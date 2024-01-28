@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/alicebob/miniredis/v2 v2.31.0
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/pkg/errors v0.9.1
 	github.com/sliveryou/go-tool/v2 v2.0.1
 	github.com/stretchr/testify v1.8.4
@@ -20,7 +21,6 @@ require (
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

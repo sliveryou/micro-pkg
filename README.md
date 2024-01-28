@@ -8,3 +8,8 @@
 [![Github Stars](https://img.shields.io/github/stars/sliveryou/go-pkg.svg?style=flat)](https://github.com/sliveryou/go-pkg/stargazers)
 
 go 微服务常用公共包
+
+## 简介
+
+- `limit` 基于 redis lua 脚本编写的时间段限流器和令牌桶限流器
+- `xkv` 通用 redis 集群键值相关操作库
