@@ -17,13 +17,13 @@ var (
 
 func TestStore(t *testing.T) {
 	type testObj struct {
-		Id   int64  `json:"id"`
+		ID   int64  `json:"id"`
 		Name string `json:"name"`
 	}
 
 	runOnCluster(func(s *Store) {
 		testKey1 := "cache:test:test_store:id:1"
-		t1 := &testObj{Id: 1, Name: "testName"}
+		t1 := &testObj{ID: 1, Name: "testName"}
 		err := s.Write(testKey1, t1)
 		require.NoError(t, err)
 
@@ -39,7 +39,7 @@ func TestStore(t *testing.T) {
 		testKey2 := "cache:test:test_store:id:2"
 		t3 := &testObj{}
 		f1 := func() (interface{}, error) {
-			return &testObj{Id: 2, Name: "testName2"}, nil
+			return &testObj{ID: 2, Name: "testName2"}, nil
 		}
 		err = s.ReadOrGet(testKey2, t3, f1)
 		require.NoError(t, err)
@@ -52,9 +52,9 @@ func TestStore(t *testing.T) {
 		t4 := make(map[string]*testObj)
 		f2 := func() (interface{}, error) {
 			m := make(map[string]*testObj)
-			m["1"] = &testObj{Id: 1, Name: "1"}
-			m["2"] = &testObj{Id: 2, Name: "2"}
-			m["3"] = &testObj{Id: 3, Name: "3"}
+			m["1"] = &testObj{ID: 1, Name: "1"}
+			m["2"] = &testObj{ID: 2, Name: "2"}
+			m["3"] = &testObj{ID: 3, Name: "3"}
 			return &m, nil
 		}
 		err = s.ReadOrGet(testKey3, &t4, f2)

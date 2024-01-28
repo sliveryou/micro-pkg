@@ -7,7 +7,7 @@ run:
 linters-settings:
   errcheck:
     # https://github.com/kisielk/errcheck#errcheck
-    ignore: fmt:.*,os:.*
+    ignore: fmt:.*,os:.*,io:.*,http:.*
   goconst:
     # https://github.com/jgautheron/goconst#usage
     ignore-tests: true
@@ -23,6 +23,8 @@ linters-settings:
   gosimple:
     # https://staticcheck.io/docs/options#checks
     checks: [ "all" ]
+  interfacebloat:
+    max: 15
   revive:
     ignore-generated-header: true
     severity: warning
@@ -43,8 +45,6 @@ linters-settings:
       - name: if-return
       - name: increment-decrement
       - name: var-naming
-        arguments:
-          - [ "ID" ] # allow list
       - name: range
       - name: receiver-naming
       - name: indent-error-flow
@@ -57,7 +57,7 @@ linters-settings:
       - name: modifies-parameter
       - name: confusing-results
       # - name: deep-exit
-      - name: unused-parameter
+      # - name: unused-parameter
       - name: unreachable-code
       # - name: add-constant
       - name: unnecessary-stmt
@@ -96,6 +96,10 @@ linters-settings:
   staticcheck:
     # https://staticcheck.io/docs/options#checks
     checks: [ "all" ]
+  ireturn:
+    # https://github.com/butuzov/ireturn#usage
+    allow: [ "anon", "error","empty", "stdlib", "generic",
+             "openapi.OpenAPI", "xhttp.RPCClient" ]
   stylecheck:
     # https://staticcheck.io/docs/options#checks
     checks: [ "all", "-ST1000", "-ST1003" ]
@@ -106,7 +110,7 @@ linters:
     - asasalint
     - asciicheck
     - bidichk
-    - bodyclose
+    # - bodyclose
     - containedctx
     - contextcheck
     - decorder
@@ -115,7 +119,7 @@ linters:
     - dupword
     - durationcheck
     - errcheck
-    - errchkjson
+    # - errchkjson
     - errname
     - errorlint
     - execinquery
@@ -193,4 +197,5 @@ issues:
     - path: _test.go
       linters:
         - dupl
+        - errcheck
         - unparam

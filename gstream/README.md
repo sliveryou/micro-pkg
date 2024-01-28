@@ -1,11 +1,11 @@
 # gstream
 
-通用 gRPC 流式消息内容读写器。
+通用 grpc 流式消息内容读写器。
    - authored by sliveryou
 
 ## 背景
 
-在一份 gRPC message 消息的定义中，往往会有较大体量的元数据：
+在一份 grpc message 消息的定义中，往往会有较大体量的元数据：
 
 ```protobuf
 // UploadFileReq 上传文件请求
@@ -21,7 +21,7 @@ message UploadFileReq {
 // 其中 file_data 就是较大的文件二进制数据
 ```
 
-在 `google.golang.org/grpc@v1.29.1/server.go` 中，服务端接收的最大消息字节数的被设置为了 4MB，且其他语言的 gRPC 消息接收限制大抵也是如此：
+在 `google.golang.org/grpc@v1.29.1/server.go` 中，服务端接收的最大消息字节数的被设置为了 4MB，且其他语言的 grpc 消息接收限制大抵也是如此：
 
 ```go
 const (
@@ -36,7 +36,7 @@ const (
 2. 流式消息传输：  
    在对应 rpc 定义，将较大体量的消息前添加 `stream` 关键字，如 `rpc UploadFile (stream UploadFileReq) returns (UploadFileResp); // UploadFile 上传文件`
 
-gRPC 官方建议一次消息传输的最大字节不超过 4MB，所以传输较大消息时，最好是选择流式传输。
+grpc 官方建议一次消息传输的最大字节不超过 4MB，所以传输较大消息时，最好是选择流式传输。
 
 ## 设计思路
 
@@ -137,7 +137,7 @@ func svrDemo(svr file.File_UploadFileServer) {
 
 1. 会发现流式传输好像都是一样代码逻辑，但是却具有业务的特征（特定消息结构体，业务相关），无法单独抽象出来
 2. 服务端每一次在循环中接收都是完整的消息结构，然后抽取其中的元数据将其转化成 io.Reader，给相关 io.Writer 调用，  
-要知道，一般需要流式传输的数据往往是较大的文件二进制数据，如很大的视频或者图片等，为了在 gRPC 中传输，被客户端切割，  
+要知道，一般需要流式传输的数据往往是较大的文件二进制数据，如很大的视频或者图片等，为了在 grpc 中传输，被客户端切割，  
 然后被服务端接收所拼凑还原，在拼凑还原的过程中，存在一个中间态，是把前部分的数据放在内存里呢？
 还是生成一个临时文件，将数据存放在其中呢？
    
@@ -196,7 +196,7 @@ func cliDemo() {
 	}
 	
 	chunkSize := (3 << 20) + (1 << 19) // 3.5MB
-	// 新建gRPC流式消息内容写入器，传入客户端对象、消息请求体对象、指定传输消息字段和传输消息块大小
+	// 新建 grpc 流式消息内容写入器，传入客户端对象、消息请求体对象、指定传输消息字段和传输消息块大小
 	writer := gstream.MustNewStreamWriter(cli, &fileclient.UploadFileReq{}, "FileData", chunkSize)
 	_, err = io.Copy(writer, f)
 	if err != nil {
@@ -227,7 +227,7 @@ func svrDemo(svr file.File_UploadFileServer) {
 	}
 	
 	key := fmt.Sprintf("common/%s.%s", fi.FileHash, fi.FileType)
-	// 新建gRPC流式消息内容读取器，传入服务端对象、消息请求体对象、指定接收消息字段和总计消息块大小
+	// 新建 grpc 流式消息内容读取器，传入服务端对象、消息请求体对象、指定接收消息字段和总计消息块大小
 	reader := gstream.MustNewStreamReader(svr, &file.UploadFileReq{}, "FileData", fi.FileSize)
 	oss.PutObject(key, reader)
 }
@@ -236,11 +236,11 @@ func svrDemo(svr file.File_UploadFileServer) {
 ## 实现原理
 
 - StreamWriter
-   - 内部传入 gRPC 客户端流对象，利用反射动态创建消息对象，并对指定 []byte 字段赋值
+   - 内部传入 grpc 客户端流对象，利用反射动态创建消息对象，并对指定 []byte 字段赋值
    - 内部申请 chunkSize 大小的缓存区，当缓存区写满时再调用客户端流对象进行消息 Send
    - Close 时将不足 chunkSize 大小缓存区数据全部写入消息体，进行最后一次发送
 
 - StreamReader
-   - 内部传入 gRPC 服务端流对象，利用反射动态创建消息对象，并对指定 []byte 字段取值
+   - 内部传入 grpc 服务端流对象，利用反射动态创建消息对象，并对指定 []byte 字段取值
    - 内部将每次读取的消息体进行缓存，直到外界将本次消息体的内容读完时，再进行消息 Recv
    - 消息全部读完时，返回 io.EOF，让外部调用知晓数据已读取完毕
