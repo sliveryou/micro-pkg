@@ -28,8 +28,8 @@ type Config struct {
 }
 
 // GetDefaultConfig 获取默认 HTTP 客户端相关配置
-func GetDefaultConfig() *Config {
-	return &Config{
+func GetDefaultConfig() Config {
+	return Config{
 		HTTPTimeout:           20 * time.Second,
 		DialTimeout:           15 * time.Second,
 		DialKeepAlive:         30 * time.Second,
@@ -44,10 +44,11 @@ func GetDefaultConfig() *Config {
 	}
 }
 
-// NewHTTPClient 新建 HTTP 客户端
-func NewHTTPClient(c *Config) *http.Client {
-	if c == nil {
-		c = GetDefaultConfig()
+// NewHTTPClient 新建 HTTP 客户端，不传递配置时，使用默认配置
+func NewHTTPClient(config ...Config) *http.Client {
+	c := GetDefaultConfig()
+	if len(config) > 0 {
+		c = config[0]
 	}
 
 	tr := &http.Transport{
@@ -74,24 +75,14 @@ func NewHTTPClient(c *Config) *http.Client {
 	return client
 }
 
-// NewDefaultHTTPClient 新建默认 HTTP 客户端
-func NewDefaultHTTPClient() *http.Client {
-	return NewHTTPClient(nil)
-}
-
 // Client HTTP 拓展客户端结构详情
 type Client struct {
 	*http.Client
 }
 
 // NewClient 新建 HTTP 拓展客户端
-func NewClient(c *Config) *Client {
-	return &Client{Client: NewHTTPClient(c)}
-}
-
-// NewDefaultClient 新建默认 HTTP 拓展客户端
-func NewDefaultClient() *Client {
-	return &Client{Client: NewDefaultHTTPClient()}
+func NewClient(config ...Config) *Client {
+	return &Client{Client: NewHTTPClient(config...)}
 }
 
 // NewClientWithHTTPClient 使用 HTTP 客户端新建 HTTP 拓展客户端

@@ -30,7 +30,7 @@ func teardown() {
 }
 
 func getApollo() (*Apollo, error) {
-	c := &Config{
+	c := Config{
 		IsEnable:        true,
 		AppID:           "SampleApp",
 		Cluster:         "default",

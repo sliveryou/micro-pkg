@@ -23,16 +23,12 @@ type Config struct {
 
 // Apollo 阿波罗配置中心客户端
 type Apollo struct {
-	c             *Config // 相关配置
-	agollo.Client         // 客户端
+	c             Config // 相关配置
+	agollo.Client        // 客户端
 }
 
 // NewApollo 新建阿波罗配置中心客户端
-func NewApollo(c *Config) (*Apollo, error) {
-	if c == nil {
-		return nil, errors.New("apollo: illegal apollo configure")
-	}
-
+func NewApollo(c Config) (*Apollo, error) {
 	a := &Apollo{c: c}
 
 	if !c.IsEnable {
@@ -64,7 +60,7 @@ func NewApollo(c *Config) (*Apollo, error) {
 }
 
 // MustNewApollo 新建阿波罗配置中心客户端
-func MustNewApollo(c *Config) *Apollo {
+func MustNewApollo(c Config) *Apollo {
 	a, err := NewApollo(c)
 	if err != nil {
 		panic(err)

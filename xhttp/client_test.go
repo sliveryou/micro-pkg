@@ -70,7 +70,7 @@ func TestClient(t *testing.T) {
 		},
 	}
 
-	client := NewDefaultClient()
+	client := NewClient()
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
 			req, err := client.GetRequest(context.Background(), c.args.method, c.args.url, c.args.header, c.args.body)

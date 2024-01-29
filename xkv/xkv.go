@@ -21,12 +21,13 @@ return current;`
 
 // Store 键值存取器结构详情
 type Store struct {
+	c kv.KvConf
 	kv.Store
 }
 
 // NewStore 新建键值存取器
 func NewStore(c kv.KvConf) *Store {
-	return &Store{Store: kv.NewStore(c)}
+	return &Store{c: c, Store: kv.NewStore(c)}
 }
 
 // GetInt 返回给定 key 所关联的 int 值

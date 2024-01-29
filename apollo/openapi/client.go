@@ -102,7 +102,7 @@ func NewClient(config ClientConfig, opts ...ClientOption) (OpenAPI, error) {
 		opt(c)
 	}
 	if c.httpClient == nil {
-		c.httpClient = xhttp.NewDefaultHTTPClient()
+		c.httpClient = xhttp.NewHTTPClient()
 	}
 
 	return c, nil

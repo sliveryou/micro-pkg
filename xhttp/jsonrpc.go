@@ -54,7 +54,7 @@ func NewRPCClient(endpoint string, opts ...RPCOption) RPCClient {
 	}
 
 	if c.httpClient == nil {
-		c.httpClient = NewDefaultHTTPClient()
+		c.httpClient = NewHTTPClient()
 	}
 
 	return c
