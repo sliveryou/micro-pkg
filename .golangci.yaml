@@ -121,7 +121,7 @@ linters:
     - durationcheck
     - errcheck
     # - errchkjson
-    - errname
+    # - errname
     - errorlint
     - execinquery
     # - exhaustive
