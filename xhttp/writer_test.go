@@ -13,7 +13,7 @@ import (
 )
 
 func TestNewMultipartWriter(t *testing.T) {
-	fileAbsName := "test/test.txt"
+	fileAbsName := "../testdata/test.txt"
 	fileReader, err := os.Open(fileAbsName)
 	require.NoError(t, err)
 	fileName := filepath.Base(fileAbsName)
@@ -50,7 +50,7 @@ func TestNewMultipartWriter(t *testing.T) {
 }
 
 func TestMultipartWriter_WriteFile(t *testing.T) {
-	fileAbsName := "test/test.pdf"
+	fileAbsName := "../testdata/test.pdf"
 	fileReader, err := os.Open(fileAbsName)
 	require.NoError(t, err)
 	fileName := filepath.Base(fileAbsName)

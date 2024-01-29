@@ -31,19 +31,19 @@ func NewLoggedResponseWriter(w http.ResponseWriter, r *http.Request) *LoggedResp
 	}
 }
 
-// Flush 实现Flush方法
+// Flush 实现 Flush 方法
 func (w *LoggedResponseWriter) Flush() {
 	if flusher, ok := w.W.(http.Flusher); ok {
 		flusher.Flush()
 	}
 }
 
-// Header 实现Header方法
+// Header 实现 Header 方法
 func (w *LoggedResponseWriter) Header() http.Header {
 	return w.W.Header()
 }
 
-// Hijack 实现Hijack方法
+// Hijack 实现 Hijack 方法
 func (w *LoggedResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	if hijacked, ok := w.W.(http.Hijacker); ok {
 		return hijacked.Hijack()

@@ -16,11 +16,10 @@ import (
 )
 
 var (
-	// From: https://raw.githubusercontent.com/jshttp/mime-db/master/db.json
-	//
-	//go:embed test/mime-db.json
-	mimeDB []byte
-	reg    = regexp.MustCompile(`(?s)(var extToMimeType = map\[string]string\{.*?\n})`)
+	// source from:
+	//   https://raw.githubusercontent.com/jshttp/mime-db/master/db.json
+	mimeDBFile = "../testdata/mime-db.json"
+	reg        = regexp.MustCompile(`(?s)(var extToMimeType = map\[string]string\{.*?\n})`)
 )
 
 func TestParseMineType(t *testing.T) {
@@ -42,7 +41,9 @@ func TestParseMineType(t *testing.T) {
 	}
 
 	m := make(map[string]rawMineType)
-	err := json.Unmarshal(mimeDB, &m)
+	mimeDB, err := os.ReadFile(mimeDBFile)
+	require.NoError(t, err)
+	err = json.Unmarshal(mimeDB, &m)
 	require.NoError(t, err)
 
 	mts := make([]string, 0, len(m))

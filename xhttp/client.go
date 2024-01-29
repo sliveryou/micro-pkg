@@ -167,7 +167,7 @@ type ChainResp struct {
 	Error  string          `json:"error"`
 }
 
-// CallChain 区块链HTTP调用
+// CallChain 区块链 HTTP 调用
 func (c *Client) CallChain(ctx context.Context, method, url string, header map[string]string, params, resp interface{}) error {
 	cReq := &ChainReq{Method: method, Params: params}
 	data, err := json.Marshal(cReq)

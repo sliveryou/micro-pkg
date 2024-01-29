@@ -68,7 +68,7 @@ func FailLimit(attemptLimit uint, failAction Action) Strategy {
 
 // Fail 失败策略，每达到一定尝试次数执行
 // 目前这个预先的策略会导致前置策略判断失败直接退出循环无法执行该策略
-// 故此策略需要在Limit策略之前加入
+// 故此策略需要在 Limit 策略之前加入
 func Fail(attemptLimit uint, failAction Action) Strategy {
 	return func(attempt uint) bool {
 		if attempt%attemptLimit == 0 && failAction != nil {

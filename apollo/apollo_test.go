@@ -35,7 +35,7 @@ func getApollo() (*Apollo, error) {
 		AppID:           "SampleApp",
 		Cluster:         "default",
 		NameSpaceNames:  []string{"application", "client.json", "service.yaml"},
-		CacheDir:        "testdata",
+		CacheDir:        "../testdata",
 		MetaAddr:        "localhost:8080",
 		AccessKeySecret: "",
 	}

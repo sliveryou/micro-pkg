@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// StreamWriter gRPC 流式消息内容写入器
+// StreamWriter grpc 流式消息内容写入器
 type StreamWriter struct {
 	stream    grpc.ClientStream
 	t         reflect.Type
@@ -21,7 +21,7 @@ type StreamWriter struct {
 	chunkSize int
 }
 
-// NewStreamWriter 新建 gRPC 流式消息内容写入器
+// NewStreamWriter 新建 grpc 流式消息内容写入器
 func NewStreamWriter(stream grpc.ClientStream, target interface{}, field string, chunkSize int) (io.WriteCloser, error) {
 	v, err := checkAndGetTargetValue(target, field)
 	if err != nil {
@@ -38,7 +38,7 @@ func NewStreamWriter(stream grpc.ClientStream, target interface{}, field string,
 	}, nil
 }
 
-// MustNewStreamWriter 新建 gRPC 流式消息内容写入器
+// MustNewStreamWriter 新建 grpc 流式消息内容写入器
 func MustNewStreamWriter(stream grpc.ClientStream, target interface{}, field string, chunkSize int) io.WriteCloser {
 	w, err := NewStreamWriter(stream, target, field, chunkSize)
 	if err != nil {
@@ -48,7 +48,7 @@ func MustNewStreamWriter(stream grpc.ClientStream, target interface{}, field str
 	return w
 }
 
-// Write 写入 gRPC 流式消息内容
+// Write 写入 grpc 流式消息内容
 func (w *StreamWriter) Write(p []byte) (n int, err error) {
 	if w.err != nil {
 		return 0, w.err
@@ -88,7 +88,7 @@ func (w *StreamWriter) Write(p []byte) (n int, err error) {
 	return n, err
 }
 
-// Close 关闭 gRPC 流式消息内容写入器，并刷新写入器缓存内容
+// Close 关闭 grpc 流式消息内容写入器，并刷新写入器缓存内容
 func (w *StreamWriter) Close() error {
 	if w.err == nil && w.bufNum > 0 {
 		req := reflect.New(w.t).Elem()
@@ -100,7 +100,7 @@ func (w *StreamWriter) Close() error {
 	return w.err
 }
 
-// StreamReader gRPC 流式消息内容读取器
+// StreamReader grpc 流式消息内容读取器
 type StreamReader struct {
 	stream grpc.ServerStream
 	t      reflect.Type
@@ -109,7 +109,7 @@ type StreamReader struct {
 	buf    []byte
 }
 
-// NewStreamReader 新建 gRPC 流式消息内容读取器
+// NewStreamReader 新建 grpc 流式消息内容读取器
 func NewStreamReader(stream grpc.ServerStream, target interface{}, field string, size int64) (io.Reader, error) {
 	v, err := checkAndGetTargetValue(target, field)
 	if err != nil {
@@ -123,7 +123,7 @@ func NewStreamReader(stream grpc.ServerStream, target interface{}, field string,
 	}, size), nil
 }
 
-// MustNewStreamReader 新建 gRPC 流式消息内容读取器
+// MustNewStreamReader 新建 grpc 流式消息内容读取器
 func MustNewStreamReader(stream grpc.ServerStream, target interface{}, field string, size int64) io.Reader {
 	r, err := NewStreamReader(stream, target, field, size)
 	if err != nil {
@@ -133,7 +133,7 @@ func MustNewStreamReader(stream grpc.ServerStream, target interface{}, field str
 	return r
 }
 
-// Read 读取 gRPC 流式消息内容
+// Read 读取 grpc 流式消息内容
 func (r *StreamReader) Read(p []byte) (n int, err error) {
 	if r.index >= int64(len(r.buf)) {
 		target := reflect.New(r.t).Elem()

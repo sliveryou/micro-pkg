@@ -16,6 +16,7 @@ linters-settings:
   gocritic:
     # https://go-critic.github.io/overview#checks-overview
     disabled-checks:
+      - appendAssign
       - ifElseChain
   gofumpt:
     # https://github.com/mvdan/gofumpt#gofumpt
@@ -82,7 +83,7 @@ linters-settings:
       - name: unconditional-recursion
       - name: identical-branches
       - name: defer
-      - name: unexported-naming
+      # - name: unexported-naming
       - name: nested-structs
       - name: useless-break
       - name: banned-characters
@@ -115,7 +116,7 @@ linters:
     - contextcheck
     - decorder
     - dogsled
-    - dupl
+    # - dupl
     - dupword
     - durationcheck
     - errcheck
@@ -196,6 +197,5 @@ issues:
   exclude-rules:
     - path: _test.go
       linters:
-        - dupl
         - errcheck
         - unparam
