@@ -22,7 +22,7 @@ type StreamWriter struct {
 }
 
 // NewStreamWriter 新建 grpc 流式消息内容写入器
-func NewStreamWriter(stream grpc.ClientStream, target interface{}, field string, chunkSize int) (io.WriteCloser, error) {
+func NewStreamWriter(stream grpc.ClientStream, target any, field string, chunkSize int) (io.WriteCloser, error) {
 	v, err := checkAndGetTargetValue(target, field)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func NewStreamWriter(stream grpc.ClientStream, target interface{}, field string,
 }
 
 // MustNewStreamWriter 新建 grpc 流式消息内容写入器
-func MustNewStreamWriter(stream grpc.ClientStream, target interface{}, field string, chunkSize int) io.WriteCloser {
+func MustNewStreamWriter(stream grpc.ClientStream, target any, field string, chunkSize int) io.WriteCloser {
 	w, err := NewStreamWriter(stream, target, field, chunkSize)
 	if err != nil {
 		panic(err)
@@ -110,7 +110,7 @@ type StreamReader struct {
 }
 
 // NewStreamReader 新建 grpc 流式消息内容读取器
-func NewStreamReader(stream grpc.ServerStream, target interface{}, field string, size int64) (io.Reader, error) {
+func NewStreamReader(stream grpc.ServerStream, target any, field string, size int64) (io.Reader, error) {
 	v, err := checkAndGetTargetValue(target, field)
 	if err != nil {
 		return nil, err
@@ -124,7 +124,7 @@ func NewStreamReader(stream grpc.ServerStream, target interface{}, field string,
 }
 
 // MustNewStreamReader 新建 grpc 流式消息内容读取器
-func MustNewStreamReader(stream grpc.ServerStream, target interface{}, field string, size int64) io.Reader {
+func MustNewStreamReader(stream grpc.ServerStream, target any, field string, size int64) io.Reader {
 	r, err := NewStreamReader(stream, target, field, size)
 	if err != nil {
 		panic(err)
@@ -155,7 +155,7 @@ func (r *StreamReader) Read(p []byte) (n int, err error) {
 }
 
 // checkAndGetTargetValue 检查并获取目标对象的反射值对象
-func checkAndGetTargetValue(target interface{}, field string) (reflect.Value, error) {
+func checkAndGetTargetValue(target any, field string) (reflect.Value, error) {
 	// 目标对象不能为 nil
 	if target == nil {
 		return reflect.Value{}, errors.New("gstream: target cannot be nil")

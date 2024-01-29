@@ -38,7 +38,7 @@ func TestStore(t *testing.T) {
 
 		testKey2 := "cache:test:test_store:id:2"
 		t3 := &testObj{}
-		f1 := func() (interface{}, error) {
+		f1 := func() (any, error) {
 			return &testObj{ID: 2, Name: "testName2"}, nil
 		}
 		err = s.ReadOrGet(testKey2, t3, f1)
@@ -50,7 +50,7 @@ func TestStore(t *testing.T) {
 
 		testKey3 := "cache:test:test_store:id:3"
 		t4 := make(map[string]*testObj)
-		f2 := func() (interface{}, error) {
+		f2 := func() (any, error) {
 			m := make(map[string]*testObj)
 			m["1"] = &testObj{ID: 1, Name: "1"}
 			m["2"] = &testObj{ID: 2, Name: "2"}

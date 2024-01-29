@@ -138,7 +138,7 @@ func (c *client) newRequest(ctx context.Context, method, url string, body io.Rea
 }
 
 // do 执行请求
-func (c *client) do(ctx context.Context, method, url string, request, response interface{}) error {
+func (c *client) do(ctx context.Context, method, url string, request, response any) error {
 	var (
 		err           error
 		reqBody       []byte

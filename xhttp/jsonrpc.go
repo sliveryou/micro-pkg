@@ -18,11 +18,11 @@ const (
 // RPCClient 通用 JSON-RPC 客户端接口
 type RPCClient interface {
 	// Call 进行 JSON-RPC 调用
-	Call(ctx context.Context, method string, params ...interface{}) (*RPCResponse, error)
+	Call(ctx context.Context, method string, params ...any) (*RPCResponse, error)
 	// CallRaw 基于所给请求体进行 JSON-RPC 调用
 	CallRaw(ctx context.Context, request *RPCRequest) (*RPCResponse, error)
 	// CallFor 进行 JSON-RPC 调用并将响应结果反序列化到所给类型对象中
-	CallFor(ctx context.Context, out interface{}, method string, params ...interface{}) error
+	CallFor(ctx context.Context, out any, method string, params ...any) error
 }
 
 // RPCOption JSON-RPC 客户端可选配置
@@ -68,7 +68,7 @@ type rpcClient struct {
 }
 
 // newRequest 新建 HTTP 请求体
-func (c *rpcClient) newRequest(ctx context.Context, req interface{}) (*http.Request, error) {
+func (c *rpcClient) newRequest(ctx context.Context, req any) (*http.Request, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, errors.WithMessagef(err, "json marshal %v err", req)
@@ -124,7 +124,7 @@ func (c *rpcClient) doCall(ctx context.Context, req *RPCRequest) (*RPCResponse, 
 }
 
 // Call 进行 JSON-RPC 调用
-func (c *rpcClient) Call(ctx context.Context, method string, params ...interface{}) (*RPCResponse, error) {
+func (c *rpcClient) Call(ctx context.Context, method string, params ...any) (*RPCResponse, error) {
 	req := &RPCRequest{
 		Method:  method,
 		Params:  Params(params...),
@@ -140,7 +140,7 @@ func (c *rpcClient) CallRaw(ctx context.Context, request *RPCRequest) (*RPCRespo
 }
 
 // CallFor 进行 JSON-RPC 调用并将响应结果反序列化到所给类型对象中
-func (c *rpcClient) CallFor(ctx context.Context, out interface{}, method string, params ...interface{}) error {
+func (c *rpcClient) CallFor(ctx context.Context, out any, method string, params ...any) error {
 	rpcResp, err := c.Call(ctx, method, params...)
 	if err != nil {
 		return err
@@ -151,14 +151,14 @@ func (c *rpcClient) CallFor(ctx context.Context, out interface{}, method string,
 
 // RPCRequest 通用 JSON-RPC 请求体
 type RPCRequest struct {
-	JSONRPC string      `json:"jsonrpc"`
-	ID      int         `json:"id"`
-	Method  string      `json:"method"`
-	Params  interface{} `json:"params,omitempty"`
+	JSONRPC string `json:"jsonrpc"`
+	ID      int    `json:"id"`
+	Method  string `json:"method"`
+	Params  any    `json:"params,omitempty"`
 }
 
 // NewRPCRequest 新建通用 JSON-RPC 请求体
-func NewRPCRequest(method string, params ...interface{}) *RPCRequest {
+func NewRPCRequest(method string, params ...any) *RPCRequest {
 	req := &RPCRequest{
 		Method:  method,
 		Params:  Params(params...),
@@ -169,8 +169,8 @@ func NewRPCRequest(method string, params ...interface{}) *RPCRequest {
 }
 
 // Params 构建请求参数
-func Params(params ...interface{}) interface{} {
-	var ps interface{}
+func Params(params ...any) any {
+	var ps any
 
 	if params != nil {
 		switch len(params) {
@@ -210,10 +210,10 @@ func Params(params ...interface{}) interface{} {
 
 // RPCResponse 通用 JSON-RPC 响应体
 type RPCResponse struct {
-	JSONRPC string      `json:"jsonrpc"`
-	ID      int         `json:"id"`
-	Result  interface{} `json:"result,omitempty"`
-	Error   interface{} `json:"error,omitempty"`
+	JSONRPC string `json:"jsonrpc"`
+	ID      int    `json:"id"`
+	Result  any    `json:"result,omitempty"`
+	Error   any    `json:"error,omitempty"`
 }
 
 // GetInt64 获取响应结果的 int64 类型值
@@ -283,7 +283,7 @@ func (resp *RPCResponse) GetString() (string, error) {
 }
 
 // ReadToObject 将响应结果反序列化到所给类型对象中
-func (resp *RPCResponse) ReadToObject(to interface{}) error {
+func (resp *RPCResponse) ReadToObject(to any) error {
 	if resp.Error != nil {
 		return errors.Errorf("%v", resp.Error)
 	}

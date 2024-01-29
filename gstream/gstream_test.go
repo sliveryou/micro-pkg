@@ -73,7 +73,7 @@ func TestReflect(t *testing.T) {
 	target.FieldByName("FileData").SetBytes([]byte("test set bytes"))
 	t.Log(target, target.Addr().Interface())
 
-	testFunc := func(r interface{}) {
+	testFunc := func(r any) {
 		req, ok := r.(*testReq)
 		if assert.True(t, ok) {
 			t.Log(string(req.FileData))

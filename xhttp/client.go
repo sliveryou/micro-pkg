@@ -122,7 +122,7 @@ func (c *Client) GetResponse(req *http.Request) (*http.Response, []byte, error) 
 }
 
 // CallWithRequest 利用 HTTP 请求进行 HTTP 调用
-func (c *Client) CallWithRequest(req *http.Request, resp interface{}) (*http.Response, error) {
+func (c *Client) CallWithRequest(req *http.Request, resp any) (*http.Response, error) {
 	response, body, err := c.GetResponse(req)
 	if err != nil {
 		return nil, errors.WithMessage(err, "get response err")
@@ -139,7 +139,7 @@ func (c *Client) CallWithRequest(req *http.Request, resp interface{}) (*http.Res
 }
 
 // Call HTTP 调用
-func (c *Client) Call(ctx context.Context, method, url string, header map[string]string, data io.Reader, resp interface{}) error {
+func (c *Client) Call(ctx context.Context, method, url string, header map[string]string, data io.Reader, resp any) error {
 	req, err := c.GetRequest(ctx, method, url, header, data)
 	if err != nil {
 		return errors.WithMessage(err, "get request err")
@@ -155,9 +155,9 @@ func (c *Client) Call(ctx context.Context, method, url string, header map[string
 
 // ChainReq 区块链 HTTP 调用请求
 type ChainReq struct {
-	ID     int         `json:"id"`
-	Method string      `json:"method"`
-	Params interface{} `json:"params"`
+	ID     int    `json:"id"`
+	Method string `json:"method"`
+	Params any    `json:"params"`
 }
 
 // ChainResp 区块链 HTTP 调用响应
@@ -168,7 +168,7 @@ type ChainResp struct {
 }
 
 // CallChain 区块链 HTTP 调用
-func (c *Client) CallChain(ctx context.Context, method, url string, header map[string]string, params, resp interface{}) error {
+func (c *Client) CallChain(ctx context.Context, method, url string, header map[string]string, params, resp any) error {
 	cReq := &ChainReq{Method: method, Params: params}
 	data, err := json.Marshal(cReq)
 	if err != nil {

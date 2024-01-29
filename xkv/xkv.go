@@ -92,7 +92,7 @@ func (s *Store) SetString(key, value string, seconds ...int) error {
 
 // Read 将给定 key 所关联的值反序列化到 obj 对象
 // 返回 false 时代表给定 key 不存在
-func (s *Store) Read(key string, obj interface{}) (bool, error) {
+func (s *Store) Read(key string, obj any) (bool, error) {
 	if !isValid(obj) {
 		return false, errors.New("obj is invalid")
 	}
@@ -114,7 +114,7 @@ func (s *Store) Read(key string, obj interface{}) (bool, error) {
 }
 
 // Write 将对象 obj 序列化后关联到给定 key，seconds 为 key 的过期时间（秒）
-func (s *Store) Write(key string, obj interface{}, seconds ...int) error {
+func (s *Store) Write(key string, obj any, seconds ...int) error {
 	value, err := json.Marshal(obj)
 	if err != nil {
 		return errors.Wrap(err, "json marshal obj err")
@@ -124,12 +124,12 @@ func (s *Store) Write(key string, obj interface{}, seconds ...int) error {
 }
 
 // GetFunc 给定 key 不存在时调用的数据获取函数
-type GetFunc func() (interface{}, error)
+type GetFunc func() (any, error)
 
 // ReadOrGet 将给定 key 所关联的值反序列化到 obj 对象
 // 若给定 key 不存在则调用数据获取函数，调用成功时赋值至 obj 对象
 // 并将其序列化后关联到给定 key，seconds 为 key 的过期时间（秒）
-func (s *Store) ReadOrGet(key string, obj interface{}, gf GetFunc, seconds ...int) error {
+func (s *Store) ReadOrGet(key string, obj any, gf GetFunc, seconds ...int) error {
 	isExist, err := s.Read(key, obj)
 	if err != nil {
 		return errors.Wrap(err, "read obj by err")
@@ -158,7 +158,7 @@ func (s *Store) ReadOrGet(key string, obj interface{}, gf GetFunc, seconds ...in
 }
 
 // isValid 判断对象是否合法
-func isValid(obj interface{}) bool {
+func isValid(obj any) bool {
 	if obj == nil {
 		return false
 	}

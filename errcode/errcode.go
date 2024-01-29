@@ -139,6 +139,7 @@ func FromError(err error) (*Err, bool) {
 			}
 		}
 	}
+
 	errors.As(ErrUnexpected, &e)
 
 	return e, false

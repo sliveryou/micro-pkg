@@ -86,13 +86,13 @@ func (a *Apollo) GetDumpFileName() string {
 }
 
 // UnmarshalYaml 将 content 字符串 yaml 反序列化到 value 中
-func UnmarshalYaml(content string, value interface{}, zeroFields ...bool) error {
+func UnmarshalYaml(content string, value any, zeroFields ...bool) error {
 	needZeroFields := false
 	if len(zeroFields) > 0 {
 		needZeroFields = zeroFields[0]
 	}
 
-	m := make(map[string]interface{})
+	m := make(map[string]any)
 	err := yaml.Unmarshal([]byte(content), m)
 	if err != nil {
 		return errors.WithMessage(err, "yaml unmarshal content err")
@@ -117,7 +117,7 @@ func UnmarshalYaml(content string, value interface{}, zeroFields ...bool) error 
 }
 
 // MustUnmarshalYaml 将 content 字符串 yaml 反序列化到 value 中
-func MustUnmarshalYaml(content string, value interface{}, zeroFields ...bool) {
+func MustUnmarshalYaml(content string, value any, zeroFields ...bool) {
 	err := UnmarshalYaml(content, value, zeroFields...)
 	if err != nil {
 		panic(err)
