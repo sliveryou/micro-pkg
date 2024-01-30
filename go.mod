@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/alicebob/miniredis/v2 v2.31.0
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/go-stack/stack v1.8.1
 	github.com/h2non/filetype v1.1.3
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/philchia/agollo/v4 v4.1.5
