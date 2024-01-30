@@ -12,6 +12,8 @@ import (
 	"github.com/sliveryou/micro-pkg/apollo/internal/mockserver"
 )
 
+var addr = ":8080"
+
 func TestMain(m *testing.M) {
 	setup()
 	code := m.Run()
@@ -20,7 +22,7 @@ func TestMain(m *testing.M) {
 }
 
 func setup() {
-	go mockserver.Run()
+	go mockserver.Run(addr)
 	// wait for mock server to run
 	time.Sleep(time.Millisecond * 5)
 }

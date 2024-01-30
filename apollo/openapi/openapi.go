@@ -137,7 +137,7 @@ type CreateNamespaceReq struct {
 	Format              Format `json:"format"`              // namespace 的格式，只能是以下类型：properties、xml、json、yml 和 yaml
 	IsPublic            bool   `json:"isPublic"`            // 是否是公共文件
 	Comment             string `json:"comment"`             // namespace 说明（非必填）
-	DataChangeCreatedBy string `json:"dataChangeCreatedBy"` // namespace 的创建人，格式为域账号，也就是 sso 系统的 User Id
+	DataChangeCreatedBy string `json:"dataChangeCreatedBy"` // namespace 的创建人，格式为域账号，也就是 sso 系统的 UserId
 }
 
 // CreateNamespaceResp 创建命名空间响应
@@ -165,7 +165,7 @@ type AddItemReq struct {
 	Key                 string `json:"key"`                 // 配置的 key，长度不能超过 128 个字符。非 properties 格式，key 固定为 content
 	Value               string `json:"value"`               // 配置的 value，长度不能超过 20000 个字符，非 properties 格式，value 为文件全部内容
 	Comment             string `json:"comment"`             // 配置的备注，长度不能超过 1024 个字符（非必填）
-	DataChangeCreatedBy string `json:"dataChangeCreatedBy"` // item 的创建人，格式为域账号，也就是 sso 系统的 User Id
+	DataChangeCreatedBy string `json:"dataChangeCreatedBy"` // item 的创建人，格式为域账号，也就是 sso 系统的 UserId
 }
 
 // UpdateItemReq 更新配置信息请求
@@ -173,8 +173,8 @@ type UpdateItemReq struct {
 	Key                      string `json:"key"`                      // 配置的 key，需和 url 中的 key 值一致。非 properties 格式，key 固定为content
 	Value                    string `json:"value"`                    // 配置的 value，长度不能超过 20000 个字符，非 properties 格式，value 为文件全部内容
 	Comment                  string `json:"comment"`                  // 配置的备注，长度不能超过 256 个字符（非必填）
-	DataChangeLastModifiedBy string `json:"dataChangeLastModifiedBy"` // item 的修改人，格式为域账号，也就是 sso 系统的 User Id
-	DataChangeCreatedBy      string `json:"dataChangeCreatedBy"`      // 当 createIfNotExists 为 true 时必选。item 的创建人，格式为域账号，也就是 sso 系统的 User ID
+	DataChangeLastModifiedBy string `json:"dataChangeLastModifiedBy"` // item 的修改人，格式为域账号，也就是 sso 系统的 UserId
+	DataChangeCreatedBy      string `json:"dataChangeCreatedBy"`      // 当 createIfNotExists 为 true 时必选。item 的创建人，格式为域账号，也就是 sso 系统的 UserID
 }
 
 // DeleteItemReq 删除配置信息请求

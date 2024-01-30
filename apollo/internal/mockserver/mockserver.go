@@ -113,12 +113,12 @@ func Delete(namespace, key string) {
 }
 
 // Run mock server
-func Run() error {
-	initServer()
+func Run(addr ...string) error {
+	initServer(addr...)
 	return server.server.ListenAndServe()
 }
 
-func initServer() {
+func initServer(addr ...string) {
 	server = &mockServer{
 		notifications: map[string]int{},
 		config:        map[string]map[string]string{},
@@ -128,6 +128,9 @@ func initServer() {
 	mux.Handle("/configs/", http.HandlerFunc(server.ConfigHandler))
 	server.server.Handler = mux
 	server.server.Addr = ":8080"
+	if len(addr) > 0 {
+		server.server.Addr = addr[0]
+	}
 }
 
 // Close mock server
