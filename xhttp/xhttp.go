@@ -137,6 +137,7 @@ func FromFile(r *http.Request, name string) (*multipart.FileHeader, error) {
 			return nil, err
 		}
 	}
+
 	f, fh, err := r.FormFile(name)
 	if err != nil {
 		if errors.Is(err, http.ErrMissingFile) {
@@ -145,12 +146,14 @@ func FromFile(r *http.Request, name string) (*multipart.FileHeader, error) {
 		return nil, err
 	}
 	f.Close()
+
 	return fh, nil
 }
 
 // Query 返回给定请求查询参数键的字符串值
 func Query(r *http.Request, key string) string {
 	value, _ := GetQuery(r, key)
+
 	return value
 }
 
@@ -159,12 +162,14 @@ func GetQuery(r *http.Request, key string) (string, bool) {
 	if values, ok := GetQueryArray(r, key); ok {
 		return values[0], ok
 	}
+
 	return "", false
 }
 
 // QueryArray 返回给定请求查询参数键的字符串切片值
 func QueryArray(r *http.Request, key string) []string {
 	values, _ := GetQueryArray(r, key)
+
 	return values
 }
 
@@ -174,6 +179,7 @@ func GetQueryArray(r *http.Request, key string) ([]string, bool) {
 	if values, ok := query[key]; ok && len(values) > 0 {
 		return values, true
 	}
+
 	return []string{}, false
 }
 

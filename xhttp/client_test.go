@@ -45,6 +45,18 @@ func TestClient(t *testing.T) {
 		args  args
 	}{
 		{
+			title: "do get ip",
+			args: args{
+				method: "GET",
+				url:    "https://www.httpbin.org/ip",
+				header: map[string]string{
+					"Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+					"User-Agent":      "Go-HTTP-Request",
+				},
+				body: nil,
+			},
+		},
+		{
 			title: "do get method",
 			args: args{
 				method: "GET",

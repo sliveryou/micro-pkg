@@ -1,10 +1,12 @@
 package xhttp
 
 import (
-	"context"
+	"bytes"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path"
 	"strings"
 	"testing"
 
@@ -13,7 +15,7 @@ import (
 )
 
 func TestQueries(t *testing.T) {
-	r, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "http://test.com/api/test?id=1&hash=a&hash=b", nil)
+	r, err := http.NewRequest(http.MethodGet, "http://test.com/api/test?id=1&hash=a&hash=b", nil)
 	require.NoError(t, err)
 
 	assert.Equal(t, "1", Query(r, "id"))
@@ -99,6 +101,79 @@ func TestParseJsonBody(t *testing.T) {
 	assert.Equal(t, int64(8), req.TotalSize)
 }
 
+func TestFromFile(t *testing.T) {
+	fileAbsName := "../testdata/test.txt"
+	fileReader, err := os.Open(fileAbsName)
+	require.NoError(t, err)
+	fileName := path.Base(fileAbsName)
+
+	body := &bytes.Buffer{}
+	writer := NewMultipartWriter(body)
+
+	err = writer.WriteField("file_type", "txt")
+	require.NoError(t, err)
+
+	ct, err := writer.WriteFile("file_data", fileName, fileReader)
+	require.NoError(t, err)
+	require.Equal(t, "text/plain; charset=utf-8", ct)
+
+	contentType := writer.FormDataContentType()
+	err = writer.Close()
+	require.NoError(t, err)
+
+	r := httptest.NewRequest(http.MethodPost, "http://test.com/api/file/upload", body)
+	r.Header.Set("Content-Type", contentType)
+	w := httptest.NewRecorder()
+	testFileHandler(w, r)
+
+	result := w.Result()
+	defer result.Body.Close()
+
+	d, err := io.ReadAll(result.Body)
+	require.NoError(t, err)
+	data := string(d)
+	assert.Equal(t, "{\"code\":0,\"msg\":\"ok\",\"data\":{\"file_data\":\"A test text.\\nA test text.\\nA test text.\\n\",\"file_name\":\"test.txt\",\"file_size\":39,\"file_type\":\"txt\"}}", data)
+}
+
+func testFileHandler(w http.ResponseWriter, r *http.Request) {
+	type _UploadFileReq struct {
+		FileType string `form:"file_type" validate:"required" label:"文件类型"` // 文件类型
+	}
+
+	ctx := r.Context()
+	var req _UploadFileReq
+	if err := Parse(r, &req); err != nil {
+		ErrorCtx(ctx, w, err)
+		return
+	}
+
+	fh, err := FromFile(r, "file_data")
+	if err != nil {
+		ErrorCtx(ctx, w, err)
+		return
+	}
+
+	f, err := fh.Open()
+	if err != nil {
+		ErrorCtx(ctx, w, err)
+		return
+	}
+	defer f.Close()
+
+	d, err := io.ReadAll(f)
+	if err != nil {
+		ErrorCtx(ctx, w, err)
+		return
+	}
+
+	OkJsonCtx(ctx, w, map[string]any{
+		"file_type": req.FileType,
+		"file_data": string(d),
+		"file_name": fh.Filename,
+		"file_size": fh.Size,
+	})
+}
+
 func TestGetClientIP(t *testing.T) {
 	cases := []struct {
 		k      string
@@ -147,11 +222,7 @@ func TestCopyHttpRequest(t *testing.T) {
 	d, err := io.ReadAll(result.Body)
 	require.NoError(t, err)
 	data := string(d)
-	assert.Equal(t, "{\"code\":0,\"msg\":\"ok\",\"data\":{\"current_data\":\"abcdefgh\",\"current_seq\":1,\"current_size\":8,\"file_name\":\"test.txt\",\"file_hash\":\"ec3f5c9819f41ec8965587553fbe9935ec26ec440c5adc94ff6c10efadeba80f\",\"total_seq\":1,\"total_size\":8}}-{\"code\":0,\"msg\":\"ok\",\"data\":{\"current_data\":\"abcdefgh\",\"current_seq\":1,\"current_size\":8,\"file_name\":\"test.txt\",\"file_hash\":\"ec3f5c9819f41ec8965587553fbe9935ec26ec440c5adc94ff6c10efadeba80f\",\"total_seq\":1,\"total_size\":8}}", data)
-
-	s := strings.Split(data, "-")
-	assert.Len(t, s, 2)
-	assert.Equal(t, s[0], s[1])
+	assert.Equal(t, "{\"code\":0,\"msg\":\"ok\",\"data\":{\"is_equal\":true,\"req1\":{\"current_data\":\"abcdefgh\",\"current_seq\":1,\"current_size\":8,\"file_name\":\"test.txt\",\"file_hash\":\"ec3f5c9819f41ec8965587553fbe9935ec26ec440c5adc94ff6c10efadeba80f\",\"total_seq\":1,\"total_size\":8},\"req2\":{\"current_data\":\"abcdefgh\",\"current_seq\":1,\"current_size\":8,\"file_name\":\"test.txt\",\"file_hash\":\"ec3f5c9819f41ec8965587553fbe9935ec26ec440c5adc94ff6c10efadeba80f\",\"total_seq\":1,\"total_size\":8}}}", data)
 }
 
 func TestErrorCtx1(t *testing.T) {
@@ -220,9 +291,11 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	OkJsonCtx(ctx, w, req1)
-	w.Write([]byte{'-'})
-	OkJsonCtx(ctx, w, req2)
+	OkJsonCtx(ctx, w, map[string]any{
+		"req1":     req1,
+		"req2":     req2,
+		"is_equal": req1 == req2,
+	})
 }
 
 type _GetFilesReq struct {

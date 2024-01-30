@@ -1,7 +1,6 @@
 package xhttp
 
 import (
-	_ "embed"
 	"encoding/json"
 	"fmt"
 	"go/format"
