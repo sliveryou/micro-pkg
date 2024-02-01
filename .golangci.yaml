@@ -20,6 +20,8 @@ linters-settings:
     disabled-checks:
       - appendAssign
       - ifElseChain
+  gocyclo:
+    min-complexity: 40
   gofumpt:
     # https://github.com/mvdan/gofumpt#gofumpt
     extra-rules: true

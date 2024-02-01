@@ -1,6 +1,9 @@
 package apollo
 
 import (
+	"bytes"
+	"encoding/gob"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -197,4 +200,13 @@ func TestUnmarshalYaml(t *testing.T) {
 	assert.Equal(t, 123, obj.TestYaml.TestInt)
 	assert.Equal(t, int32(456), obj.TestYaml.TestInt32)
 	assert.Equal(t, int64(789), obj.TestYaml.TestInt64)
+
+	fileName := client.GetDumpFileName()
+	b, err := os.ReadFile(fileName)
+	require.NoError(t, err)
+
+	m := map[string]map[string]string{}
+	err = gob.NewDecoder(bytes.NewReader(b)).Decode(&m)
+	require.NoError(t, err)
+	fmt.Println(m)
 }

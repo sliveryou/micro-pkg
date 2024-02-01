@@ -18,7 +18,7 @@ import (
 //	业务状态码等于 0 时，代表成功
 //	业务状态码大于 0 时，代表错误
 //	自定义业务状态码请大于等于 17，与 grpc 默认 code 区分开
-//	98 代表通用错误，99 代表意外错误，100 代表请求参数错误，均已被占用，建议之后业务状态码从 200 开始
+//	97 代表通用错误，98 代表记录不存在错误，99 代表意外错误，100 代表请求参数错误，均已被占用，建议之后业务状态码从 200 开始
 const (
 	// CodeOK 请求成功业务状态码
 	CodeOK = 0
@@ -26,9 +26,14 @@ const (
 	MsgOK = "ok"
 
 	// CodeCommon 通用错误业务状态码
-	CodeCommon = 98
+	CodeCommon = 97
 	// MsgCommon 通用错误业务消息
 	MsgCommon = "通用错误"
+
+	// CodeRecordNotFound 记录不存在错误业务状态码
+	CodeRecordNotFound = 98
+	// MsgRecordNotFound 记录不存在错误业务消息
+	MsgRecordNotFound = "记录不存在"
 
 	// CodeUnexpected 意外错误业务状态码
 	CodeUnexpected = 99
@@ -52,6 +57,8 @@ var (
 	OK = New(CodeOK, MsgOK)
 	// ErrCommon 通用错误
 	ErrCommon = New(CodeCommon, MsgCommon)
+	// ErrRecordNotFound 记录不存在错误
+	ErrRecordNotFound = New(CodeRecordNotFound, MsgRecordNotFound)
 	// ErrUnexpected 意外错误
 	ErrUnexpected = New(CodeUnexpected, MsgUnexpected)
 	// ErrInvalidParams 请求参数错误

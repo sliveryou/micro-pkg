@@ -6,6 +6,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.31.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-stack/stack v1.8.1
+	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/h2non/filetype v1.1.3
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/philchia/agollo/v4 v4.1.5
@@ -16,6 +17,7 @@ require (
 	github.com/zeromicro/go-zero v1.6.1
 	go.opentelemetry.io/otel/trace v1.19.0
 	golang.org/x/crypto v0.18.0
+	golang.org/x/exp v0.0.0-20240119083558-1b970713d09a
 	google.golang.org/grpc v1.60.0
 	gopkg.in/yaml.v2 v2.4.0
 )
