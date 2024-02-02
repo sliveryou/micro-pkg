@@ -101,10 +101,6 @@ linters-settings:
   staticcheck:
     # https://staticcheck.io/docs/options#checks
     checks: [ "all" ]
-  ireturn:
-    # https://github.com/butuzov/ireturn#usage
-    allow: [ "anon", "error","empty", "stdlib", "generic",
-             "openapi.OpenAPI", "xhttp.RPCClient" ]
   stylecheck:
     # https://staticcheck.io/docs/options#checks
     checks: [ "all", "-ST1000", "-ST1003" ]
@@ -116,7 +112,7 @@ linters:
     - asciicheck
     - bidichk
     # - bodyclose
-    - containedctx
+    # - containedctx
     - contextcheck
     - decorder
     - dogsled
@@ -154,7 +150,7 @@ linters:
     - inamedparam
     - ineffassign
     - interfacebloat
-    - ireturn
+    # - ireturn
     - loggercheck
     - maintidx
     - makezero

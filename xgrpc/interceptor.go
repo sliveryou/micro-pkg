@@ -25,7 +25,7 @@ const (
 	ignoreRLogFlag = "true"
 )
 
-// IgnoreRLog 忽略grpc服务端的请求响应日志打印
+// IgnoreRLog 忽略 grpc 服务端的请求响应日志打印
 func IgnoreRLog(ctx context.Context) context.Context {
 	return metadata.AppendToOutgoingContext(ctx, rLogKey, ignoreRLogFlag)
 }

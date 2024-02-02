@@ -86,7 +86,7 @@ func TestJWT_ParseToken(t *testing.T) {
 
 	ui := _UserInfo{}
 	err = j.ParseToken(tok, ui)
-	require.EqualError(t, err, "decode payloads err: new map structure decoder err: result must be a pointer")
+	require.EqualError(t, err, "unsupported token type")
 
 	empty := &struct{}{}
 	err = j.ParseToken(tok, empty)
@@ -228,6 +228,28 @@ func genToken(issuer, secretKey string, method jwt.SigningMethod, payloads map[s
 	}
 
 	return ts, nil
+}
+
+func Test_isStructPointer(t *testing.T) {
+	cases := []struct {
+		in     any
+		expect bool
+	}{
+		{in: nil, expect: false},
+		{in: struct{}{}, expect: false},
+		{in: &struct{}{}, expect: true},
+		{in: &struct{ a int64 }{}, expect: true},
+		{in: &struct{ a int64 }{a: 100}, expect: true},
+		{in: 0, expect: false},
+		{in: 1.23, expect: false},
+		{in: "test", expect: false},
+		{in: []int64{1, 2, 3}, expect: false},
+	}
+
+	for _, c := range cases {
+		out := isStructPointer(c.in)
+		assert.Equal(t, c.expect, out)
+	}
 }
 
 type _UserInfo struct {

@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"net/http"
+	"reflect"
 	"strings"
 	"time"
 
@@ -29,12 +30,13 @@ const (
 
 var (
 	standardClaims = []string{
-		jwtAudience, jwtExpire, jwtID, jwtIssueAt,
-		jwtIssuer, jwtNotBefore, jwtSubject,
+		jwtAudience, jwtExpire, jwtID, jwtIssueAt, jwtIssuer, jwtNotBefore, jwtSubject,
 	}
 
-	errInvalidToken = errors.New("invalid jwt token")
-	errNoClaims     = errors.New("no token claims")
+	errInvalidToken    = errors.New("invalid jwt token")
+	errNoClaims        = errors.New("no token claims")
+	errUnsupportedType = errors.New("unsupported token type")
+	errNoTokenInCtx    = errors.New("no token present in context")
 )
 
 // Config JWT 相关配置
@@ -102,23 +104,31 @@ func (j *JWT) GenToken(payloads map[string]any, expirationTime ...time.Duration)
 // ParseToken 解析 JWT token，并将其反序列化至指定 token 结构体中
 // 注意：token 必须为结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
 func (j *JWT) ParseToken(tokenString string, token any) error {
+	if !isStructPointer(token) {
+		return errUnsupportedType
+	}
+
 	payloads, err := j.ParseTokenPayloads(tokenString)
 	if err != nil {
 		return err
 	}
 
-	return errors.WithMessage(decodePayloads(payloads, token), "decode payloads err")
+	return errors.WithMessage(decode(payloads, token), "decode payloads err")
 }
 
 // ParseTokenFromRequest 从请求头解析 JWT token，并将其反序列化至指定 token 结构体中
-// 注意：token 必须为结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
+// 注意：token 必须为结构体指针类型，名称以 json tag 对应的名称与 payloads 进行映射
 func (j *JWT) ParseTokenFromRequest(r *http.Request, token any) error {
+	if !isStructPointer(token) {
+		return errUnsupportedType
+	}
+
 	payloads, err := j.ParseTokenPayloadsFromRequest(r)
 	if err != nil {
 		return err
 	}
 
-	return errors.WithMessage(decodePayloads(payloads, token), "decode payloads err")
+	return errors.WithMessage(decode(payloads, token), "decode payloads err")
 }
 
 // ParseTokenPayloads 解析 JWT token，返回 payloads
@@ -193,8 +203,8 @@ func extractPayloads(token *jwt.Token) (map[string]any, error) {
 	return payloads, nil
 }
 
-// decodePayloads 反序列化 payloads 至 dst 结构体中
-func decodePayloads(payloads map[string]any, dst any) error {
+// decode 反序列化 src 至 dst
+func decode(src, dst any) error {
 	dc := &mapstructure.DecoderConfig{
 		Result:           dst,
 		Squash:           true,
@@ -211,7 +221,7 @@ func decodePayloads(payloads map[string]any, dst any) error {
 		return errors.WithMessage(err, "new map structure decoder err")
 	}
 
-	return d.Decode(payloads)
+	return d.Decode(src)
 }
 
 // trimBearerPrefix 去除 token 的 'Bearer ' 前缀
@@ -221,4 +231,26 @@ func trimBearerPrefix(tok string) string {
 	}
 
 	return tok
+}
+
+// isStructPointer 判断是否为结构体指针
+func isStructPointer(obj any) bool {
+	if obj == nil {
+		return false
+	}
+
+	val := reflect.ValueOf(obj)
+	if val.Kind() != reflect.Ptr {
+		return false
+	}
+
+	val = val.Elem()
+	if !val.CanAddr() {
+		return false
+	}
+	if val.Kind() != reflect.Struct {
+		return false
+	}
+
+	return true
 }
