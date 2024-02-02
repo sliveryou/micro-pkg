@@ -1,10 +1,12 @@
 package jwt
 
 import (
+	"net/http"
 	"strings"
 	"time"
 
 	jwt "github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5/request"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	"golang.org/x/exp/slices"
@@ -105,8 +107,96 @@ func (j *JWT) ParseToken(tokenString string, token any) error {
 		return err
 	}
 
+	return errors.WithMessage(decodePayloads(payloads, token), "decode payloads err")
+}
+
+// ParseTokenFromRequest 从请求头解析 JWT token，并将其反序列化至指定 token 结构体中
+// 注意：token 必须为结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
+func (j *JWT) ParseTokenFromRequest(r *http.Request, token any) error {
+	payloads, err := j.ParseTokenPayloadsFromRequest(r)
+	if err != nil {
+		return err
+	}
+
+	return errors.WithMessage(decodePayloads(payloads, token), "decode payloads err")
+}
+
+// ParseTokenPayloads 解析 JWT token，返回 payloads
+func (j *JWT) ParseTokenPayloads(tokenString string) (map[string]any, error) {
+	token, err := j.newParser().Parse(trimBearerPrefix(tokenString), j.keyFunc())
+	if err != nil {
+		return nil, errors.WithMessage(err, "jwt.Parse err")
+	}
+
+	payloads, err := extractPayloads(token)
+	if err != nil {
+		return nil, errors.WithMessage(err, "extract payloads err")
+	}
+
+	return payloads, nil
+}
+
+// ParseTokenPayloadsFromRequest 从请求头解析 JWT token，返回 payloads
+func (j *JWT) ParseTokenPayloadsFromRequest(r *http.Request) (map[string]any, error) {
+	token, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor,
+		j.keyFunc(), request.WithParser(j.newParser()))
+	if err != nil {
+		return nil, errors.WithMessage(err, "request.ParseFromRequest err")
+	}
+
+	payloads, err := extractPayloads(token)
+	if err != nil {
+		return nil, errors.WithMessage(err, "extract payloads err")
+	}
+
+	return payloads, nil
+}
+
+// newParser 新建 JWT 解析器
+func (j *JWT) newParser() *jwt.Parser {
+	return jwt.NewParser(
+		jwt.WithIssuer(j.c.Issuer),
+		jwt.WithValidMethods([]string{jwtAlgHS256}),
+		jwt.WithExpirationRequired(),
+		jwt.WithJSONNumber(),
+	)
+}
+
+// keyFunc JWT 签名密钥函数
+func (j *JWT) keyFunc() jwt.Keyfunc {
+	return func(token *jwt.Token) (any, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.Errorf("unexpected signed method: %v", token.Header[jwtHeaderAlg])
+		}
+		return []byte(j.c.SecretKey), nil
+	}
+}
+
+// extractPayloads 提取 token 里包含的 payloads
+func extractPayloads(token *jwt.Token) (map[string]any, error) {
+	if token == nil || !token.Valid {
+		return nil, errInvalidToken
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, errNoClaims
+	}
+
+	payloads := make(map[string]any)
+	for k, v := range claims {
+		if !slices.Contains(standardClaims, k) {
+			payloads[k] = v
+		}
+	}
+
+	return payloads, nil
+}
+
+// decodePayloads 反序列化 payloads 至 dst 结构体中
+func decodePayloads(payloads map[string]any, dst any) error {
 	dc := &mapstructure.DecoderConfig{
-		Result:           token,
+		Result:           dst,
 		Squash:           true,
 		WeaklyTypedInput: true,
 		ZeroFields:       false,
@@ -124,38 +214,6 @@ func (j *JWT) ParseToken(tokenString string, token any) error {
 	return d.Decode(payloads)
 }
 
-// ParseTokenPayloads 解析 JWT token，返回 payloads
-func (j *JWT) ParseTokenPayloads(tokenString string) (map[string]any, error) {
-	payloads := make(map[string]any)
-
-	tok := trimBearerPrefix(tokenString)
-	token, err := jwt.Parse(tok, jwtKeyFunc(j.c.SecretKey),
-		jwt.WithIssuer(j.c.Issuer),
-		jwt.WithValidMethods([]string{jwtAlgHS256}),
-		jwt.WithExpirationRequired(),
-		jwt.WithJSONNumber(),
-	)
-	if err != nil {
-		return nil, errors.WithMessage(err, "jwt.Parse err")
-	}
-
-	if !token.Valid {
-		return nil, errInvalidToken
-	}
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		return nil, errNoClaims
-	}
-
-	for k, v := range claims {
-		if !slices.Contains(standardClaims, k) {
-			payloads[k] = v
-		}
-	}
-
-	return payloads, nil
-}
-
 // trimBearerPrefix 去除 token 的 'Bearer ' 前缀
 func trimBearerPrefix(tok string) string {
 	if len(tok) > 6 && strings.ToUpper(tok[0:7]) == "BEARER " {
@@ -163,14 +221,4 @@ func trimBearerPrefix(tok string) string {
 	}
 
 	return tok
-}
-
-// jwtKeyFunc JWT 签名密钥函数
-func jwtKeyFunc(key string) jwt.Keyfunc {
-	return func(token *jwt.Token) (any, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.Errorf("unexpected signed method: %v", token.Header[jwtHeaderAlg])
-		}
-		return []byte(key), nil
-	}
 }

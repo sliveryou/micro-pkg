@@ -2,6 +2,8 @@ package jwt
 
 import (
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -38,19 +40,14 @@ func TestJWT_GenToken(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
-	t.Log(tokenStr)
 
 	payloads, err := j.ParseTokenPayloads(tokenStr)
 	require.NoError(t, err)
 	assert.NotEmpty(t, payloads)
-	for k, v := range payloads {
-		fmt.Printf("k: %s, v: %v, %T\n", k, v, v)
-	}
 
 	ui := &_UserInfo{}
 	err = j.ParseToken(tokenStr, ui)
 	require.NoError(t, err)
-	fmt.Printf("%+v\n", ui)
 	assert.Equal(t, int64(100000), ui.UserID)
 	assert.Equal(t, "test_user", ui.UserName)
 	assert.Equal(t, []int64{100000, 100001, 100002}, ui.RoleIds)
@@ -89,7 +86,7 @@ func TestJWT_ParseToken(t *testing.T) {
 
 	ui := _UserInfo{}
 	err = j.ParseToken(tok, ui)
-	require.EqualError(t, err, "new map structure decoder err: result must be a pointer")
+	require.EqualError(t, err, "decode payloads err: new map structure decoder err: result must be a pointer")
 
 	empty := &struct{}{}
 	err = j.ParseToken(tok, empty)
@@ -143,6 +140,69 @@ func TestJWT_ParseTokenPayloads(t *testing.T) {
 	for k, v := range payloads {
 		fmt.Printf("k: %s, v: %v, %T\n", k, v, v)
 	}
+}
+
+func TestJWT_ParseTokenFromRequest(t *testing.T) {
+	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", ExpirationTime: 72 * time.Hour}
+	j, err := NewJWT(c)
+	require.NoError(t, err)
+	assert.NotNil(t, j)
+
+	tokenStr, err := j.GenToken(map[string]any{
+		"user_id":   100000,
+		"user_name": "test_user",
+		"role_ids":  []int64{100000, 100001, 100002},
+		"group":     "ADMIN",
+		"is_admin":  true,
+		"score":     123.123,
+	})
+	require.NoError(t, err)
+	assert.NotEmpty(t, tokenStr)
+
+	req := httptest.NewRequest(http.MethodGet, "http://localhost", http.NoBody)
+	_, err = j.ParseTokenPayloadsFromRequest(req)
+	require.EqualError(t, err, "request.ParseFromRequest err: no token present in request")
+
+	req.Header.Set("Authorization", "Bearer "+tokenStr)
+	payloads, err := j.ParseTokenPayloadsFromRequest(req)
+	require.NoError(t, err)
+	assert.NotEmpty(t, payloads)
+	for k, v := range payloads {
+		fmt.Printf("k: %s, v: %v, %T\n", k, v, v)
+	}
+}
+
+func TestJWT_ParseTokenPayloadsFromRequest(t *testing.T) {
+	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", ExpirationTime: 72 * time.Hour}
+	j, err := NewJWT(c)
+	require.NoError(t, err)
+	assert.NotNil(t, j)
+
+	tokenStr, err := j.GenToken(map[string]any{
+		"user_id":   100000,
+		"user_name": "test_user",
+		"role_ids":  []int64{100000, 100001, 100002},
+		"group":     "ADMIN",
+		"is_admin":  true,
+		"score":     123.123,
+	})
+	require.NoError(t, err)
+	assert.NotEmpty(t, tokenStr)
+
+	req := httptest.NewRequest(http.MethodGet, "http://localhost", http.NoBody)
+	uip := &_UserInfo{}
+	err = j.ParseTokenFromRequest(req, uip)
+	require.EqualError(t, err, "request.ParseFromRequest err: no token present in request")
+
+	req.Header.Set("Authorization", tokenStr)
+	err = j.ParseTokenFromRequest(req, uip)
+	require.NoError(t, err)
+	assert.Equal(t, int64(100000), uip.UserID)
+	assert.Equal(t, "test_user", uip.UserName)
+	assert.Equal(t, []int64{100000, 100001, 100002}, uip.RoleIds)
+	assert.Equal(t, "ADMIN", uip.Group)
+	assert.True(t, uip.IsAdmin)
+	assert.InEpsilon(t, 123.123, uip.Score, 0.0001)
 }
 
 func genToken(issuer, secretKey string, method jwt.SigningMethod, payloads map[string]any, expirationTime ...time.Duration) (string, error) {
