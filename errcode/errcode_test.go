@@ -68,7 +68,7 @@ func TestGenDoc(t *testing.T) {
 		"|:---------|:-----------|:---------|:----------------|\n")
 
 	fileNames := []string{"errcode.go"}
-	targetFileName := "../testdata/errcode.md"
+	targetFileName := "../docs/errcode.md"
 
 	out, err := genDoc(fileNames...)
 	require.NoError(t, err)
