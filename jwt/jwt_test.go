@@ -30,14 +30,7 @@ func TestJWT_GenToken(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, j)
 
-	tokenStr, err := j.GenToken(map[string]any{
-		"user_id":   100000,
-		"user_name": "test_user",
-		"role_ids":  []int64{100000, 100001, 100002},
-		"group":     "ADMIN",
-		"is_admin":  true,
-		"score":     123.123,
-	})
+	tokenStr, err := j.GenToken(getTokenMap())
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
 
@@ -62,16 +55,7 @@ func TestJWT_ParseToken(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, j)
 
-	tokenMap := map[string]any{
-		"user_id":   100000,
-		"user_name": "test_user",
-		"role_ids":  []int64{100000, 100001, 100002},
-		"group":     "ADMIN",
-		"is_admin":  true,
-		"score":     123.123,
-	}
-
-	tok, err := genToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS256, tokenMap, 72*time.Hour)
+	tok, err := genTestToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS256, getTokenMap(), 72*time.Hour)
 	require.NoError(t, err)
 
 	uip := &_UserInfo{}
@@ -103,36 +87,28 @@ func TestJWT_ParseTokenPayloads(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, j)
 
-	tokenMap := map[string]any{
-		"user_id":   100000,
-		"user_name": "test_user",
-		"role_ids":  []int64{100000, 100001, 100002},
-		"group":     "ADMIN",
-		"is_admin":  true,
-		"score":     123.123,
-	}
-
-	tok, err := genToken("another-issuer", "ABCDEFGH", jwt.SigningMethodHS256, tokenMap, 72*time.Hour)
+	tokenMap := getTokenMap()
+	tok, err := genTestToken("another-issuer", "ABCDEFGH", jwt.SigningMethodHS256, tokenMap, 72*time.Hour)
 	require.NoError(t, err)
 	_, err = j.ParseTokenPayloads(tok)
 	require.EqualError(t, err, "jwt.Parse err: token has invalid claims: token has invalid issuer")
 
-	tok, err = genToken("test-issuer", "ABCD", jwt.SigningMethodHS256, tokenMap, 72*time.Hour)
+	tok, err = genTestToken("test-issuer", "ABCD", jwt.SigningMethodHS256, tokenMap, 72*time.Hour)
 	require.NoError(t, err)
 	_, err = j.ParseTokenPayloads(tok)
 	require.EqualError(t, err, "jwt.Parse err: token signature is invalid: signature is invalid")
 
-	tok, err = genToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS512, tokenMap, 72*time.Hour)
+	tok, err = genTestToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS512, tokenMap, 72*time.Hour)
 	require.NoError(t, err)
 	_, err = j.ParseTokenPayloads(tok)
 	require.EqualError(t, err, "jwt.Parse err: token signature is invalid: signing method HS512 is invalid")
 
-	tok, err = genToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS256, tokenMap)
+	tok, err = genTestToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS256, tokenMap)
 	require.NoError(t, err)
 	_, err = j.ParseTokenPayloads(tok)
 	require.EqualError(t, err, "jwt.Parse err: token has invalid claims: token is missing required claim: exp claim is required")
 
-	tok, err = genToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS256, tokenMap, 72*time.Hour)
+	tok, err = genTestToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS256, tokenMap, 72*time.Hour)
 	require.NoError(t, err)
 	payloads, err := j.ParseTokenPayloads(tok)
 	require.NoError(t, err)
@@ -148,14 +124,7 @@ func TestJWT_ParseTokenFromRequest(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, j)
 
-	tokenStr, err := j.GenToken(map[string]any{
-		"user_id":   100000,
-		"user_name": "test_user",
-		"role_ids":  []int64{100000, 100001, 100002},
-		"group":     "ADMIN",
-		"is_admin":  true,
-		"score":     123.123,
-	})
+	tokenStr, err := j.GenToken(getTokenMap())
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
 
@@ -178,14 +147,7 @@ func TestJWT_ParseTokenPayloadsFromRequest(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, j)
 
-	tokenStr, err := j.GenToken(map[string]any{
-		"user_id":   100000,
-		"user_name": "test_user",
-		"role_ids":  []int64{100000, 100001, 100002},
-		"group":     "ADMIN",
-		"is_admin":  true,
-		"score":     123.123,
-	})
+	tokenStr, err := j.GenToken(getTokenMap())
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
 
@@ -205,7 +167,29 @@ func TestJWT_ParseTokenPayloadsFromRequest(t *testing.T) {
 	assert.InEpsilon(t, 123.123, uip.Score, 0.0001)
 }
 
-func genToken(issuer, secretKey string, method jwt.SigningMethod, payloads map[string]any, expirationTime ...time.Duration) (string, error) {
+func Test_isStructPointer(t *testing.T) {
+	cases := []struct {
+		in     any
+		expect bool
+	}{
+		{in: nil, expect: false},
+		{in: struct{}{}, expect: false},
+		{in: &struct{}{}, expect: true},
+		{in: &struct{ a int64 }{}, expect: true},
+		{in: &struct{ a int64 }{a: 100}, expect: true},
+		{in: 0, expect: false},
+		{in: 1.23, expect: false},
+		{in: "test", expect: false},
+		{in: []int64{1, 2, 3}, expect: false},
+	}
+
+	for _, c := range cases {
+		out := isStructPointer(c.in)
+		assert.Equal(t, c.expect, out)
+	}
+}
+
+func genTestToken(issuer, secretKey string, method jwt.SigningMethod, payloads map[string]any, expirationTime ...time.Duration) (string, error) {
 	claims := make(jwt.MapClaims)
 	now := timex.Now()
 	claims[jwtIssuer] = issuer
@@ -230,25 +214,25 @@ func genToken(issuer, secretKey string, method jwt.SigningMethod, payloads map[s
 	return ts, nil
 }
 
-func Test_isStructPointer(t *testing.T) {
-	cases := []struct {
-		in     any
-		expect bool
-	}{
-		{in: nil, expect: false},
-		{in: struct{}{}, expect: false},
-		{in: &struct{}{}, expect: true},
-		{in: &struct{ a int64 }{}, expect: true},
-		{in: &struct{ a int64 }{a: 100}, expect: true},
-		{in: 0, expect: false},
-		{in: 1.23, expect: false},
-		{in: "test", expect: false},
-		{in: []int64{1, 2, 3}, expect: false},
+func getToken() *_UserInfo {
+	return &_UserInfo{
+		UserID:   100000,
+		UserName: "test_user",
+		RoleIds:  []int64{100000, 100001, 100002},
+		Group:    "ADMIN",
+		IsAdmin:  true,
+		Score:    123.123,
 	}
+}
 
-	for _, c := range cases {
-		out := isStructPointer(c.in)
-		assert.Equal(t, c.expect, out)
+func getTokenMap() map[string]any {
+	return map[string]any{
+		"user_id":   100000,
+		"user_name": "test_user",
+		"role_ids":  []int64{100000, 100001, 100002},
+		"group":     "ADMIN",
+		"is_admin":  true,
+		"score":     123.123,
 	}
 }
 

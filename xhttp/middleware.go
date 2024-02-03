@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httputil"
+	"reflect"
 	"strings"
 
 	"github.com/go-stack/stack"
@@ -13,8 +14,57 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest/httpx"
 
+	"github.com/sliveryou/micro-pkg/jwt"
 	"github.com/sliveryou/micro-pkg/xgrpc"
 )
+
+// -------------------- JWTMiddleware -------------------- //
+
+// JWTMiddleware JWT 认证处理中间件
+type JWTMiddleware struct {
+	j              *jwt.JWT
+	token          any
+	t              reflect.Type
+	errTokenVerify error
+}
+
+// NewJWTMiddleware 新建 JWT 认证处理中间件
+func NewJWTMiddleware(j *jwt.JWT, token any, errTokenVerify error) (*JWTMiddleware, error) {
+	if err := jwt.CheckTokenType(token); err != nil {
+		return nil, err
+	}
+
+	return &JWTMiddleware{
+		j: j, token: token, t: reflect.ValueOf(token).Elem().Type(), errTokenVerify: errTokenVerify,
+	}, nil
+}
+
+// MustNewJWTMiddleware 新建 JWT 认证处理中间件
+func MustNewJWTMiddleware(j *jwt.JWT, token any, errTokenVerify error) *JWTMiddleware {
+	m, err := NewJWTMiddleware(j, token, errTokenVerify)
+	if err != nil {
+		panic(err)
+	}
+
+	return m
+}
+
+// Handle JWT 认证处理
+func (m *JWTMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		l := logx.WithContext(ctx)
+		target := reflect.New(m.t).Elem().Addr().Interface()
+
+		if err := m.j.ParseTokenFromRequest(r, target); err != nil {
+			l.Errorf("jwt middleware parse token from request err: %v", err)
+			ErrorCtx(ctx, w, m.errTokenVerify)
+			return
+		}
+
+		next(w, r.WithContext(jwt.WithCtx(ctx, target)))
+	}
+}
 
 // -------------------- CorsMiddleware -------------------- //
 

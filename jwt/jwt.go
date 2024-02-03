@@ -104,8 +104,8 @@ func (j *JWT) GenToken(payloads map[string]any, expirationTime ...time.Duration)
 // ParseToken 解析 JWT token，并将其反序列化至指定 token 结构体中
 // 注意：token 必须为结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
 func (j *JWT) ParseToken(tokenString string, token any) error {
-	if !isStructPointer(token) {
-		return errUnsupportedType
+	if err := CheckTokenType(token); err != nil {
+		return err
 	}
 
 	payloads, err := j.ParseTokenPayloads(tokenString)
@@ -119,8 +119,8 @@ func (j *JWT) ParseToken(tokenString string, token any) error {
 // ParseTokenFromRequest 从请求头解析 JWT token，并将其反序列化至指定 token 结构体中
 // 注意：token 必须为结构体指针类型，名称以 json tag 对应的名称与 payloads 进行映射
 func (j *JWT) ParseTokenFromRequest(r *http.Request, token any) error {
-	if !isStructPointer(token) {
-		return errUnsupportedType
+	if err := CheckTokenType(token); err != nil {
+		return err
 	}
 
 	payloads, err := j.ParseTokenPayloadsFromRequest(r)
@@ -180,6 +180,15 @@ func (j *JWT) keyFunc() jwt.Keyfunc {
 		}
 		return []byte(j.c.SecretKey), nil
 	}
+}
+
+// CheckTokenType 校验 token 类型
+func CheckTokenType(token any) error {
+	if !isStructPointer(token) {
+		return errUnsupportedType
+	}
+
+	return nil
 }
 
 // extractPayloads 提取 token 里包含的 payloads
