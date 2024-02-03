@@ -25,6 +25,10 @@ go 微服务常用公共包
 
 ## 文档
 
-- [通用 grpc 流式消息内容读写器](gstream/README.md)
+- [开发规范](docs/dev-specification.md)
+- [Go 安全指南](docs/security-guide.md)
+- [Uber Go 语言编码规范](https://github.com/xxjwxc/uber_go_guide_cn)
+- [第三方库和工具](docs/third-party-libraries.md)
 - [接口错误码](docs/errcode.md)
+- [通用 grpc 流式消息内容读写器](gstream/README.md)
 - [参考文献](docs/references.md)
