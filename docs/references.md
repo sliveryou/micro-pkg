@@ -37,3 +37,5 @@
 - [INSERT ... ON DUPLICATE KEY UPDATE Statement](https://dev.mysql.com/doc/refman/5.7/en/insert-on-duplicate.html)
 - [分布式服务限流实战](https://www.infoq.cn/article/Qg2tX8fyw5Vt-f3HH673)
 - [gRPC Metadata](https://github.com/grpc/grpc-go/blob/master/Documentation/grpc-metadata.md)
+- [写给 go 开发者的 gRPC 教程 - Metadata](https://zhuanlan.zhihu.com/p/607479811)
+- [系统高可用之健康检查和健康度量那些事](https://www.cnblogs.com/vivotech/p/14705021.html)

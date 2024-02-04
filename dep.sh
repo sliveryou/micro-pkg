@@ -19,6 +19,7 @@ ${download} google.golang.org/protobuf/cmd/protoc-gen-go@v1.32.0
 ${download} google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
 ${download} github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
 ${download} github.com/swaggo/swag/cmd/swag@v1.16.2
+${download} github.com/alvaroloes/enumer@v1.1.2
 ${download} golang.org/x/tools/cmd/goimports@v0.16.1
 ${download} github.com/incu6us/goimports-reviser/v3@v3.6.2
 ${download} github.com/fullstorydev/grpcui/cmd/grpcui@v1.3.3

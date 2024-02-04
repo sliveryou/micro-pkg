@@ -51,6 +51,8 @@
 - **swag** swagger 文档快速生成工具：
   - 项目地址：https://github.com/swaggo/swag
   - 文档地址：https://github.com/swaggo/swag/blob/master/README_zh-CN.md
+- **enumer** go 枚举方法生成工具
+  - 项目地址：https://github.com/alvaroloes/enumer
 - **goctl** 定制化 goctl：
   - 项目地址：https://github.com/sliveryou/goctl
 - **swag2md** 基于 swagger 文档快速生成 markdown 文档工具：
