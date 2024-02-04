@@ -17,22 +17,22 @@ var _ health.Checker = (*Checker)(nil)
 
 const healthHeader = "health"
 
-// Checker 服务集群检查器结构详情
+// Checker 服务检查器结构详情
 type Checker struct {
 	hc grpc_health_v1.HealthClient
 }
 
-// NewChecker 新建服务集群检查器
+// NewChecker 新建服务检查器
 func NewChecker(cc zrpc.RpcClientConf, options ...zrpc.ClientOption) *Checker {
 	return &Checker{hc: client.NewHealthClient(zrpc.MustNewClient(cc, options...))}
 }
 
-// NewCheckerWithClient 新建服务集群检查器
+// NewCheckerWithClient 通过已有客户端新建服务检查器
 func NewCheckerWithClient(cli zrpc.Client) *Checker {
 	return &Checker{hc: client.NewHealthClient(cli)}
 }
 
-// Check 检查服务集群健康情况
+// Check 检查服务健康情况
 func (c *Checker) Check(ctx context.Context) health.Health {
 	h := health.NewHealth()
 

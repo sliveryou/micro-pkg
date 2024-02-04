@@ -22,15 +22,14 @@ type Checker struct {
 }
 
 // NewChecker 新建键值集群检查器
-func NewChecker(kc kv.KvConf) *Checker {
+func NewChecker(kc kv.KvConf, opts ...redis.Option) *Checker {
 	if len(kc) == 0 || cache.TotalWeights(kc) <= 0 {
 		logx.Must(errors.New("there are no cache nodes"))
 	}
 
-	c := &Checker{}
+	c := &Checker{nodes: make([]*redis.Redis, 0, len(kc))}
 	for _, nc := range kc {
-		n, err := redis.NewRedis(nc.RedisConf)
-		logx.Must(errors.WithMessage(err, "redis.NewRedis err"))
+		n := redis.MustNewRedis(nc.RedisConf, opts...)
 		c.nodes = append(c.nodes, n)
 	}
 
@@ -43,7 +42,7 @@ func NewCheckerWithNodes(nodes ...*redis.Redis) *Checker {
 		logx.Must(errors.New("there are no cache nodes"))
 	}
 
-	c := &Checker{}
+	c := &Checker{nodes: make([]*redis.Redis, 0, len(nodes))}
 	for _, node := range nodes {
 		if node != nil {
 			c.nodes = append(c.nodes, node)
