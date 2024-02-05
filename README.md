@@ -12,14 +12,16 @@ go 微服务常用公共包
 ## 简介
 
 - **apollo** 阿波罗配置中心 go 客户端
+- **balancer** grpc 平衡器，包含了一致性 hash 平衡器
 - **errcode** 通用业务错误码包，记录了业务状态码、业务消息和 HTTP 状态码，并实现了 `GRPCStatus() *status.Status` 接口，可在 grpc 调用中流转
 - **gstream** grpc 流式消息内容读写器，利用反射动态创建消息对象，流式读写消息内容
 - **health** 健康检查包，实现了 [grpc_health_v1](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) 定义的健康检查服务端和客户端，并包含了一些常用中间件的健康检查器
 - **jwt** jwt token 生成和解析包，支持返回 `map[string]any` 类型的 payloads 或反序列化至指定 token 结构体，另外包含 grpc 拦截器，可以自动在 metadata 中传递和解析 token 信息
 - **limit** 基于 redis lua 脚本编写的时间段限流器和令牌桶限流器
 - **retry** 通用操作重试包，对操作进行失败重试，可以组合不同的策略
-- **xgrpc** 包含常用 grpc 拦截器
-- **xhash** 通用 hash 校验和计算包，常用 hash 计算，基于 bcrypt hash 的密码生成与校验等
+- **shorturl** 基于 murmur3 hash 的短地址标识符生成包
+- **xgrpc** 常用 grpc 拦截器，包含请求响应日志打印和恐慌捕获恢复等
+- **xhash** 通用 hash 校验和计算包，包含常用 hash 计算和基于 bcrypt hash 的密码生成与校验等
 - **xhttp** http 相关操作库，包含请求参数反序列化和响应参数序列化、http 通用客户端、http 通用中间件 和 ip 获取等
 - **xkv** 通用 redis 集群键值相关操作库
 - **xonce** 操作执行器，只执行一次成功操作，失败可以再次执行
