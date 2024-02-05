@@ -2,8 +2,8 @@ package kvchecker
 
 import (
 	"context"
+	"errors"
 
-	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/kv"

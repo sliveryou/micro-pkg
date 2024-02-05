@@ -8,8 +8,13 @@ import (
 	miniredis "github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 )
+
+func init() {
+	logx.ExitOnFatal.Set(false)
+}
 
 var s, _ = miniredis.Run()
 
@@ -59,6 +64,10 @@ func TestChecker_Check_Down(t *testing.T) {
 }
 
 func TestNewCheckerWithRedis(t *testing.T) {
+	assert.Panics(t, func() {
+		NewCheckerWithRedis(nil)
+	})
+
 	kc := getUpConf()
 	rds, err := redis.NewRedis(kc)
 	require.NoError(t, err)

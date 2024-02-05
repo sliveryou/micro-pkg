@@ -8,10 +8,15 @@ import (
 	miniredis "github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/kv"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 )
+
+func init() {
+	logx.ExitOnFatal.Set(false)
+}
 
 var (
 	s1, _ = miniredis.Run()
@@ -63,6 +68,10 @@ func getDownKvConf() kv.KvConf {
 }
 
 func TestNewChecker(t *testing.T) {
+	assert.Panics(t, func() {
+		NewChecker(kv.KvConf{})
+	})
+
 	c := NewChecker(getUpKvConf())
 	assert.Len(t, c.nodes, 2)
 
@@ -91,6 +100,10 @@ func TestChecker_Check_Down(t *testing.T) {
 }
 
 func TestNewCheckerWithNodes(t *testing.T) {
+	assert.Panics(t, func() {
+		NewCheckerWithNodes()
+	})
+
 	kc := getUpKvConf()
 	nodes := make([]*redis.Redis, 0, len(kc))
 

@@ -42,8 +42,15 @@ func TestCompositeChecker_AddChecker(t *testing.T) {
 	c := NewChecker()
 	assert.Empty(t, c.checkers)
 
-	c.AddChecker("testChecker", &upTestChecker{})
-	assert.Len(t, c.checkers, 1)
+	checker1 := &upTestChecker{}
+	c.AddChecker("testChecker", checker1)
+	require.Len(t, c.checkers, 1)
+	assert.Equal(t, checker1, c.checkers[0].checker)
+
+	checker2 := &downTestChecker{}
+	c.AddChecker("testChecker", checker2)
+	require.Len(t, c.checkers, 1)
+	assert.NotEqual(t, checker2, c.checkers[0].checker)
 }
 
 func TestCompositeChecker_Check_Up(t *testing.T) {
@@ -101,9 +108,15 @@ func TestCompositeChecker_CheckByName(t *testing.T) {
 	c.AddChecker("upTestChecker1", &upTestChecker{})
 	c.AddChecker("upTestChecker2", &upTestChecker{})
 
-	h := c.CheckByName(context.Background(), "upTestChecker1")
-	assert.True(t, h.IsUp())
+	h := c.CheckByName(context.Background(), "unknownTestChecker")
+	assert.True(t, h.IsUnknown())
 	b, err := json.Marshal(h)
+	require.NoError(t, err)
+	assert.Equal(t, `{"error":"unknown service name","status":"UNKNOWN"}`, string(b))
+
+	h = c.CheckByName(context.Background(), "upTestChecker1")
+	assert.True(t, h.IsUp())
+	b, err = json.Marshal(h)
 	require.NoError(t, err)
 	assert.Equal(t, `{"status":"UP"}`, string(b))
 
@@ -116,8 +129,14 @@ func TestCompositeChecker_CheckByName(t *testing.T) {
 
 func Test_CompositeChecker_AddInfo(t *testing.T) {
 	c := NewChecker()
-	c.AddInfo("key", "value")
 
-	_, ok := c.info["key"]
+	c.AddInfo("key", "value")
+	v, ok := c.info["key"]
 	assert.True(t, ok)
+	assert.Equal(t, "value", v)
+
+	c.AddInfo("key", "new_value")
+	v, ok = c.info["key"]
+	assert.True(t, ok)
+	assert.Equal(t, "new_value", v)
 }
