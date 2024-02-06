@@ -30,6 +30,10 @@
   - 项目地址：https://github.com/casbin/casbin
   - 文档地址：https://casbin.org/zh/docs/overview
   - model 语法：https://casbin.org/zh/docs/syntax-for-models
+- **excelize** 操作 office excel 文档基础库：
+  - 项目地址：https://github.com/qax-os/excelize
+  - 文档地址：https://xuri.me/excelize/zh-hans
+  - 封装：[micro-pkg/excel](../excel)
 - **go-tool** 常用工具函数集合：
   - 项目地址：https://github.com/sliveryou/go-tool
 

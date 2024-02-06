@@ -14,6 +14,7 @@ go 微服务常用公共包
 - **apollo** 阿波罗配置中心 go 客户端
 - **balancer** grpc 平衡器，包含了一致性 hash 平衡器
 - **errcode** 通用业务错误码包，记录了业务状态码、业务消息和 HTTP 状态码，并实现了 `GRPCStatus() *status.Status` 接口，可在 grpc 调用中流转
+- **excel** 常用 excel 操作包，包含获取所有行数据、流式读取行数据和流式写入行数据等操作 
 - **gstream** grpc 流式消息内容读写器，利用反射动态创建消息对象，流式读写消息内容
 - **health** 健康检查包，实现了 [grpc_health_v1](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) 定义的健康检查服务端和客户端，并包含了一些常用中间件的健康检查器
 - **jwt** jwt token 生成和解析包，支持返回 `map[string]any` 类型的 payloads 或反序列化至指定 token 结构体，另外包含 grpc 拦截器，可以自动在 metadata 中传递和解析 token 信息
@@ -34,5 +35,5 @@ go 微服务常用公共包
 - [第三方库和工具](docs/third-party-libraries.md)
 - [接口错误码](docs/errcode.md)
 - [通用 grpc 流式消息内容读写器](gstream/README.md)
-- [短地址生成与映射](shorturl/README.md)
+- [短地址标识符生成](shorturl/README.md)
 - [参考文献](docs/references.md)

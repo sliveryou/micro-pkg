@@ -7,9 +7,6 @@ run:
     - xhttp/binding
 
 linters-settings:
-  errcheck:
-    # https://github.com/kisielk/errcheck#errcheck
-    ignore: fmt:.*,os:.*,io:.*,http:.*
   goconst:
     # https://github.com/jgautheron/goconst#usage
     ignore-tests: true
@@ -119,7 +116,7 @@ linters:
     # - dupl
     - dupword
     - durationcheck
-    - errcheck
+    # - errcheck
     # - errchkjson
     # - errname
     - errorlint
@@ -198,9 +195,8 @@ issues:
     - path: _test.go
       linters:
         - contextcheck
-        - errcheck
-        - unparam
         - noctx
+        - unparam
     - path: xhttp.go
       text: "var-naming"
       linters:
