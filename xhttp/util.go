@@ -1,9 +1,14 @@
 package xhttp
 
 import (
+	"bytes"
+	"io"
 	"mime"
+	"os"
 	"path"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 var extToMimeType = map[string]string{
@@ -1217,9 +1222,57 @@ func TypeByExtension(filePath string) string {
 	if typ == "" {
 		typ = extToMimeType[ext]
 		if typ == "" {
-			typ = "application/octet-stream"
+			typ = ApplicationStream
 		}
 	}
 
 	return typ
+}
+
+// GetReaderLen 获取读取器实际内容长度
+func GetReaderLen(reader io.Reader) (contentLength int64, err error) {
+	switch v := reader.(type) {
+	case *bytes.Buffer:
+		contentLength = int64(v.Len())
+	case *bytes.Reader:
+		contentLength = int64(v.Len())
+	case *strings.Reader:
+		contentLength = int64(v.Len())
+	case *os.File:
+		fInfo, fError := v.Stat()
+		if fError != nil {
+			err = errors.WithMessage(fError, "file.Stat err")
+		} else {
+			contentLength = fInfo.Size()
+		}
+	case *io.LimitedReader:
+		contentLength = v.N
+	case *io.SectionReader:
+		contentLength = v.Size()
+	default:
+		err = errors.New("unknown reader type")
+	}
+
+	return
+}
+
+// ParseEndpoint 解析节点地址
+func ParseEndpoint(endpoint string) (parsedEndpoint string, useSSL bool) {
+	switch {
+	case strings.HasPrefix(endpoint, "http://"):
+		parsedEndpoint = endpoint[len("http://"):]
+	case strings.HasPrefix(endpoint, "https://"):
+		parsedEndpoint, useSSL = endpoint[len("https://"):], true
+	default:
+		parsedEndpoint = endpoint
+	}
+
+	fields := strings.SplitN(parsedEndpoint, ":", 2)
+	if host, ip := fields[0], GetInternalIP(); ip != "" &&
+		(host == "" || host == "0.0.0.0" || host == "localhost") {
+		fields[0] = ip
+		parsedEndpoint = strings.Join(fields, ":")
+	}
+
+	return
 }

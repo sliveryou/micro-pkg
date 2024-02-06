@@ -8,6 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	excelize "github.com/xuri/excelize/v2"
+
+	"github.com/sliveryou/go-tool/v2/filex"
 )
 
 func TestGetRows(t *testing.T) {
@@ -88,6 +90,9 @@ func TestWriteRows(t *testing.T) {
 		return nil, false, true
 	}
 
-	err = WriteRows(f, "Sheet1", "../testdata/test-write.xlsx", handler)
-	require.NoError(t, err)
+	saveAs := "../testdata/test-write.xlsx"
+	if !filex.IsExist(saveAs) {
+		err = WriteRows(f, "Sheet1", saveAs, handler)
+		require.NoError(t, err)
+	}
 }

@@ -1,9 +1,11 @@
 package xhttp
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"go/format"
+	"io"
 	"os"
 	"regexp"
 	"sort"
@@ -132,4 +134,60 @@ func TestTypeByExtension(t *testing.T) {
 		got := TypeByExtension(c.filePath)
 		assert.Contains(t, got, c.expect)
 	}
+}
+
+func TestGetReaderLen(t *testing.T) {
+	cases := []struct {
+		reader    io.Reader
+		expectLen int64
+		expectErr bool
+	}{
+		{reader: bytes.NewBufferString("test reader"), expectLen: 11, expectErr: false},
+		{reader: bytes.NewReader([]byte("test reader")), expectLen: 11, expectErr: false},
+		{reader: strings.NewReader("test reader"), expectLen: 11, expectErr: false},
+		{reader: io.LimitReader(strings.NewReader("test reader"), 20), expectLen: 20, expectErr: false},
+		{reader: io.NewSectionReader(strings.NewReader("test reader"), 0, 20), expectLen: 20, expectErr: false},
+		{reader: &_mockReader{}, expectLen: 0, expectErr: true},
+	}
+
+	for _, c := range cases {
+		got, err := GetReaderLen(c.reader)
+		if c.expectErr {
+			require.Error(t, err)
+		} else {
+			require.NoError(t, err)
+			require.Equal(t, c.expectLen, got)
+		}
+	}
+}
+
+func TestParseEndpoint(t *testing.T) {
+	cases := []struct {
+		endpoint string
+		isUseSSL bool
+	}{
+		{endpoint: "", isUseSSL: false},
+		{endpoint: ":", isUseSSL: false},
+		{endpoint: ":56789", isUseSSL: false},
+		{endpoint: "56789", isUseSSL: false},
+		{endpoint: "0.0.0.0:56789/bucket", isUseSSL: false},
+		{endpoint: "localhost:56789/bucket", isUseSSL: false},
+		{endpoint: "172.0.0.100:56789/bucket", isUseSSL: false},
+		{endpoint: "http://0.0.0.0:56789/bucket", isUseSSL: false},
+		{endpoint: "https://localhost:56789/bucket", isUseSSL: true},
+		{endpoint: "https://172.0.0.100:56789/bucket", isUseSSL: true},
+	}
+
+	for _, c := range cases {
+		pe, useSSL := ParseEndpoint(c.endpoint)
+		assert.False(t, strings.HasPrefix(pe, "http"))
+		assert.Equal(t, c.isUseSSL, useSSL)
+		fmt.Println(pe)
+	}
+}
+
+type _mockReader struct{}
+
+func (m *_mockReader) Read(p []byte) (n int, err error) {
+	return 0, nil
 }
