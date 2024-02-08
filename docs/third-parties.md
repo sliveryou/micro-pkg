@@ -14,6 +14,8 @@
 - **gorm** 通用数据库相关操作库：
   - v2 文档地址：https://gorm.io/zh_CN/docs/index.html
   - v1 文档地址：https://v1.gorm.io/zh_CN/docs/index.html
+  - gen 文档地址：https://gorm.io/zh_CN/gen/index.html
+  - 封装：[micro-pkg/xdb](../xdb)
 - **kv** 通用 redis 键值相关操作库：
   - 项目地址：https://github.com/zeromicro/go-zero/tree/master/core/stores/kv
   - 封装：[micro-pkg/xkv](../xkv)
@@ -62,7 +64,7 @@
 - **swag2md** 基于 swagger 文档快速生成 markdown 文档工具：
   - 项目地址：https://github.com/sliveryou/swag2md
 
-客户端可视化工具：
+## 客户端可视化工具
 
 1. [ETCD Manager](https://github.com/gtamas/etcdmanager/releases)
 2. [Another Redis Desktop Manager](https://github.com/qishibo/AnotherRedisDesktopManager/releases)

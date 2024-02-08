@@ -15,7 +15,7 @@ type Shorter interface {
 // Config 短地址相关配置
 type Config struct {
 	Length   int64  // 生成短地址标识长度，不建议超过 12
-	Alphabet string // 对应进制数字符表，长度须为 62
+	Alphabet string `json:",optional"` // 对应进制数字符表，为空则使用默认，不为空长度须为 62
 }
 
 // NewShorter 新建短地址映射器

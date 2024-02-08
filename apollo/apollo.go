@@ -14,11 +14,11 @@ import (
 type Config struct {
 	IsEnable        bool     // 是否启用
 	AppID           string   // 应用ID
-	Cluster         string   // 集群
+	Cluster         string   `json:",default=default"` // 集群
 	NameSpaceNames  []string // 命名空间
-	CacheDir        string   // 配置缓存目录
+	CacheDir        string   `json:",optional"` // 配置缓存目录
 	MetaAddr        string   // 服务地址
-	AccessKeySecret string   // 访问鉴权密钥
+	AccessKeySecret string   `json:",optional"` // 访问鉴权密钥
 }
 
 // Apollo 阿波罗配置中心客户端
@@ -34,9 +34,11 @@ func NewApollo(c Config) (*Apollo, error) {
 	if !c.IsEnable {
 		a.Client = &MockClient{}
 	} else {
-		if c.AppID == "" || c.Cluster == "" ||
-			len(c.NameSpaceNames) == 0 || c.MetaAddr == "" {
+		if c.AppID == "" || len(c.NameSpaceNames) == 0 || c.MetaAddr == "" {
 			return nil, errors.New("apollo: illegal apollo configure")
+		}
+		if c.Cluster == "" {
+			c.Cluster = "default"
 		}
 
 		client := agollo.NewClient(&agollo.Conf{

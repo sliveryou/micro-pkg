@@ -83,6 +83,8 @@ func TestHealth_UnmarshalJSON(t *testing.T) {
 	err := json.Unmarshal([]byte(data), &h)
 	require.NoError(t, err)
 	assert.True(t, h.IsUp())
+	assert.Equal(t, "node1", h.GetInfo("node"))
+	assert.Equal(t, "v1.0.0", h.GetInfo("version"))
 	t.Log(h)
 }
 

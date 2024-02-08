@@ -43,7 +43,7 @@ var (
 type Config struct {
 	Issuer         string        // 签发者
 	SecretKey      string        // 密钥
-	ExpirationTime time.Duration // 过期时间
+	ExpirationTime time.Duration `json:",default=72h"` // 过期时间
 }
 
 // JWT 结构详情
@@ -53,8 +53,11 @@ type JWT struct {
 
 // NewJWT 新建 JWT
 func NewJWT(c Config) (*JWT, error) {
-	if c.Issuer == "" || c.SecretKey == "" || c.ExpirationTime.Seconds() <= 0 {
+	if c.Issuer == "" || c.SecretKey == "" || c.ExpirationTime < 0 {
 		return nil, errors.New("jwt: illegal jwt configure")
+	}
+	if c.ExpirationTime == 0 {
+		c.ExpirationTime = 72 * time.Hour
 	}
 
 	return &JWT{c: c}, nil
@@ -73,7 +76,7 @@ func MustNewJWT(c Config) *JWT {
 // GenToken 根据 payloads 生成 JWT token
 func (j *JWT) GenToken(payloads map[string]any, expirationTime ...time.Duration) (string, error) {
 	et := j.c.ExpirationTime
-	if len(expirationTime) > 0 && expirationTime[0].Seconds() > 0 {
+	if len(expirationTime) > 0 && expirationTime[0] > 0 {
 		et = expirationTime[0]
 	}
 

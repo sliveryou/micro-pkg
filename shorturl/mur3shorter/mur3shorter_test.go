@@ -30,13 +30,13 @@ func TestShorter_Mapping(t *testing.T) {
 	}{
 		{longURL: "https://www.baidu.com", expectLength: 6},
 		{longURL: "https://www.baidu.com", expectLength: 8},
-		{longURL: "https://www.baidu.com", expectLength: 10},
+		{longURL: "https://www.baidu.com", expectLength: 12},
 		{longURL: "https://tieba.baidu.com", expectLength: 6},
 		{longURL: "https://tieba.baidu.com", expectLength: 8},
-		{longURL: "https://tieba.baidu.com", expectLength: 10},
+		{longURL: "https://tieba.baidu.com", expectLength: 12},
 		{longURL: "https://zhidao.baidu.com", expectLength: 6},
 		{longURL: "https://zhidao.baidu.com", expectLength: 8},
-		{longURL: "https://zhidao.baidu.com", expectLength: 10},
+		{longURL: "https://zhidao.baidu.com", expectLength: 12},
 	}
 
 	for _, c := range cases {

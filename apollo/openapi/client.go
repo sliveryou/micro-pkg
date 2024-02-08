@@ -47,10 +47,10 @@ var (
 type ClientConfig struct {
 	PortalAddress    string // 入口地址，一般端口为 8070
 	Token            string // 鉴权令牌，须事先在管理平台注册并授权
-	DefaultEnv       string // 默认环境，一般为 DEV
+	DefaultEnv       string `json:",default=DEV"` // 默认环境，一般为 DEV
 	DefaultAppID     string // 默认应用ID
-	DefaultCluster   string // 默认集群，一般为 default
-	DefaultNamespace string // 默认命名空间
+	DefaultCluster   string `json:",default=default"` // 默认集群，一般为 default
+	DefaultNamespace string `json:",optional"`        // 默认命名空间
 }
 
 // getAPIOption 获取接口可选参数配置
