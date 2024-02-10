@@ -72,7 +72,7 @@ func OkJsonCtx(ctx context.Context, w http.ResponseWriter, v any) {
 
 // ErrorCtx 错误响应包装返回
 func ErrorCtx(ctx context.Context, w http.ResponseWriter, err error) {
-	logx.WithContext(ctx).Errorf("request handle err, err: %+v", err)
+	logx.WithContext(ctx).Errorf("request handle err: %+v", err)
 
 	e, _ := errcode.FromError(err)
 	WriteHeader(w, e)
@@ -88,7 +88,7 @@ func ErrorCtx(ctx context.Context, w http.ResponseWriter, err error) {
 // Parse 请求体解析
 func Parse(r *http.Request, v any) error {
 	if err := httpx.Parse(r, v); err != nil {
-		logx.WithContext(r.Context()).Errorf("request parse err, err: %s",
+		logx.WithContext(r.Context()).Errorf("request parse err: %s",
 			formatStr(err.Error(), halfShowLen))
 		return errcode.ErrInvalidParams
 	}
@@ -103,7 +103,7 @@ func Parse(r *http.Request, v any) error {
 // ParseForm 请求表单解析
 func ParseForm(r *http.Request, v any) error {
 	if err := binding.Form.Bind(r, v); err != nil {
-		logx.WithContext(r.Context()).Errorf("request parse form err, err: %s",
+		logx.WithContext(r.Context()).Errorf("request parse form err: %s",
 			formatStr(err.Error(), halfShowLen))
 		return errcode.ErrInvalidParams
 	}
@@ -118,7 +118,7 @@ func ParseForm(r *http.Request, v any) error {
 // ParseJsonBody 解析 json 请求体
 func ParseJsonBody(r *http.Request, v any) error {
 	if err := mapping.UnmarshalJsonReader(r.Body, v); err != nil {
-		logx.WithContext(r.Context()).Errorf("request parse json body err, err: %s",
+		logx.WithContext(r.Context()).Errorf("request parse json body err: %s",
 			formatStr(err.Error(), halfShowLen))
 		return errcode.ErrInvalidParams
 	}

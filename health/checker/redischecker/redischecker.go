@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 
 	"github.com/sliveryou/micro-pkg/health"
@@ -19,13 +18,18 @@ type Checker struct {
 
 // NewChecker 新建 redis 检查器
 func NewChecker(rc redis.RedisConf, opts ...redis.Option) *Checker {
-	return &Checker{rds: redis.MustNewRedis(rc, opts...)}
+	rds, err := redis.NewRedis(rc, opts...)
+	if err != nil {
+		panic(err)
+	}
+
+	return &Checker{rds: rds}
 }
 
 // NewCheckerWithRedis 通过已有 redis 客户端新建 redis 检查器
 func NewCheckerWithRedis(rds *redis.Redis) *Checker {
 	if rds == nil {
-		logx.Must(errors.New("nil redis is invalid"))
+		panic(errors.New("nil redis is invalid"))
 	}
 
 	return &Checker{rds: rds}

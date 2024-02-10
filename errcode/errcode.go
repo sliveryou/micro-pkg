@@ -3,6 +3,7 @@ package errcode
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"regexp"
 
@@ -80,6 +81,22 @@ func (e *Err) String() string {
 // Error Err 实现 Error 方法
 func (e *Err) Error() string {
 	return e.Msg
+}
+
+// Format Err 实现 Format 方法
+func (e *Err) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 'v':
+		if s.Flag('+') {
+			io.WriteString(s, e.String())
+			return
+		}
+		fallthrough
+	case 's':
+		io.WriteString(s, e.Msg)
+	case 'q':
+		fmt.Fprintf(s, "%q", e.Msg)
+	}
 }
 
 // GRPCStatus Err 实现 GRPCStatus 方法

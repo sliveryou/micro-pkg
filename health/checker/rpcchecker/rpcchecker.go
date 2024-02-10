@@ -24,7 +24,12 @@ type Checker struct {
 
 // NewChecker 新建服务检查器
 func NewChecker(cc zrpc.RpcClientConf, options ...zrpc.ClientOption) *Checker {
-	return &Checker{hc: client.NewHealthClient(zrpc.MustNewClient(cc, options...))}
+	c, err := zrpc.NewClient(cc, options...)
+	if err != nil {
+		panic(err)
+	}
+
+	return &Checker{hc: client.NewHealthClient(c)}
 }
 
 // NewCheckerWithClient 通过已有客户端新建服务检查器

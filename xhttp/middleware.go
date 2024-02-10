@@ -132,7 +132,7 @@ func (m *RecoverMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if cause := recover(); cause != nil {
-				logx.WithContext(r.Context()).Errorf("%s%v [running]:\n%s", dumpRequest(r), cause, getStacks())
+				logx.WithContext(r.Context()).Errorf("%s%+v [running]:\n%s", dumpRequest(r), cause, getStacks())
 				w.WriteHeader(http.StatusInternalServerError)
 			}
 		}()

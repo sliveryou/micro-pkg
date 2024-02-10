@@ -59,7 +59,7 @@ func (l *Logger) Error(ctx context.Context, msg string, data ...any) {
 // Trace 日志记录 trace
 func (l *Logger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
 	if l.LogLevel > logger.Silent {
-		log := logx.WithContext(ctx)
+		log := logx.WithContext(ctx).WithFields(logx.Field("service", "db"))
 		elapsed := time.Since(begin)
 
 		switch {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/kv"
 	"github.com/zeromicro/go-zero/core/stores/redis"
@@ -24,12 +23,15 @@ type Checker struct {
 // NewChecker 新建键值集群检查器
 func NewChecker(kc kv.KvConf, opts ...redis.Option) *Checker {
 	if len(kc) == 0 || cache.TotalWeights(kc) <= 0 {
-		logx.Must(errors.New("there are no cache nodes"))
+		panic(errors.New("there are no cache nodes"))
 	}
 
 	c := &Checker{nodes: make([]*redis.Redis, 0, len(kc))}
 	for _, nc := range kc {
-		n := redis.MustNewRedis(nc.RedisConf, opts...)
+		n, err := redis.NewRedis(nc.RedisConf, opts...)
+		if err != nil {
+			panic(err)
+		}
 		c.nodes = append(c.nodes, n)
 	}
 
@@ -39,7 +41,7 @@ func NewChecker(kc kv.KvConf, opts ...redis.Option) *Checker {
 // NewCheckerWithNodes 通过已有节点新建键值集群检查器
 func NewCheckerWithNodes(nodes ...*redis.Redis) *Checker {
 	if len(nodes) == 0 {
-		logx.Must(errors.New("there are no cache nodes"))
+		panic(errors.New("there are no cache nodes"))
 	}
 
 	c := &Checker{nodes: make([]*redis.Redis, 0, len(nodes))}
