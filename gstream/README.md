@@ -141,15 +141,17 @@ func svrDemo(svr file.File_UploadFileServer) {
 然后被服务端接收所拼凑还原，在拼凑还原的过程中，存在一个中间态，是把前部分的数据放在内存里呢？
 还是生成一个临时文件，将数据存放在其中呢？
    
-在对接文件对象存储的业务中，我设计了一个 OSS 服务通用接口来对接阿里云、华为云和腾讯云的对象存储服务：
+在对接文件对象存储的业务中，我设计了一个 OSS 通用客户端接口来对接阿里云、华为云和腾讯云的对象存储服务：
 
 ```go
-// OSS OSS 服务接口
+// OSS 客户端接口
 type OSS interface {
 	// Cloud 获取云服务商名称
 	Cloud() string
-	// GetUrl 获取对象在 OSS 上的完整访问 URL
-	GetUrl(key string) string
+	// GetURL 获取对象在 OSS 上的完整访问 URL
+	GetURL(key string) string
+	// GetObject 获取对象在 OSS 的存储数据
+	GetObject(key string) (io.ReadCloser, error)
 	// PutObject 上传对象至 OSS
 	PutObject(key string, reader io.Reader) (string, error)
 	// DeleteObjects 批量删除 OSS 上的对象
@@ -158,6 +160,8 @@ type OSS interface {
 	UploadFile(key, filePath string, partSize int64, routines int) (string, error)
 	// AuthorizedUpload 授权上传至 OSS，expires：过期时间（秒）
 	AuthorizedUpload(key string, expires int) (string, error)
+	// GetThumbnailSuffix 获取缩略图后缀，如果只传一个值则进行等比缩放，两个值都传时会强制缩放，可能会导致图片变形
+	GetThumbnailSuffix(width, height int, size int64) string
 }
 ```
 

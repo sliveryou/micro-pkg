@@ -37,5 +37,6 @@ go 微服务常用公共包
 - [第三方库和工具](docs/third-parties.md)
 - [接口错误码](docs/errcode.md)
 - [通用 grpc 流式消息内容读写器](gstream/README.md)
+- [通用对象存储服务客户端](oss/README.md)
 - [短地址标识符生成](shorturl/README.md)
 - [参考文献](docs/references.md)
