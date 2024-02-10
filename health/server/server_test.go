@@ -6,9 +6,11 @@ import (
 	"net"
 	"testing"
 
+	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	miniredis "github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/kv"
 	"github.com/zeromicro/go-zero/core/stores/redis"
@@ -19,10 +21,12 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 
 	"github.com/sliveryou/micro-pkg/health/checker/compositechecker"
+	"github.com/sliveryou/micro-pkg/health/checker/dbchecker"
 	"github.com/sliveryou/micro-pkg/health/checker/kvchecker"
 	"github.com/sliveryou/micro-pkg/health/checker/redischecker"
 	"github.com/sliveryou/micro-pkg/health/checker/rpcchecker"
 	"github.com/sliveryou/micro-pkg/health/client"
+	"github.com/sliveryou/micro-pkg/xdb"
 )
 
 var (
@@ -45,15 +49,24 @@ func TestNewHealthServer(t *testing.T) {
 }
 
 func TestHealthServer_Check(t *testing.T) {
+	logx.DisableStat()
+
+	dbConf := getDBConf()
+	db, mock := xdb.MustNewDBMock(dbConf)
+	dbChecker := dbchecker.NewChecker(dbConf.Type, db)
 	nodes := getNodes()
 	kvChecker := kvchecker.NewCheckerWithNodes(nodes...)
 	redisChecker := redischecker.NewCheckerWithRedis(nodes[0])
 	rpcChecker := rpcchecker.NewChecker(getCliConf(), zrpc.WithDialOption(grpc.WithContextDialer(dialer(MustNewHealthServer("test.rpc", compositechecker.NewChecker())))))
 
 	cc := compositechecker.NewChecker()
+	cc.AddChecker("db", dbChecker)
 	cc.AddChecker("kv", kvChecker)
 	cc.AddChecker("redis", redisChecker)
 	cc.AddChecker("test.rpc", rpcChecker)
+
+	mock.ExpectPrepare("^SELECT 1").ExpectQuery().WillReturnRows(sqlmock.NewRows([]string{"ok"}).AddRow("1"))
+	mock.ExpectPrepare("^SELECT VERSION()").ExpectQuery().WillReturnRows(sqlmock.NewRows([]string{"version"}).AddRow("5.7.31"))
 
 	hs, err := NewHealthServer("health.rpc", cc)
 	require.NoError(t, err)
@@ -67,7 +80,7 @@ func TestHealthServer_Check(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, grpc_health_v1.HealthCheckResponse_SERVING, resp.GetStatus())
 	require.Len(t, header[healthHeader], 1)
-	assert.Equal(t, `{"kv":{"node0":{"status":"UP"},"node1":{"status":"UP"},"status":"UP"},"redis":{"status":"UP"},"status":"UP","test.rpc":{"status":"UP"}}`, header[healthHeader][0])
+	assert.Equal(t, `{"db":{"status":"UP","version":"5.7.31"},"kv":{"node0":{"status":"UP"},"node1":{"status":"UP"},"status":"UP"},"redis":{"status":"UP"},"status":"UP","test.rpc":{"status":"UP"}}`, header[healthHeader][0])
 }
 
 func getKvConf() kv.KvConf {
@@ -111,6 +124,14 @@ func getNodes() []*redis.Redis {
 	}
 
 	return nodes
+}
+
+func getDBConf() xdb.Config {
+	return xdb.Config{
+		Type:     xdb.MySQL,
+		Database: "my_test_db",
+		LogLevel: xdb.Error,
+	}
 }
 
 func dialer(srv grpc_health_v1.HealthServer) func(context.Context, string) (net.Conn, error) {
