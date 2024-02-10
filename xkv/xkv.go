@@ -1,6 +1,7 @@
 package xkv
 
 import (
+	"context"
 	"encoding/json"
 	"reflect"
 
@@ -32,7 +33,12 @@ func NewStore(c kv.KvConf) *Store {
 
 // GetInt 返回给定 key 所关联的 int 值
 func (s *Store) GetInt(key string) (int, error) {
-	value, err := s.Get(key)
+	return s.GetIntCtx(context.Background(), key)
+}
+
+// GetIntCtx 返回给定 key 所关联的 int 值
+func (s *Store) GetIntCtx(ctx context.Context, key string) (int, error) {
+	value, err := s.GetCtx(ctx, key)
 	if err != nil {
 		return 0, err
 	}
@@ -42,12 +48,22 @@ func (s *Store) GetInt(key string) (int, error) {
 
 // SetInt 将 int value 关联到给定 key，seconds 为 key 的过期时间（秒）
 func (s *Store) SetInt(key string, value int, seconds ...int) error {
-	return s.SetString(key, convert.ToString(value), seconds...)
+	return s.SetIntCtx(context.Background(), key, value, seconds...)
+}
+
+// SetIntCtx 将 int value 关联到给定 key，seconds 为 key 的过期时间（秒）
+func (s *Store) SetIntCtx(ctx context.Context, key string, value int, seconds ...int) error {
+	return s.SetStringCtx(ctx, key, convert.ToString(value), seconds...)
 }
 
 // GetInt64 返回给定 key 所关联的 int64 值
 func (s *Store) GetInt64(key string) (int64, error) {
-	value, err := s.Get(key)
+	return s.GetInt64Ctx(context.Background(), key)
+}
+
+// GetInt64Ctx 返回给定 key 所关联的 int64 值
+func (s *Store) GetInt64Ctx(ctx context.Context, key string) (int64, error) {
+	value, err := s.GetCtx(ctx, key)
 	if err != nil {
 		return 0, err
 	}
@@ -57,12 +73,22 @@ func (s *Store) GetInt64(key string) (int64, error) {
 
 // SetInt64 将 int64 value 关联到给定 key，seconds 为 key 的过期时间（秒）
 func (s *Store) SetInt64(key string, value int64, seconds ...int) error {
-	return s.SetString(key, convert.ToString(value), seconds...)
+	return s.SetInt64Ctx(context.Background(), key, value, seconds...)
+}
+
+// SetInt64Ctx 将 int64 value 关联到给定 key，seconds 为 key 的过期时间（秒）
+func (s *Store) SetInt64Ctx(ctx context.Context, key string, value int64, seconds ...int) error {
+	return s.SetStringCtx(ctx, key, convert.ToString(value), seconds...)
 }
 
 // GetBytes 返回给定 key 所关联的 []byte 值
 func (s *Store) GetBytes(key string) ([]byte, error) {
-	value, err := s.Get(key)
+	return s.GetBytesCtx(context.Background(), key)
+}
+
+// GetBytesCtx 返回给定 key 所关联的 []byte 值
+func (s *Store) GetBytesCtx(ctx context.Context, key string) ([]byte, error) {
+	value, err := s.GetCtx(ctx, key)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +98,12 @@ func (s *Store) GetBytes(key string) ([]byte, error) {
 
 // GetDel 返回并删除给定 key 所关联的 string 值
 func (s *Store) GetDel(key string) (string, error) {
-	resp, err := s.Eval(getAndDelScript, key)
+	return s.GetDelCtx(context.Background(), key)
+}
+
+// GetDelCtx 返回并删除给定 key 所关联的 string 值
+func (s *Store) GetDelCtx(ctx context.Context, key string) (string, error) {
+	resp, err := s.EvalCtx(ctx, getAndDelScript, key)
 	if err != nil {
 		return "", errors.Wrap(err, "eval script err")
 	}
@@ -82,22 +113,33 @@ func (s *Store) GetDel(key string) (string, error) {
 
 // SetString 将 string value 关联到给定 key，seconds 为 key 的过期时间（秒）
 func (s *Store) SetString(key, value string, seconds ...int) error {
-	if len(seconds) != 0 {
-		return errors.Wrapf(s.Setex(key, value, seconds[0]),
+	return s.SetStringCtx(context.Background(), key, value, seconds...)
+}
+
+// SetStringCtx 将 string value 关联到给定 key，seconds 为 key 的过期时间（秒）
+func (s *Store) SetStringCtx(ctx context.Context, key, value string, seconds ...int) error {
+	if len(seconds) > 0 {
+		return errors.Wrapf(s.SetexCtx(ctx, key, value, seconds[0]),
 			"setex by seconds = %v err", seconds[0])
 	}
 
-	return errors.Wrap(s.Set(key, value), "set err")
+	return errors.Wrap(s.SetCtx(ctx, key, value), "set err")
 }
 
 // Read 将给定 key 所关联的值反序列化到 obj 对象
 // 返回 false 时代表给定 key 不存在
 func (s *Store) Read(key string, obj any) (bool, error) {
+	return s.ReadCtx(context.Background(), key, obj)
+}
+
+// ReadCtx 将给定 key 所关联的值反序列化到 obj 对象
+// 返回 false 时代表给定 key 不存在
+func (s *Store) ReadCtx(ctx context.Context, key string, obj any) (bool, error) {
 	if !isValid(obj) {
 		return false, errors.New("obj is invalid")
 	}
 
-	value, err := s.GetBytes(key)
+	value, err := s.GetBytesCtx(ctx, key)
 	if err != nil {
 		return false, errors.Wrap(err, "get bytes err")
 	}
@@ -115,28 +157,38 @@ func (s *Store) Read(key string, obj any) (bool, error) {
 
 // Write 将对象 obj 序列化后关联到给定 key，seconds 为 key 的过期时间（秒）
 func (s *Store) Write(key string, obj any, seconds ...int) error {
+	return s.WriteCtx(context.Background(), key, obj, seconds...)
+}
+
+// WriteCtx 将对象 obj 序列化后关联到给定 key，seconds 为 key 的过期时间（秒）
+func (s *Store) WriteCtx(ctx context.Context, key string, obj any, seconds ...int) error {
 	value, err := json.Marshal(obj)
 	if err != nil {
 		return errors.Wrap(err, "json marshal obj err")
 	}
 
-	return s.SetString(key, string(value), seconds...)
+	return s.SetStringCtx(ctx, key, string(value), seconds...)
 }
-
-// GetFunc 给定 key 不存在时调用的数据获取函数
-type GetFunc func() (any, error)
 
 // ReadOrGet 将给定 key 所关联的值反序列化到 obj 对象
 // 若给定 key 不存在则调用数据获取函数，调用成功时赋值至 obj 对象
 // 并将其序列化后关联到给定 key，seconds 为 key 的过期时间（秒）
-func (s *Store) ReadOrGet(key string, obj any, gf GetFunc, seconds ...int) error {
-	isExist, err := s.Read(key, obj)
+func (s *Store) ReadOrGet(key string, obj any, gf func() (any, error), seconds ...int) error {
+	f := func(context.Context) (any, error) { return gf() }
+	return s.ReadOrGetCtx(context.Background(), key, obj, f, seconds...)
+}
+
+// ReadOrGetCtx 将给定 key 所关联的值反序列化到 obj 对象
+// 若给定 key 不存在则调用数据获取函数，调用成功时赋值至 obj 对象
+// 并将其序列化后关联到给定 key，seconds 为 key 的过期时间（秒）
+func (s *Store) ReadOrGetCtx(ctx context.Context, key string, obj any, gf func(ctx context.Context) (any, error), seconds ...int) error {
+	isExist, err := s.ReadCtx(ctx, key, obj)
 	if err != nil {
 		return errors.Wrap(err, "read obj by err")
 	}
 
 	if !isExist {
-		data, err := gf()
+		data, err := gf(ctx)
 		if err != nil {
 			return err
 		}
@@ -151,7 +203,7 @@ func (s *Store) ReadOrGet(key string, obj any, gf GetFunc, seconds ...int) error
 		}
 		ov.Set(dv)
 
-		_ = s.Write(key, data, seconds...)
+		_ = s.WriteCtx(ctx, key, data, seconds...)
 	}
 
 	return nil
@@ -163,9 +215,10 @@ func isValid(obj any) bool {
 		return false
 	}
 
-	if reflect.ValueOf(obj).Kind() != reflect.Ptr {
+	val := reflect.ValueOf(obj)
+	if val.Kind() != reflect.Ptr {
 		return false
 	}
 
-	return true
+	return val.Elem().CanAddr()
 }
