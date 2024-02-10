@@ -4,6 +4,7 @@ run:
   timeout: 5m
   tests: true
   skip-dirs:
+    - xhash/sm3
     - xhttp/binding
 
 linters-settings:
@@ -58,7 +59,7 @@ linters-settings:
       - name: get-return
       - name: modifies-parameter
       - name: confusing-results
-      # - name: deep-exit
+      - name: deep-exit
       # - name: unused-parameter
       - name: unreachable-code
       # - name: add-constant
@@ -69,6 +70,7 @@ linters-settings:
       - name: bool-literal-in-expr
       - name: redefines-builtin-id
       - name: function-result-limit
+        arguments: [4]
       - name: imports-blacklist
       - name: range-val-in-closure
       - name: range-val-address
@@ -84,7 +86,7 @@ linters-settings:
       - name: unconditional-recursion
       - name: identical-branches
       - name: defer
-      # - name: unexported-naming
+      - name: unexported-naming
       - name: nested-structs
       - name: useless-break
       - name: banned-characters

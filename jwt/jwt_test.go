@@ -17,15 +17,15 @@ import (
 )
 
 func TestJWT_GenToken(t *testing.T) {
-	c := Config{Issuer: "test-issuer", SecretKey: "", ExpirationTime: 72 * time.Hour}
+	c := Config{Issuer: "test-issuer", SecretKey: "", Expiration: 72 * time.Hour}
 	_, err := NewJWT(c)
-	require.EqualError(t, err, "jwt: illegal jwt configure")
+	require.EqualError(t, err, "jwt: illegal jwt config")
 
-	c = Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", ExpirationTime: -72 * time.Hour}
+	c = Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", Expiration: -72 * time.Hour}
 	_, err = NewJWT(c)
-	require.EqualError(t, err, "jwt: illegal jwt configure")
+	require.EqualError(t, err, "jwt: illegal jwt config")
 
-	c = Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", ExpirationTime: 72 * time.Hour}
+	c = Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", Expiration: 72 * time.Hour}
 	j, err := NewJWT(c)
 	require.NoError(t, err)
 	assert.NotNil(t, j)
@@ -50,7 +50,7 @@ func TestJWT_GenToken(t *testing.T) {
 }
 
 func TestJWT_ParseToken(t *testing.T) {
-	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", ExpirationTime: 72 * time.Hour}
+	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", Expiration: 72 * time.Hour}
 	j, err := NewJWT(c)
 	require.NoError(t, err)
 	assert.NotNil(t, j)
@@ -82,7 +82,7 @@ func TestJWT_ParseToken(t *testing.T) {
 }
 
 func TestJWT_ParseTokenPayloads(t *testing.T) {
-	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", ExpirationTime: 72 * time.Hour}
+	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", Expiration: 72 * time.Hour}
 	j, err := NewJWT(c)
 	require.NoError(t, err)
 	assert.NotNil(t, j)
@@ -119,7 +119,7 @@ func TestJWT_ParseTokenPayloads(t *testing.T) {
 }
 
 func TestJWT_ParseTokenFromRequest(t *testing.T) {
-	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", ExpirationTime: 72 * time.Hour}
+	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", Expiration: 72 * time.Hour}
 	j, err := NewJWT(c)
 	require.NoError(t, err)
 	assert.NotNil(t, j)
@@ -142,7 +142,7 @@ func TestJWT_ParseTokenFromRequest(t *testing.T) {
 }
 
 func TestJWT_ParseTokenPayloadsFromRequest(t *testing.T) {
-	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", ExpirationTime: 72 * time.Hour}
+	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", Expiration: 72 * time.Hour}
 	j, err := NewJWT(c)
 	require.NoError(t, err)
 	assert.NotNil(t, j)
@@ -189,14 +189,14 @@ func Test_isStructPointer(t *testing.T) {
 	}
 }
 
-func genTestToken(issuer, secretKey string, method jwt.SigningMethod, payloads map[string]any, expirationTime ...time.Duration) (string, error) {
+func genTestToken(issuer, secretKey string, method jwt.SigningMethod, payloads map[string]any, expiration ...time.Duration) (string, error) {
 	claims := make(jwt.MapClaims)
 	now := timex.Now()
 	claims[jwtIssuer] = issuer
 	claims[jwtIssueAt] = now.Unix()
 	claims[jwtNotBefore] = now.Unix()
-	if len(expirationTime) > 0 && expirationTime[0].Seconds() > 0 {
-		claims[jwtExpire] = now.Add(expirationTime[0]).Unix()
+	if len(expiration) > 0 && expiration[0].Seconds() > 0 {
+		claims[jwtExpire] = now.Add(expiration[0]).Unix()
 	}
 
 	for k, v := range payloads {

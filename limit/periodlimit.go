@@ -107,7 +107,7 @@ type PeriodLimit struct {
 // NewPeriodLimit 新建时间段限流器
 func NewPeriodLimit(period, quota int, keyPrefix string, store *xkv.Store) (*PeriodLimit, error) {
 	if store == nil || period <= 0 || quota <= 0 {
-		return nil, errors.New("limit: illegal period limit configure")
+		return nil, errors.New("limit: illegal period limit config")
 	}
 
 	limiter := &PeriodLimit{

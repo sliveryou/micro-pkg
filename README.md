@@ -13,6 +13,7 @@ go 微服务常用公共包
 
 - **apollo** 阿波罗配置中心 go 客户端
 - **balancer** grpc 平衡器，包含了一致性 hash 平衡器
+- **captcha** base64 编码的图形验证码包，使用 redis 缓存验证码答案
 - **errcode** 通用业务错误码包，记录了业务状态码、业务消息和 HTTP 状态码，并实现了 `GRPCStatus() *status.Status` 接口，可在 grpc 调用中流转
 - **excel** 常用 excel 操作包，包含获取所有行数据、流式读取行数据和流式写入行数据等操作 
 - **gstream** grpc 流式消息内容读写器，利用反射动态创建消息对象，流式读写消息内容

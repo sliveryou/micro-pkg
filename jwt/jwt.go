@@ -41,9 +41,9 @@ var (
 
 // Config JWT 相关配置
 type Config struct {
-	Issuer         string        // 签发者
-	SecretKey      string        // 密钥
-	ExpirationTime time.Duration `json:",default=72h"` // 过期时间
+	Issuer     string        // 签发者
+	SecretKey  string        // 密钥
+	Expiration time.Duration `json:",default=72h"` // 过期时间
 }
 
 // JWT 结构详情
@@ -53,11 +53,11 @@ type JWT struct {
 
 // NewJWT 新建 JWT
 func NewJWT(c Config) (*JWT, error) {
-	if c.Issuer == "" || c.SecretKey == "" || c.ExpirationTime < 0 {
-		return nil, errors.New("jwt: illegal jwt configure")
+	if c.Issuer == "" || c.SecretKey == "" || c.Expiration < 0 {
+		return nil, errors.New("jwt: illegal jwt config")
 	}
-	if c.ExpirationTime == 0 {
-		c.ExpirationTime = 72 * time.Hour
+	if c.Expiration == 0 {
+		c.Expiration = 72 * time.Hour
 	}
 
 	return &JWT{c: c}, nil
@@ -74,10 +74,10 @@ func MustNewJWT(c Config) *JWT {
 }
 
 // GenToken 根据 payloads 生成 JWT token
-func (j *JWT) GenToken(payloads map[string]any, expirationTime ...time.Duration) (string, error) {
-	et := j.c.ExpirationTime
-	if len(expirationTime) > 0 && expirationTime[0] > 0 {
-		et = expirationTime[0]
+func (j *JWT) GenToken(payloads map[string]any, expiration ...time.Duration) (string, error) {
+	et := j.c.Expiration
+	if len(expiration) > 0 && expiration[0] > 0 {
+		et = expiration[0]
 	}
 
 	claims := make(jwt.MapClaims)

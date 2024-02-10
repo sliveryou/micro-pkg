@@ -36,6 +36,11 @@
   - 项目地址：https://github.com/qax-os/excelize
   - 文档地址：https://xuri.me/excelize/zh-hans
   - 封装：[micro-pkg/excel](../excel)
+- **base64Captcha** base64 编码图形验证码库：
+  - 项目地址：https://github.com/mojocn/base64Captcha
+  - 文档地址：https://zh.mojotv.cn/go/refactor-base64-captcha
+  - base64 图片转换：https://tool.chinaz.com/tools/imgtobase
+  - 封装：[micro-pkg/captcha](../captcha)
 - **go-tool** 常用工具函数集合：
   - 项目地址：https://github.com/sliveryou/go-tool
 

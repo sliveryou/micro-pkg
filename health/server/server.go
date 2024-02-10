@@ -31,7 +31,7 @@ func NewHealthServer(serverName string, compositeChecker *compositechecker.Check
 		serverName = "health"
 	}
 	if compositeChecker == nil {
-		return nil, errors.New("health: illegal health configure")
+		return nil, errors.New("health: illegal health config")
 	}
 
 	return &healthServer{

@@ -38,7 +38,7 @@ type Config struct {
 // NewDB 新建 gorm.DB 对象
 func NewDB(c Config) (*gorm.DB, error) {
 	if err := c.fillDefault(); err != nil {
-		return nil, errors.WithMessage(err, "xdb: fill default db config err")
+		return nil, errors.WithMessage(err, "xdb: fill default config err")
 	}
 	// 创建数据库失败，不做处理
 	_ = c.createDatabase()

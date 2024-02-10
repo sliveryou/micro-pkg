@@ -84,7 +84,7 @@ func WithHTTPClient(hc *http.Client) ClientOption {
 // NewClient 新建阿波罗配置中心开放平台客户端
 func NewClient(config ClientConfig, opts ...ClientOption) (OpenAPI, error) {
 	if config.PortalAddress == "" || config.Token == "" || config.DefaultAppID == "" {
-		return nil, errors.New("openapi: illegal apollo openapi client configure")
+		return nil, errors.New("openapi: illegal apollo openapi client config")
 	}
 
 	if config.DefaultEnv == "" {

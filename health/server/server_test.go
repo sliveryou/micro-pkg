@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"log"
 	"net"
 	"testing"
 
@@ -39,13 +38,13 @@ func TestNewHealthServer(t *testing.T) {
 	assert.NotPanics(t, func() {
 		MustNewHealthServer("test.rpc", cc)
 	})
-	assert.PanicsWithError(t, "health: illegal health configure", func() {
+	assert.PanicsWithError(t, "health: illegal health config", func() {
 		MustNewHealthServer("test.rpc", nil)
 	})
 	_, err := NewHealthServer("test.rpc", cc)
 	require.NoError(t, err)
 	_, err = NewHealthServer("", nil)
-	require.EqualError(t, err, "health: illegal health configure")
+	require.EqualError(t, err, "health: illegal health config")
 }
 
 func TestHealthServer_Check(t *testing.T) {
@@ -141,7 +140,7 @@ func dialer(srv grpc_health_v1.HealthServer) func(context.Context, string) (net.
 
 	go func() {
 		if err := server.Serve(listener); err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 	}()
 

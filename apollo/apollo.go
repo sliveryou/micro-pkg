@@ -35,7 +35,7 @@ func NewApollo(c Config) (*Apollo, error) {
 		a.Client = &MockClient{}
 	} else {
 		if c.AppID == "" || len(c.NameSpaceNames) == 0 || c.MetaAddr == "" {
-			return nil, errors.New("apollo: illegal apollo configure")
+			return nil, errors.New("apollo: illegal apollo config")
 		}
 		if c.Cluster == "" {
 			c.Cluster = "default"

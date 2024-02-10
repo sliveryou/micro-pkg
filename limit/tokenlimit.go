@@ -89,7 +89,7 @@ type TokenLimit struct {
 // NewTokenLimit 新建令牌桶限流器
 func NewTokenLimit(rate, capacity int, key string, store *xkv.Store) (*TokenLimit, error) {
 	if store == nil || rate <= 0 || capacity <= 0 {
-		return nil, errors.New("limit: illegal token limit configure")
+		return nil, errors.New("limit: illegal token limit config")
 	}
 
 	limiter := &TokenLimit{

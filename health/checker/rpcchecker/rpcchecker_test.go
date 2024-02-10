@@ -3,7 +3,6 @@ package rpcchecker
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net"
 	"testing"
 
@@ -68,7 +67,7 @@ func dialer(srv grpc_health_v1.HealthServer) func(context.Context, string) (net.
 
 	go func() {
 		if err := server.Serve(listener); err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 	}()
 

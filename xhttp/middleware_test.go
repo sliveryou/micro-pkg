@@ -18,7 +18,7 @@ import (
 )
 
 func getJWTMiddleware() *JWTMiddleware {
-	j := jwt.MustNewJWT(jwt.Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", ExpirationTime: 72 * time.Hour})
+	j := jwt.MustNewJWT(jwt.Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", Expiration: 72 * time.Hour})
 	errTokenVerify := errcode.New(401, "token校验失败", http.StatusUnauthorized)
 	m := MustNewJWTMiddleware(j, &_UserInfo{}, errTokenVerify)
 	return m
