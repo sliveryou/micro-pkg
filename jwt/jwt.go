@@ -73,8 +73,24 @@ func MustNewJWT(c Config) *JWT {
 	return j
 }
 
-// GenToken 根据 payloads 生成 JWT token
-func (j *JWT) GenToken(payloads map[string]any, expiration ...time.Duration) (string, error) {
+// GenToken 根据给定 token 结构体 生成 JWT token
+//
+// 注意：token 必须为结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
+func (j *JWT) GenToken(token any, expiration ...time.Duration) (string, error) {
+	if err := CheckTokenType(token); err != nil {
+		return "", err
+	}
+
+	payloads := make(map[string]any)
+	if err := decode(token, &payloads); err != nil {
+		return "", errors.WithMessage(err, "decode token to payloads err")
+	}
+
+	return j.GenTokenWithPayloads(payloads, expiration...)
+}
+
+// GenTokenWithPayloads 根据 payloads 生成 JWT token
+func (j *JWT) GenTokenWithPayloads(payloads map[string]any, expiration ...time.Duration) (string, error) {
 	et := j.c.Expiration
 	if len(expiration) > 0 && expiration[0] > 0 {
 		et = expiration[0]
@@ -105,6 +121,7 @@ func (j *JWT) GenToken(payloads map[string]any, expiration ...time.Duration) (st
 }
 
 // ParseToken 解析 JWT token，并将其反序列化至指定 token 结构体中
+//
 // 注意：token 必须为结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
 func (j *JWT) ParseToken(tokenString string, token any) error {
 	if err := CheckTokenType(token); err != nil {
@@ -116,10 +133,11 @@ func (j *JWT) ParseToken(tokenString string, token any) error {
 		return err
 	}
 
-	return errors.WithMessage(decode(payloads, token), "decode payloads err")
+	return errors.WithMessage(decode(payloads, token), "decode payloads to token err")
 }
 
 // ParseTokenFromRequest 从请求头解析 JWT token，并将其反序列化至指定 token 结构体中
+//
 // 注意：token 必须为结构体指针类型，名称以 json tag 对应的名称与 payloads 进行映射
 func (j *JWT) ParseTokenFromRequest(r *http.Request, token any) error {
 	if err := CheckTokenType(token); err != nil {
@@ -131,7 +149,7 @@ func (j *JWT) ParseTokenFromRequest(r *http.Request, token any) error {
 		return err
 	}
 
-	return errors.WithMessage(decode(payloads, token), "decode payloads err")
+	return errors.WithMessage(decode(payloads, token), "decode payloads to token err")
 }
 
 // ParseTokenPayloads 解析 JWT token，返回 payloads

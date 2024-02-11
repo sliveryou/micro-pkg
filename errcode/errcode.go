@@ -115,8 +115,8 @@ func New(code uint32, msg string, httpCode ...int) error {
 }
 
 // NewCommon 新建通用业务错误
-// 与 New 效果相同，只是 Code 硬性指定为 CodeCommon
-// 主要适用于该业务错误不确定指定什么业务状态码的情况
+//
+// 与 New 效果相同，只是 Code 硬性指定为 CodeCommon，主要适用于该业务错误不确定指定什么业务状态码的情况
 func NewCommon(msg string, httpCode ...int) error {
 	hc := http.StatusOK
 	if len(httpCode) != 0 && httpCode[0] > 0 {
@@ -176,6 +176,7 @@ func IsErr(err error) bool {
 }
 
 // Is 判断业务错误是否相同
+//
 // target 须为业务错误，用于和 err 进行比对
 func Is(err, target error) bool {
 	te, ok := FromError(target)

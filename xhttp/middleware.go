@@ -29,6 +29,7 @@ type JWTMiddleware struct {
 }
 
 // NewJWTMiddleware 新建 JWT 认证处理中间件
+//
 // 注意：token 必须为结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
 func NewJWTMiddleware(j *jwt.JWT, token any, errTokenVerify error) (*JWTMiddleware, error) {
 	if err := jwt.CheckTokenType(token); err != nil {
@@ -41,6 +42,7 @@ func NewJWTMiddleware(j *jwt.JWT, token any, errTokenVerify error) (*JWTMiddlewa
 }
 
 // MustNewJWTMiddleware 新建 JWT 认证处理中间件
+//
 // 注意：token 必须为结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
 func MustNewJWTMiddleware(j *jwt.JWT, token any, errTokenVerify error) *JWTMiddleware {
 	m, err := NewJWTMiddleware(j, token, errTokenVerify)

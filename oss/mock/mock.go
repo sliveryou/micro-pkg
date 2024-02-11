@@ -60,12 +60,12 @@ func (m *MSS) GetThumbnailSuffix(width, height int, size int64) string {
 // mockReadCloser 模拟 io.ReadCloser
 type mockReadCloser struct{}
 
-// Read 实现Read方法
+// Read 实现 Read 方法
 func (m *mockReadCloser) Read(p []byte) (n int, err error) {
 	return 0, io.EOF
 }
 
-// Close 实现Close方法
+// Close 实现 Close 方法
 func (m *mockReadCloser) Close() error {
 	return nil
 }

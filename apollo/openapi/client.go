@@ -43,7 +43,7 @@ var (
 )
 
 // ClientConfig 默认阿波罗配置中心开放平台客户端配置
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=%e4%ba%8c%e3%80%81-%e7%ac%ac%e4%b8%89%e6%96%b9%e5%ba%94%e7%94%a8%e6%8e%a5%e5%85%a5apollo%e5%bc%80%e6%94%be%e5%b9%b3%e5%8f%b0
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#31-url%E8%B7%AF%E5%BE%84%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E
 type ClientConfig struct {
 	PortalAddress    string // 入口地址，一般端口为 8070
 	Token            string // 鉴权令牌，须事先在管理平台注册并授权
@@ -185,7 +185,7 @@ func (c *client) do(ctx context.Context, method, url string, request, response a
 }
 
 // GetEnvClusters 获取对应应用环境下的所有集群信息（appId 必填）
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_321-%e8%8e%b7%e5%8f%96app%e7%9a%84%e7%8e%af%e5%a2%83%ef%bc%8c%e9%9b%86%e7%be%a4%e4%bf%a1%e6%81%af
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#321-%E8%8E%B7%E5%8F%96app%E7%9A%84%E7%8E%AF%E5%A2%83%E9%9B%86%E7%BE%A4%E4%BF%A1%E6%81%AF
 func (c *client) GetEnvClusters(ctx context.Context, opts ...APIOption) (resp []*EnvClusters, err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/apps/%s/envclusters", c.config.PortalAddress, o.appID)
@@ -194,7 +194,7 @@ func (c *client) GetEnvClusters(ctx context.Context, opts ...APIOption) (resp []
 }
 
 // GetNamespaces 获取对应集群下的所有命名空间信息（env、appId 和 cluster 必填）
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_325-%e8%8e%b7%e5%8f%96%e9%9b%86%e7%be%a4%e4%b8%8b%e6%89%80%e6%9c%89namespace%e4%bf%a1%e6%81%af%e6%8e%a5%e5%8f%a3
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#325-%E8%8E%B7%E5%8F%96%E9%9B%86%E7%BE%A4%E4%B8%8B%E6%89%80%E6%9C%89namespace%E4%BF%A1%E6%81%AF%E6%8E%A5%E5%8F%A3
 func (c *client) GetNamespaces(ctx context.Context, opts ...APIOption) (resp []*Namespace, err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces",
@@ -204,7 +204,7 @@ func (c *client) GetNamespaces(ctx context.Context, opts ...APIOption) (resp []*
 }
 
 // GetNamespace 获取指定命名空间信息（env、appId、cluster 和 namespace 必填）
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_326-%e8%8e%b7%e5%8f%96%e6%9f%90%e4%b8%aanamespace%e4%bf%a1%e6%81%af%e6%8e%a5%e5%8f%a3
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#326-%E8%8E%B7%E5%8F%96%E6%9F%90%E4%B8%AAnamespace%E4%BF%A1%E6%81%AF%E6%8E%A5%E5%8F%A3
 func (c *client) GetNamespace(ctx context.Context, opts ...APIOption) (resp *Namespace, err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s",
@@ -215,7 +215,7 @@ func (c *client) GetNamespace(ctx context.Context, opts ...APIOption) (resp *Nam
 }
 
 // CreateNamespace 创建命名空间信息（appId 必填）
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_327-%e5%88%9b%e5%bb%banamespace
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#327-%E5%88%9B%E5%BB%BAnamespace
 func (c *client) CreateNamespace(ctx context.Context, r CreateNamespaceReq, opts ...APIOption) (resp *CreateNamespaceResp, err error) {
 	o := c.config.getAPIOption(opts...)
 	if r.AppID == "" {
@@ -229,7 +229,7 @@ func (c *client) CreateNamespace(ctx context.Context, r CreateNamespaceReq, opts
 }
 
 // GetNamespaceLock 获取指定命名空间锁定信息（env、appId、cluster 和 namespace 必填）
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_328-%e8%8e%b7%e5%8f%96%e6%9f%90%e4%b8%aanamespace%e5%bd%93%e5%89%8d%e7%bc%96%e8%be%91%e4%ba%ba%e6%8e%a5%e5%8f%a3
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#328-%E8%8E%B7%E5%8F%96%E6%9F%90%E4%B8%AAnamespace%E5%BD%93%E5%89%8D%E7%BC%96%E8%BE%91%E4%BA%BA%E6%8E%A5%E5%8F%A3
 func (c *client) GetNamespaceLock(ctx context.Context, opts ...APIOption) (resp *NamespaceLock, err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/lock",
@@ -240,7 +240,7 @@ func (c *client) GetNamespaceLock(ctx context.Context, opts ...APIOption) (resp 
 }
 
 // AddItem 添加配置信息（env、appId、cluster 和 namespace 必填）
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_3210-%e6%96%b0%e5%a2%9e%e9%85%8d%e7%bd%ae%e6%8e%a5%e5%8f%a3
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3210-%E6%96%B0%E5%A2%9E%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
 func (c *client) AddItem(ctx context.Context, r AddItemReq, opts ...APIOption) (resp *Item, err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/items",
@@ -251,7 +251,7 @@ func (c *client) AddItem(ctx context.Context, r AddItemReq, opts ...APIOption) (
 }
 
 // UpdateItem 更新配置信息（env、appId、cluster 和 namespace 必填）
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_3211-%e4%bf%ae%e6%94%b9%e9%85%8d%e7%bd%ae%e6%8e%a5%e5%8f%a3
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3211-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
 func (c *client) UpdateItem(ctx context.Context, r UpdateItemReq, opts ...APIOption) (err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/items/%s",
@@ -261,7 +261,7 @@ func (c *client) UpdateItem(ctx context.Context, r UpdateItemReq, opts ...APIOpt
 }
 
 // CreateOrUpdateItem 创建或者更新配置信息（env、appId、cluster 和 namespace 必填）
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_3211-%e4%bf%ae%e6%94%b9%e9%85%8d%e7%bd%ae%e6%8e%a5%e5%8f%a3
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3211-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
 func (c *client) CreateOrUpdateItem(ctx context.Context, r UpdateItemReq, opts ...APIOption) (err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/items/%s?createIfNotExists=true",
@@ -271,7 +271,7 @@ func (c *client) CreateOrUpdateItem(ctx context.Context, r UpdateItemReq, opts .
 }
 
 // DeleteItem 删除配置信息（env、appId、cluster 和 namespace 必填）
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_3212-%e5%88%a0%e9%99%a4%e9%85%8d%e7%bd%ae%e6%8e%a5%e5%8f%a3
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3212-%E5%88%A0%E9%99%A4%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
 func (c *client) DeleteItem(ctx context.Context, r DeleteItemReq, opts ...APIOption) (err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/items/%s?operator=%s",
@@ -281,7 +281,7 @@ func (c *client) DeleteItem(ctx context.Context, r DeleteItemReq, opts ...APIOpt
 }
 
 // PublishRelease 发布版本配置信息（env、appId、cluster 和 namespace 必填）
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_3213-%e5%8f%91%e5%b8%83%e9%85%8d%e7%bd%ae%e6%8e%a5%e5%8f%a3
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3213-%E5%8F%91%E5%B8%83%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
 func (c *client) PublishRelease(ctx context.Context, r PublishReleaseReq, opts ...APIOption) (resp *Release, err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/releases",
@@ -292,7 +292,7 @@ func (c *client) PublishRelease(ctx context.Context, r PublishReleaseReq, opts .
 }
 
 // GetRelease 获取版本配置信息（env、appId、cluster 和 namespace 必填）
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_3214-%e8%8e%b7%e5%8f%96%e6%9f%90%e4%b8%aanamespace%e5%bd%93%e5%89%8d%e7%94%9f%e6%95%88%e7%9a%84%e5%b7%b2%e5%8f%91%e5%b8%83%e9%85%8d%e7%bd%ae%e6%8e%a5%e5%8f%a3
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3214-%E8%8E%B7%E5%8F%96%E6%9F%90%E4%B8%AAnamespace%E5%BD%93%E5%89%8D%E7%94%9F%E6%95%88%E7%9A%84%E5%B7%B2%E5%8F%91%E5%B8%83%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
 func (c *client) GetRelease(ctx context.Context, opts ...APIOption) (resp *Release, err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/releases/latest",
@@ -303,7 +303,7 @@ func (c *client) GetRelease(ctx context.Context, opts ...APIOption) (resp *Relea
 }
 
 // parseError 解析状态码获取错误信息
-// https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=%e5%9b%9b%e3%80%81%e9%94%99%e8%af%af%e7%a0%81%e8%af%b4%e6%98%8e
+// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#%E5%9B%9B%E9%94%99%E8%AF%AF%E7%A0%81%E8%AF%B4%E6%98%8E
 func parseError(status int) error {
 	switch status {
 	case http.StatusBadRequest:

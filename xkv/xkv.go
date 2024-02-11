@@ -127,12 +127,14 @@ func (s *Store) SetStringCtx(ctx context.Context, key, value string, seconds ...
 }
 
 // Read 将给定 key 所关联的值反序列化到 obj 对象
+//
 // 返回 false 时代表给定 key 不存在
 func (s *Store) Read(key string, obj any) (bool, error) {
 	return s.ReadCtx(context.Background(), key, obj)
 }
 
 // ReadCtx 将给定 key 所关联的值反序列化到 obj 对象
+//
 // 返回 false 时代表给定 key 不存在
 func (s *Store) ReadCtx(ctx context.Context, key string, obj any) (bool, error) {
 	if !isValid(obj) {
@@ -171,16 +173,18 @@ func (s *Store) WriteCtx(ctx context.Context, key string, obj any, seconds ...in
 }
 
 // ReadOrGet 将给定 key 所关联的值反序列化到 obj 对象
-// 若给定 key 不存在则调用数据获取函数，调用成功时赋值至 obj 对象
-// 并将其序列化后关联到给定 key，seconds 为 key 的过期时间（秒）
+//
+//	若给定 key 不存在则调用数据获取函数，调用成功时赋值至 obj 对象，并将其序列化后关联到给定 key
+//	seconds 为 key 的过期时间（秒）
 func (s *Store) ReadOrGet(key string, obj any, gf func() (any, error), seconds ...int) error {
 	f := func(context.Context) (any, error) { return gf() }
 	return s.ReadOrGetCtx(context.Background(), key, obj, f, seconds...)
 }
 
 // ReadOrGetCtx 将给定 key 所关联的值反序列化到 obj 对象
-// 若给定 key 不存在则调用数据获取函数，调用成功时赋值至 obj 对象
-// 并将其序列化后关联到给定 key，seconds 为 key 的过期时间（秒）
+//
+//	若给定 key 不存在则调用数据获取函数，调用成功时赋值至 obj 对象，并将其序列化后关联到给定 key
+//	seconds 为 key 的过期时间（秒）
 func (s *Store) ReadOrGetCtx(ctx context.Context, key string, obj any, gf func(ctx context.Context) (any, error), seconds ...int) error {
 	isExist, err := s.ReadCtx(ctx, key, obj)
 	if err != nil {

@@ -33,6 +33,7 @@ func WithCtx(ctx context.Context, token any) context.Context {
 }
 
 // ReadCtx 从 context 获取令牌数据，并将其反序列化至指定 token 中
+//
 // 注意：token 必须为指针类型
 func ReadCtx(ctx context.Context, token any) error {
 	if tok := ctx.Value(TokenKey); tok != nil {

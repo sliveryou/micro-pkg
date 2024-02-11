@@ -17,6 +17,27 @@ import (
 )
 
 func TestJWT_GenToken(t *testing.T) {
+	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", Expiration: 72 * time.Hour}
+	j, err := NewJWT(c)
+	require.NoError(t, err)
+	assert.NotNil(t, j)
+
+	tokenStr, err := j.GenToken(getToken())
+	require.NoError(t, err)
+	assert.NotEmpty(t, tokenStr)
+
+	ui := &_UserInfo{}
+	err = j.ParseToken(tokenStr, ui)
+	require.NoError(t, err)
+	assert.Equal(t, int64(100000), ui.UserID)
+	assert.Equal(t, "test_user", ui.UserName)
+	assert.Equal(t, []int64{100000, 100001, 100002}, ui.RoleIds)
+	assert.Equal(t, "ADMIN", ui.Group)
+	assert.True(t, ui.IsAdmin)
+	assert.InEpsilon(t, 123.123, ui.Score, 0.0001)
+}
+
+func TestJWT_GenTokenWithPayloads(t *testing.T) {
 	c := Config{Issuer: "test-issuer", SecretKey: "", Expiration: 72 * time.Hour}
 	_, err := NewJWT(c)
 	require.EqualError(t, err, "jwt: illegal jwt config")
@@ -30,7 +51,7 @@ func TestJWT_GenToken(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, j)
 
-	tokenStr, err := j.GenToken(getTokenMap())
+	tokenStr, err := j.GenTokenWithPayloads(getTokenMap())
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
 
@@ -124,7 +145,7 @@ func TestJWT_ParseTokenFromRequest(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, j)
 
-	tokenStr, err := j.GenToken(getTokenMap())
+	tokenStr, err := j.GenTokenWithPayloads(getTokenMap())
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
 
@@ -147,7 +168,7 @@ func TestJWT_ParseTokenPayloadsFromRequest(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, j)
 
-	tokenStr, err := j.GenToken(getTokenMap())
+	tokenStr, err := j.GenTokenWithPayloads(getTokenMap())
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
 

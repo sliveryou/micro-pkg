@@ -64,7 +64,7 @@ func checkConfig(c Config) (err error) {
 	return
 }
 
-// NewOSS 新建OSS对象
+// NewOSS 新建 OSS 对象
 func NewOSS(c Config) (OSS, error) {
 	if err := checkConfig(c); err != nil {
 		return nil, err

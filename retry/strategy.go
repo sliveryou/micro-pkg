@@ -52,6 +52,8 @@ func Wait(durations ...time.Duration) Strategy {
 }
 
 // FailLimit 失败尝试策略，达到一定尝试次数执行预先指定的失败方法并退出
+//
+// 使用该策略时，不需要再使用 Limit 策略和 Fail 策略
 func FailLimit(attemptLimit uint, failAction Action) Strategy {
 	return func(attempt uint) bool {
 		if attempt < attemptLimit {
@@ -67,8 +69,9 @@ func FailLimit(attemptLimit uint, failAction Action) Strategy {
 }
 
 // Fail 失败策略，每达到一定尝试次数执行
-// 目前这个预先的策略会导致前置策略判断失败直接退出循环无法执行该策略
-// 故此策略需要在 Limit 策略之前加入
+//
+// 与 Limit 策略组合使用时，请确保该策略在 Limit 策略之前，且 attemptLimit 小于等于 Limit 策略的 attemptLimit，
+// 否则可能因为 Limit 策略提早终止尝试而无法执行该策略
 func Fail(attemptLimit uint, failAction Action) Strategy {
 	return func(attempt uint) bool {
 		if attempt%attemptLimit == 0 && failAction != nil {

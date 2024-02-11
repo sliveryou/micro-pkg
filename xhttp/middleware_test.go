@@ -28,7 +28,7 @@ func TestNewJWTMiddleware_Success(t *testing.T) {
 	m := getJWTMiddleware()
 	req := httptest.NewRequest(http.MethodGet, "http://localhost", http.NoBody)
 
-	tokenStr, err := m.j.GenToken(getTokenMap())
+	tokenStr, err := m.j.GenTokenWithPayloads(getTokenMap())
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
 	req.Header.Set("Authorization", "Bearer "+tokenStr)
