@@ -1,14 +1,11 @@
 package xhttp
 
 import (
-	"bytes"
+	"errors"
 	"io"
 	"mime"
-	"os"
 	"path"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 var extToMimeType = map[string]string{
@@ -1221,39 +1218,68 @@ func TypeByExtension(filePath string) string {
 	typ := mime.TypeByExtension(ext)
 	if typ == "" {
 		typ = extToMimeType[ext]
-		if typ == "" {
-			typ = ApplicationStream
-		}
+	} else if strings.HasPrefix(typ, "text/") && strings.Contains(typ, "charset=") {
+		typ = removeCharsetInMimeType(typ)
+	}
+	if typ == "" {
+		typ = ApplicationStream
 	}
 
 	return typ
 }
 
-// GetReaderLen 获取读取器实际内容长度
-func GetReaderLen(reader io.Reader) (contentLength int64, err error) {
-	switch v := reader.(type) {
-	case *bytes.Buffer:
-		contentLength = int64(v.Len())
-	case *bytes.Reader:
-		contentLength = int64(v.Len())
-	case *strings.Reader:
-		contentLength = int64(v.Len())
-	case *os.File:
-		fInfo, fError := v.Stat()
-		if fError != nil {
-			err = errors.WithMessage(fError, "file.Stat err")
-		} else {
-			contentLength = fInfo.Size()
+// removeCharsetInMimeType 从 MIME 类型中删除字符集
+func removeCharsetInMimeType(typ string) (str string) {
+	var builder strings.Builder
+	temArr := strings.Split(typ, ";")
+
+	for i, s := range temArr {
+		tmpStr := strings.Trim(s, " ")
+		if strings.Contains(tmpStr, "charset=") {
+			continue
 		}
+		if i == 0 {
+			builder.WriteString(s)
+		} else {
+			builder.WriteString("; " + s)
+		}
+	}
+
+	return builder.String()
+}
+
+// GetReaderLen 获取读取器实际内容长度
+func GetReaderLen(reader io.Reader) (int64, error) {
+	var contentLength int64
+	var err error
+
+	switch v := reader.(type) {
 	case *io.LimitedReader:
 		contentLength = v.N
-	case *io.SectionReader:
-		contentLength = v.Size()
+	case interface{ Len() int }:
+		contentLength = int64(v.Len())
+	case io.Seeker:
+		curOffset, err := v.Seek(0, io.SeekCurrent)
+		if err != nil {
+			return 0, err
+		}
+		endOffset, err := v.Seek(0, io.SeekEnd)
+		if err != nil {
+			return 0, err
+		}
+		_, err = v.Seek(curOffset, io.SeekStart)
+		if err != nil {
+			return 0, err
+		}
+		n := endOffset - curOffset
+		if n >= 0 {
+			contentLength = n
+		}
 	default:
 		err = errors.New("unknown reader type")
 	}
 
-	return
+	return contentLength, err
 }
 
 // ParseEndpoint 解析节点地址

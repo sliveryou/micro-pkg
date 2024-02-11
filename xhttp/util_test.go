@@ -132,7 +132,7 @@ func TestTypeByExtension(t *testing.T) {
 
 	for _, c := range cases {
 		got := TypeByExtension(c.filePath)
-		assert.Contains(t, got, c.expect)
+		assert.Equal(t, got, c.expect)
 	}
 }
 

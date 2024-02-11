@@ -17,6 +17,16 @@ const (
 // OptionFunc 可选配置
 type OptionFunc func(o *OSS)
 
+// WithUploadInternal 使用内网上传配置
+func WithUploadInternal(uploadInternal ...bool) OptionFunc {
+	return func(o *OSS) {
+		o.uploadInternal = true
+		if len(uploadInternal) > 0 {
+			o.uploadInternal = uploadInternal[0]
+		}
+	}
+}
+
 // WithNotSetACL 不设置权限规则
 func WithNotSetACL(notSetACL ...bool) OptionFunc {
 	return func(o *OSS) {
@@ -24,13 +34,6 @@ func WithNotSetACL(notSetACL ...bool) OptionFunc {
 		if len(notSetACL) > 0 {
 			o.notSetACL = notSetACL[0]
 		}
-	}
-}
-
-// WithUploadInternal 使用内网上传配置
-func WithUploadInternal(uploadInternal bool) OptionFunc {
-	return func(o *OSS) {
-		o.uploadInternal = uploadInternal
 	}
 }
 

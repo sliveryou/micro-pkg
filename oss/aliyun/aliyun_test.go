@@ -31,7 +31,7 @@ func TestOSS_GetURL(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "https://my-test.oss-cn-hangzhou-internal.aliyuncs.com/test/test.txt", oss.GetURL("test/test.txt"))
 
-	oss, err = NewOSS("oss-cn-hangzhou-internal.aliyuncs.com", accessKeyID, accessKeySecret, bucketName, WithNotSetACL(), WithUploadInternal(true))
+	oss, err = NewOSS("oss-cn-hangzhou-internal.aliyuncs.com", accessKeyID, accessKeySecret, bucketName, WithNotSetACL(), WithUploadInternal())
 	require.NoError(t, err)
 	assert.Equal(t, "https://my-test.oss-cn-hangzhou.aliyuncs.com/test/test.txt", oss.GetURL("test/test.txt"))
 }

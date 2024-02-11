@@ -43,9 +43,12 @@ const (
 type OptionFunc func(m *MinIO)
 
 // WithSecure 使用安全配置
-func WithSecure(secure bool) OptionFunc {
+func WithSecure(secure ...bool) OptionFunc {
 	return func(m *MinIO) {
-		m.secure = secure
+		m.secure = true
+		if len(secure) > 0 {
+			m.secure = secure[0]
+		}
 	}
 }
 

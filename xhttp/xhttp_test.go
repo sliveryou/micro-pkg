@@ -115,7 +115,7 @@ func TestFromFile(t *testing.T) {
 
 	ct, err := writer.WriteFile("file_data", fileName, fileReader)
 	require.NoError(t, err)
-	require.Equal(t, "text/plain; charset=utf-8", ct)
+	require.Equal(t, "text/plain", ct)
 
 	contentType := writer.FormDataContentType()
 	err = writer.Close()

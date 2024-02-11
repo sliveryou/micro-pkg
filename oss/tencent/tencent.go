@@ -11,6 +11,8 @@ import (
 
 	"github.com/pkg/errors"
 	cos "github.com/tencentyun/cos-go-sdk-v5"
+
+	"github.com/sliveryou/micro-pkg/xhttp"
 )
 
 const (
@@ -97,7 +99,15 @@ func (c *COS) GetObject(key string) (io.ReadCloser, error) {
 
 // PutObject 上传对象至腾讯云 COS
 func (c *COS) PutObject(key string, reader io.Reader) (string, error) {
-	_, err := c.client.Object.Put(context.Background(), key, reader, nil)
+	contentLength, _ := xhttp.GetReaderLen(reader)
+
+	_, err := c.client.Object.Put(context.Background(), key, reader, &cos.ObjectPutOptions{
+		ObjectPutHeaderOptions: &cos.ObjectPutHeaderOptions{
+			ContentType:   xhttp.TypeByExtension(key),
+			ContentLength: contentLength,
+			Listener:      &cos.DefaultProgressListener{},
+		},
+	})
 	if err != nil {
 		return "", errors.WithMessage(err, "tencent: cos put object err")
 	}
@@ -124,6 +134,11 @@ func (c *COS) UploadFile(key, filePath string, partSize int64, routines int) (st
 		PartSize:       partSize / 1024 / 1024,
 		ThreadPoolSize: routines,
 		CheckPoint:     true,
+		OptIni: &cos.InitiateMultipartUploadOptions{
+			ObjectPutHeaderOptions: &cos.ObjectPutHeaderOptions{
+				ContentType: xhttp.TypeByExtension(filePath),
+			},
+		},
 	})
 	if err != nil {
 		return "", errors.WithMessage(err, "tencent: cos upload file err")

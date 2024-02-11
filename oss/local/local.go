@@ -21,9 +21,12 @@ const (
 type OptionFunc func(l *LSS)
 
 // WithSecure 使用安全配置
-func WithSecure(secure bool) OptionFunc {
+func WithSecure(secure ...bool) OptionFunc {
 	return func(l *LSS) {
-		l.secure = secure
+		l.secure = true
+		if len(secure) > 0 {
+			l.secure = secure[0]
+		}
 	}
 }
 

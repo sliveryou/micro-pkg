@@ -7,6 +7,8 @@ import (
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-obs/obs"
 	"github.com/pkg/errors"
+
+	"github.com/sliveryou/micro-pkg/xhttp"
 )
 
 const (
@@ -91,6 +93,8 @@ func (o *OBS) PutObject(key string, reader io.Reader) (string, error) {
 	input.Bucket = o.bucketName
 	input.Key = key
 	input.Body = reader
+	input.ContentType = xhttp.TypeByExtension(key)
+	input.ContentLength, _ = xhttp.GetReaderLen(reader)
 
 	_, err := o.client.PutObject(input)
 	if err != nil {
@@ -128,6 +132,7 @@ func (o *OBS) UploadFile(key, filePath string, partSize int64, routines int) (st
 	input.EnableCheckpoint = true // 开启断点续传模式
 	input.PartSize = partSize     // 指定分段大小
 	input.TaskNum = routines      // 指定分段上传时的最大并发数
+	input.ContentType = xhttp.TypeByExtension(key)
 
 	_, err := o.client.UploadFile(input)
 	if err != nil {
