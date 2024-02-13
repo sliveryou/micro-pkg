@@ -11,8 +11,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slices"
 
+	"github.com/sliveryou/go-tool/v2/sliceg"
 	"github.com/sliveryou/go-tool/v2/timex"
 )
 
@@ -31,7 +31,7 @@ func TestJWT_GenToken(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, int64(100000), ui.UserID)
 	assert.Equal(t, "test_user", ui.UserName)
-	assert.Equal(t, []int64{100000, 100001, 100002}, ui.RoleIds)
+	assert.Equal(t, []int64{100000, 100001, 100002}, ui.RoleIDs)
 	assert.Equal(t, "ADMIN", ui.Group)
 	assert.True(t, ui.IsAdmin)
 	assert.InEpsilon(t, 123.123, ui.Score, 0.0001)
@@ -64,7 +64,7 @@ func TestJWT_GenTokenWithPayloads(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, int64(100000), ui.UserID)
 	assert.Equal(t, "test_user", ui.UserName)
-	assert.Equal(t, []int64{100000, 100001, 100002}, ui.RoleIds)
+	assert.Equal(t, []int64{100000, 100001, 100002}, ui.RoleIDs)
 	assert.Equal(t, "ADMIN", ui.Group)
 	assert.True(t, ui.IsAdmin)
 	assert.InEpsilon(t, 123.123, ui.Score, 0.0001)
@@ -84,7 +84,7 @@ func TestJWT_ParseToken(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, int64(100000), uip.UserID)
 	assert.Equal(t, "test_user", uip.UserName)
-	assert.Equal(t, []int64{100000, 100001, 100002}, uip.RoleIds)
+	assert.Equal(t, []int64{100000, 100001, 100002}, uip.RoleIDs)
 	assert.Equal(t, "ADMIN", uip.Group)
 	assert.True(t, uip.IsAdmin)
 	assert.InEpsilon(t, 123.123, uip.Score, 0.0001)
@@ -182,7 +182,7 @@ func TestJWT_ParseTokenPayloadsFromRequest(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, int64(100000), uip.UserID)
 	assert.Equal(t, "test_user", uip.UserName)
-	assert.Equal(t, []int64{100000, 100001, 100002}, uip.RoleIds)
+	assert.Equal(t, []int64{100000, 100001, 100002}, uip.RoleIDs)
 	assert.Equal(t, "ADMIN", uip.Group)
 	assert.True(t, uip.IsAdmin)
 	assert.InEpsilon(t, 123.123, uip.Score, 0.0001)
@@ -221,7 +221,7 @@ func genTestToken(issuer, secretKey string, method jwt.SigningMethod, payloads m
 	}
 
 	for k, v := range payloads {
-		if !slices.Contains(standardClaims, k) {
+		if !sliceg.Contain(standardClaims, k) {
 			claims[k] = v
 		}
 	}
@@ -239,7 +239,7 @@ func getToken() *_UserInfo {
 	return &_UserInfo{
 		UserID:   100000,
 		UserName: "test_user",
-		RoleIds:  []int64{100000, 100001, 100002},
+		RoleIDs:  []int64{100000, 100001, 100002},
 		Group:    "ADMIN",
 		IsAdmin:  true,
 		Score:    123.123,
@@ -260,7 +260,7 @@ func getTokenMap() map[string]any {
 type _UserInfo struct {
 	UserID   int64   `json:"user_id"`
 	UserName string  `json:"user_name"`
-	RoleIds  []int64 `json:"role_ids"`
+	RoleIDs  []int64 `json:"role_ids"`
 	Group    string  `json:"group"`
 	IsAdmin  bool    `json:"is_admin"`
 	Score    float64 `json:"score"`

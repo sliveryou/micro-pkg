@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	stderrors "errors"
 	"net/http"
 	"reflect"
 	"strings"
@@ -10,8 +11,8 @@ import (
 	"github.com/golang-jwt/jwt/v5/request"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
-	"golang.org/x/exp/slices"
 
+	"github.com/sliveryou/go-tool/v2/sliceg"
 	"github.com/sliveryou/go-tool/v2/timex"
 )
 
@@ -33,10 +34,10 @@ var (
 		jwtAudience, jwtExpire, jwtID, jwtIssueAt, jwtIssuer, jwtNotBefore, jwtSubject,
 	}
 
-	errInvalidToken    = errors.New("invalid jwt token")
-	errNoClaims        = errors.New("no token claims")
-	errUnsupportedType = errors.New("unsupported token type")
-	errNoTokenInCtx    = errors.New("no token present in context")
+	errInvalidToken    = stderrors.New("invalid jwt token")
+	errNoClaims        = stderrors.New("no token claims")
+	errUnsupportedType = stderrors.New("unsupported token type")
+	errNoTokenInCtx    = stderrors.New("no token present in context")
 )
 
 // Config JWT 相关配置
@@ -106,7 +107,7 @@ func (j *JWT) GenTokenWithPayloads(payloads map[string]any, expiration ...time.D
 	claims[jwtExpire] = now.Add(et).Unix() // expiration time，过期时间
 
 	for k, v := range payloads {
-		if !slices.Contains(standardClaims, k) {
+		if !sliceg.Contain(standardClaims, k) {
 			claims[k] = v
 		}
 	}
@@ -225,7 +226,7 @@ func extractPayloads(token *jwt.Token) (map[string]any, error) {
 
 	payloads := make(map[string]any)
 	for k, v := range claims {
-		if !slices.Contains(standardClaims, k) {
+		if !sliceg.Contain(standardClaims, k) {
 			payloads[k] = v
 		}
 	}

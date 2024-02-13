@@ -1,8 +1,6 @@
 package mock
 
-import (
-	"io"
-)
+import "io"
 
 const (
 	// CloudMock 云服务商：模拟

@@ -1,6 +1,7 @@
 package errcode
 
 import (
+	stderrors "errors"
 	"fmt"
 	"go/ast"
 	"go/format"
@@ -14,9 +15,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slices"
 
 	"github.com/sliveryou/go-tool/v2/convert"
+	"github.com/sliveryou/go-tool/v2/sliceg"
 )
 
 func TestCollectConstants(t *testing.T) {
@@ -245,7 +246,7 @@ func TestFromError(t *testing.T) {
 		{err: nil, expect: true},
 		{err: New(CodeUnexpected, MsgUnexpected), expect: true},
 		{err: errors.New("test"), expect: false},
-		{err: fmt.Errorf("test"), expect: false},
+		{err: stderrors.New("test"), expect: false},
 		{err: New(101, "101 error"), expect: true},
 	}
 
@@ -292,7 +293,7 @@ func genDoc(fileNames ...string) (string, error) {
 	}
 
 	if len(docRows) > 0 {
-		slices.SortFunc(docRows, func(a, b docRow) int { return int(a.Code - b.Code) })
+		sliceg.SortFunc(docRows, func(a, b docRow) int { return int(a.Code - b.Code) })
 		for _, dr := range docRows {
 			if r, ok := rowMap[dr.Code]; ok {
 				return "", errors.Errorf("业务错误码冲突：%d，已存在的相同错误码的业务错误: %+v，冲突的业务错误：%+v", dr.Code, r, dr)

@@ -4,9 +4,7 @@
 
 package binding
 
-import (
-	"net/http"
-)
+import "net/http"
 
 // Binding describes the interface which needs to be implemented for binding the
 // data present in the request such as JSON request body, query parameters or

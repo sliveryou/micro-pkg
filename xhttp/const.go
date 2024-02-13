@@ -1,8 +1,6 @@
 package xhttp
 
-import (
-	"net/http"
-)
+import "net/http"
 
 const (
 	// MethodGet 请求方法：GET

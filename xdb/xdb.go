@@ -158,7 +158,7 @@ func (c Config) GetPostgreSQLConfig(needDatabase ...bool) postgres.Config {
 func (c Config) GetSQLiteDSN() string {
 	// https://github.com/glebarez/sqlite
 	// https://github.com/glebarez/go-sqlite
-	dsn := fmt.Sprintf("%s?_pragma=foreign_keys(1)&", c.Database)
+	dsn := c.Database + "?_pragma=foreign_keys(1)&"
 	if c.Params != "" {
 		dsn += c.Params
 	} else {

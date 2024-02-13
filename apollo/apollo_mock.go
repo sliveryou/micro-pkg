@@ -1,8 +1,6 @@
 package apollo
 
-import (
-	agollo "github.com/philchia/agollo/v4"
-)
+import agollo "github.com/philchia/agollo/v4"
 
 // MockClient ...
 type MockClient struct{}

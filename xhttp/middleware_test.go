@@ -145,7 +145,7 @@ func getTokenMap() map[string]any {
 type _UserInfo struct {
 	UserID   int64   `json:"user_id"`
 	UserName string  `json:"user_name"`
-	RoleIds  []int64 `json:"role_ids"`
+	RoleIDs  []int64 `json:"role_ids"`
 	Group    string  `json:"group"`
 	IsAdmin  bool    `json:"is_admin"`
 	Score    float64 `json:"score"`

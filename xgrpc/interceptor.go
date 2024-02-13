@@ -53,14 +53,14 @@ func RLogInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, h
 	if req != nil {
 		reqContent, err := json.Marshal(req)
 		if err == nil && len(reqContent) > 0 {
-			buf.WriteString(fmt.Sprintf("\n%s", string(reqContent)))
+			buf.WriteString("\n" + string(reqContent))
 		}
 	}
 
 	if resp != nil {
 		respContent, err := json.Marshal(resp)
 		if err == nil && len(respContent) > 0 {
-			buf.WriteString(fmt.Sprintf("\n<= %s", string(respContent)))
+			buf.WriteString("\n<= " + string(respContent))
 		}
 	}
 

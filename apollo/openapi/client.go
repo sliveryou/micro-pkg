@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	stderrors "errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,17 +30,17 @@ const (
 
 var (
 	// ErrStatusBadRequest 400 - Bad Request
-	ErrStatusBadRequest = fmt.Errorf("400 - Bad Request - 客户端传入参数的错误，如操作人不存在，Namespace 不存在等等，客户端需要根据提示信息检查对应的参数是否正确。")
+	ErrStatusBadRequest = stderrors.New("400 - Bad Request - 客户端传入参数的错误，如操作人不存在，Namespace 不存在等等，客户端需要根据提示信息检查对应的参数是否正确。")
 	// ErrStatusUnauthorized 401 - Bad Request
-	ErrStatusUnauthorized = fmt.Errorf("401 - Bad Request - 接口传入的 Token 非法或者已过期，客户端需要检查 Token 是否传入正确。")
+	ErrStatusUnauthorized = stderrors.New("401 - Bad Request - 接口传入的 Token 非法或者已过期，客户端需要检查 Token 是否传入正确。")
 	// ErrStatusForbidden 403 - Forbidden
-	ErrStatusForbidden = fmt.Errorf("403 - Forbidden - 接口要访问的资源未得到授权，比如只授权了对 A 应用下 Namespace 的管理权限，但是却尝试管理 B 应用下的配置。")
+	ErrStatusForbidden = stderrors.New("403 - Forbidden - 接口要访问的资源未得到授权，比如只授权了对 A 应用下 Namespace 的管理权限，但是却尝试管理 B 应用下的配置。")
 	// ErrStatusNotFound 404 - Not Found
-	ErrStatusNotFound = fmt.Errorf("404 - Not Found - 接口要访问的资源不存在，一般是 URL 或 URL 的参数错误。")
+	ErrStatusNotFound = stderrors.New("404 - Not Found - 接口要访问的资源不存在，一般是 URL 或 URL 的参数错误。")
 	// ErrStatusMethodNotAllowed 405 - Method Not Allowed
-	ErrStatusMethodNotAllowed = fmt.Errorf("405 - Method Not Allowed - 接口访问的 Method 不正确，比如应该使用 POST 的接口使用了 GET 访问等，客户端需要检查接口访问方式是否正确。")
+	ErrStatusMethodNotAllowed = stderrors.New("405 - Method Not Allowed - 接口访问的 Method 不正确，比如应该使用 POST 的接口使用了 GET 访问等，客户端需要检查接口访问方式是否正确。")
 	// ErrStatusInternalServerError 500 - Internal Server Error
-	ErrStatusInternalServerError = fmt.Errorf("500 - Internal Server Error - 其它类型的错误默认都会返回 500，对这类错误如果应用无法根据提示信息找到原因的话，可以找 Apollo 研发团队一起排查问题。")
+	ErrStatusInternalServerError = stderrors.New("500 - Internal Server Error - 其它类型的错误默认都会返回 500，对这类错误如果应用无法根据提示信息找到原因的话，可以找 Apollo 研发团队一起排查问题。")
 )
 
 // ClientConfig 默认阿波罗配置中心开放平台客户端配置

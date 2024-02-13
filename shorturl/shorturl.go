@@ -1,8 +1,6 @@
 package shorturl
 
-import (
-	"github.com/sliveryou/micro-pkg/shorturl/mur3shorter"
-)
+import "github.com/sliveryou/micro-pkg/shorturl/mur3shorter"
 
 var _ Shorter = (*mur3shorter.Shorter)(nil)
 
