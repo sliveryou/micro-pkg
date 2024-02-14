@@ -25,7 +25,7 @@ require (
 	github.com/zeromicro/go-zero v1.6.2
 	go.opentelemetry.io/otel/trace v1.19.0
 	golang.org/x/crypto v0.19.0
-	google.golang.org/grpc v1.61.0
+	google.golang.org/grpc v1.61.1
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/mysql v1.5.4
 	gorm.io/driver/postgres v1.5.6
