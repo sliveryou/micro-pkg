@@ -1,11 +1,16 @@
-name: ci
+name: CI
+
 on:
   push:
+    branches:
+      - 'main'
     paths:
       - 'go.mod'
       - '**.go'
       - '**.yml'
   pull_request:
+    branches:
+      - 'main'
     paths:
       - 'go.mod'
       - '**.go'
@@ -23,19 +28,38 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: '${{ env.lint_go_version }}'
 
-      - run: go install github.com/incu6us/goimports-reviser/v3@v3.6.4
-      - run: go install mvdan.cc/gofumpt@v0.6.0
-      - run: go install mvdan.cc/sh/v3/cmd/shfmt@v3.8.0
-      - run: go install mvdan.cc/sh/v3/cmd/gosh@v3.8.0
       - run: go mod tidy
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: v1.56.1
+          args: "--out-format colored-line-number"
+          skip-pkg-cache: true
+
+  fmt:
+    name: Fmt
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '${{ env.lint_go_version }}'
+
+      - name: Install tools
+        run: |
+          go install mvdan.cc/gofumpt@v0.6.0
+          go install mvdan.cc/sh/v3/cmd/shfmt@v3.8.0
+          go install github.com/incu6us/goimports-reviser/v3@v3.6.4
+          go mod tidy
 
       - name: Code fmt
         run: |
@@ -45,22 +69,13 @@ jobs:
             exit 1
           fi
 
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.56.1
-          args: "--out-format colored-line-number"
-          skip-pkg-cache: true
-
   test:
     name: Test
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Set up Go
         uses: actions/setup-go@v5
         with:

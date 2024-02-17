@@ -43,31 +43,59 @@
   - 封装：[micro-pkg/captcha](../captcha)
 - **go-tool** 常用工具函数集合：
   - 项目地址：https://github.com/sliveryou/go-tool
+  - 文档地址：https://pkg.go.dev/github.com/sliveryou/go-tool/v2
 
 ## 第三方工具
 
+- **gvm** go 版本管理工具：
+  - 项目地址：https://github.com/moovweb/gvm
+  - 使用示例：
+    - `gvm listall` 
+    - `gvm install go1.21.7` 
+    - `gvm use go1.21.7 --default`
 - **grpcui** grpc 服务端可视化测试工具：
   - 项目地址：https://github.com/fullstorydev/grpcui
   - 启动示例：`grpcui -plaintext localhost:12345`
 - **grpc_health_probe** 通用 grpc 健康检查工具
   - 项目地址：https://github.com/grpc-ecosystem/grpc-health-probe
   - 使用示例：`grpc_health_probe -addr=localost:12345 -connect-timeout 250ms -rpc-timeout 100ms`
+- **scc** 代码行数统计工具：
+  - 项目地址：https://github.com/boyter/scc
+  - 使用示例：`scc -i go`
+- **shfmt** shell 脚本格式化工具：
+  - 项目地址：https://mvdan.cc/sh/v3/cmd/shfmt
+  - 使用示例：`shfmt -w -s -i 2 -ci -bn -sr dep.sh`
 - **gofumpt** 加强版 gofmt：
   - 项目地址：https://github.com/mvdan/gofumpt
+  - 使用示例：`gofumpt -w -extra main.go`
 - **goimports-reviser** 加强版 goimports：
   - 项目地址：https://github.com/incu6us/goimports-reviser
+  - 使用示例：`goimports-reviser -rm-unused -set-alias -company-prefixes "github.com/sliveryou" -project-name "github.com/sliveryou/micro-pkg" main.go`
 - **golangci-lint** 静态代码检测工具：
   - 项目地址：https://github.com/golangci/golangci-lint
   - 文档地址：https://golangci-lint.run
+  - 使用示例：`golangci-lint run ./...`
 - **swag** swagger 文档快速生成工具：
   - 项目地址：https://github.com/swaggo/swag
   - 文档地址：https://github.com/swaggo/swag/blob/master/README_zh-CN.md
+  - 使用示例：`swag init -d . -g main.go -p snakecase --ot go,json,yaml -o docs`
 - **enumer** go 枚举方法生成工具
   - 项目地址：https://github.com/alvaroloes/enumer
+  - 使用示例：`//go:generate enumer -type Status -json -linecomment -output health_string.go`
+- **grom** 基于 mysql 数据表生成 go-zero 相关项目文件工具：
+  - 项目地址：https://github.com/sliveryou/grom/tree/feat-go-zero
+  - 文档地址：https://github.com/sliveryou/grom/blob/feat-go-zero/README_zh-CN.md
+  - 使用示例：
+    - `grom api config -n config.yaml`
+    - `grom api generate -n config.yaml`
 - **goctl** 定制化 goctl：
   - 项目地址：https://github.com/sliveryou/goctl
+  - 使用示例：`goctl api proto --api base.api --dir .`
 - **swag2md** 基于 swagger 文档快速生成 markdown 文档工具：
   - 项目地址：https://github.com/sliveryou/swag2md
+  - 使用示例：
+    - `swag2md -t "接口文档" -s swagger.json -o api.md`
+    - `swag2md casbin -s swagger.json -o policy.csv --sub ADMIN --deny`
 
 ## 客户端可视化工具
 
