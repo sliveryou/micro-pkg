@@ -16,7 +16,7 @@ require (
 	github.com/mojocn/base64Captcha v1.3.6
 	github.com/philchia/agollo/v4 v4.1.5
 	github.com/pkg/errors v0.9.1
-	github.com/redis/go-redis/v9 v9.4.0
+	github.com/redis/go-redis/v9 v9.5.0
 	github.com/sliveryou/go-tool/v2 v2.0.2
 	github.com/spaolacci/murmur3 v1.1.0
 	github.com/stretchr/testify v1.8.4
