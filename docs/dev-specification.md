@@ -276,3 +276,52 @@ PS:
   - 项目地址：https://github.com/incu6us/goimports-reviser
 - **goctl** 定制化 goctl：
   - 项目地址：https://github.com/sliveryou/goctl
+
+## git 规范
+
+### branch 
+
+仓库一般有两个基础分支：
+
+- dev（默认分支）
+- main（用于发布）
+
+通过 pull request 来合并新的代码：
+
+- 协作者的代码通过 pr 合并到 dev
+- dev 通过 pr 合并到 master
+
+PS:
+
+- merge 到 dev，使用 squash merge
+- merge 到 main，使用普通的 merge
+- 永远不向 main 直接 commit 代码
+
+### commit message
+
+需要规范化 commit message，格式建议为：
+
+```
+<type>(<scope>): <subject>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
+其中 type 的类型有：
+
+```
+feat: A new feature
+fix: A bug fix
+docs: Documentation only changes
+style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+refactor: A code change that neither fixes a bug nor adds a feature
+perf: A code change that improves performance
+test: Adding missing or correcting existing tests
+chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
+```
+
+参考文献：
+
+- [Commit Message Guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits)

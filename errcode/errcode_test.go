@@ -243,6 +243,7 @@ func TestFromError(t *testing.T) {
 		{err: OK, expect: true},
 		{err: ErrUnexpected, expect: true},
 		{err: ErrInvalidParams, expect: true},
+		{err: errors.WithMessage(ErrInvalidParams, "test wrap"), expect: true},
 		{err: nil, expect: true},
 		{err: New(CodeUnexpected, MsgUnexpected), expect: true},
 		{err: errors.New("test"), expect: false},

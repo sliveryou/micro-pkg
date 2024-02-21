@@ -15,7 +15,7 @@
   - v2 文档地址：https://gorm.io/zh_CN/docs/index.html
   - v1 文档地址：https://v1.gorm.io/zh_CN/docs/index.html
   - gen 文档地址：https://gorm.io/zh_CN/gen/index.html
-  - 封装：[micro-pkg/xdb](../xdb)
+  - 封装：[micro-pkg/xdb](../xdb)，[micro-pkg/xdb/xfield](../xdb/xfield)
 - **kv** 通用 redis 键值相关操作库：
   - 项目地址：https://github.com/zeromicro/go-zero/tree/master/core/stores/kv
   - 封装：[micro-pkg/xkv](../xkv)
@@ -82,6 +82,7 @@
 - **enumer** go 枚举方法生成工具
   - 项目地址：https://github.com/alvaroloes/enumer
   - 使用示例：`//go:generate enumer -type Status -json -linecomment -output health_string.go`
+  - [使用教程](enumer.md)
 - **grom** 基于 mysql 数据表生成 go-zero 相关项目文件工具：
   - 项目地址：https://github.com/sliveryou/grom/tree/feat-go-zero
   - 文档地址：https://github.com/sliveryou/grom/blob/feat-go-zero/README_zh-CN.md

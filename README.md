@@ -24,6 +24,7 @@ go 微服务常用公共包
 - **retry** 通用操作重试包，对操作进行失败重试，可以组合不同的策略
 - **shorturl** 基于 murmur3 hash 的短地址标识符生成包
 - **xdb** 通用数据库连接包，返回 `*gorm.DB` 对象，支持 MySQL、PostgreSQL、SQLite 和 SQLServer
+- **xdb/xfield** gorm gen 字段拓展包，支持构建原始 sql 字段和原始 sql 条件
 - **xgrpc** 常用 grpc 拦截器，包含请求响应日志打印和恐慌捕获恢复等
 - **xhash** 通用 hash 校验和计算包，包含常用 hash 计算和基于 bcrypt hash 的密码生成与校验等
 - **xhttp** http 相关操作库，包含请求参数反序列化和响应参数序列化、http 通用客户端、http 通用中间件 和 ip 获取等
@@ -40,4 +41,5 @@ go 微服务常用公共包
 - [通用 grpc 流式消息内容读写器](gstream/README.md)
 - [通用对象存储服务客户端](oss/README.md)
 - [短地址标识符生成](shorturl/README.md)
+- [枚举类型方法生成工具](docs/enumer.md)
 - [参考文献](docs/references.md)
