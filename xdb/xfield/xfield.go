@@ -17,13 +17,17 @@ var (
 
 // Raw 原始字段
 type Raw struct {
-	Column string
 	field.Expr
+	SQL  string
+	Vars []any
 }
 
 // NewRaw 新建原始字段
-func NewRaw(column string) Raw {
-	r := Raw{Column: column}
+func NewRaw(sql string, vars ...any) Raw {
+	r := Raw{
+		SQL:  sql,
+		Vars: vars,
+	}
 	r.replace()
 
 	return r
@@ -43,8 +47,8 @@ func (r *Raw) replace() {
 	// 获取自定义 expr 类型的 e 字段
 	e := expr.FieldByName("e")
 	eElem := reflect.NewAt(e.Type(), unsafe.Pointer(e.UnsafeAddr())).Elem()
-	// 修改自定义 expr 类型的 e 字段为 Raw
-	eElem.Set(reflect.ValueOf(*r))
+	// 修改自定义 expr 类型的 e 字段为 clause.NamedExpr
+	eElem.Set(reflect.ValueOf(clause.NamedExpr{SQL: r.SQL, Vars: convertVars(r.Vars)}))
 
 	// 获取 Raw 的 field.Expr 字段
 	rawExpr := reflect.ValueOf(r).Elem().FieldByName("Expr")
@@ -53,69 +57,96 @@ func (r *Raw) replace() {
 	rawExprElem.Set(expr)
 }
 
-// Build 实现 Build 方法
-func (r Raw) Build(builder clause.Builder) {
-	_, _ = builder.WriteString(r.Column)
-}
-
-// Tabler 表接口
-type Tabler interface {
-	Alias() string
-	TableName() string
-}
-
-// Field 字段结构
-type Field struct {
-	Expr  field.Expr
-	Table Tabler
-}
-
 // RawCondition 原始条件
 type RawCondition struct {
 	field.Field
-	sql  string
-	vars []any
+	SQL  string
+	Vars []any
 }
 
 // NewRawCondition 新建原始条件
 func NewRawCondition(sql string, vars ...any) RawCondition {
 	return RawCondition{
-		sql:  sql,
-		vars: vars,
+		SQL:  sql,
+		Vars: vars,
 	}
 }
 
 // BeCond 实现 BeCond 方法
-func (m RawCondition) BeCond() any {
-	var vars []any
+func (rc RawCondition) BeCond() any {
+	return clause.NamedExpr{SQL: rc.SQL, Vars: convertVars(rc.Vars)}
+}
 
-	for _, v := range m.vars {
+// CondError 实现 CondError 方法
+func (RawCondition) CondError() error { return nil }
+
+// convertVars 转换 vars 列表
+func convertVars(vars []any) []any {
+	newVars := make([]any, 0, len(vars))
+
+	for _, v := range vars {
 		switch vt := v.(type) {
-		case Field:
-			column := clause.Column{
-				Name: vt.Expr.ColumnName().String(),
-				Raw:  false,
-			}
-			if vt.Table != nil {
-				column.Table = vt.Table.TableName()
-				if vt.Table.Alias() != "" {
-					column.Table = vt.Table.Alias()
-				}
-			}
-			vars = append(vars, column)
 		case field.Expr:
 			column := clause.Column{
 				Name: vt.ColumnName().String(),
 				Raw:  false,
 			}
-			vars = append(vars, column)
+			if c := getColumn(vt); c != nil {
+				column = *c
+			}
+			newVars = append(newVars, column)
 		default:
-			vars = append(vars, v)
+			newVars = append(newVars, v)
 		}
 	}
 
-	return clause.NamedExpr{SQL: m.sql, Vars: vars}
+	return newVars
 }
 
-// CondError 实现 CondError 方法
-func (RawCondition) CondError() error { return nil }
+// getField 获取结构体对应字段
+func getField(s any, fieldName string) any {
+	defer func() { recover() }()
+
+	if s == nil || fieldName == "" {
+		return nil
+	}
+
+	v := reflect.ValueOf(s)
+	newV := reflect.New(v.Type()).Elem()
+	newV.Set(v)
+
+	if newV.Kind() == reflect.Struct {
+		f := newV.FieldByName(fieldName)
+		if f.IsValid() {
+			f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem()
+			return f.Interface()
+		}
+	}
+
+	return nil
+}
+
+// getColumn 获取 field.Expr 包含的 clause.Column 信息
+func getColumn(f any) *clause.Column {
+	fe, ok := f.(field.Expr)
+	if !ok {
+		return nil
+	}
+
+	expr := getField(fe, "expr")
+	if expr == nil {
+		return nil
+	}
+
+	col := getField(expr, "col")
+	if col == nil {
+		return nil
+	}
+
+	column, ok := col.(clause.Column)
+	if !ok {
+		return nil
+	}
+
+	return &column
+}
