@@ -165,27 +165,27 @@ func getColumn(f any) *clause.Column {
 ```go
 f := l.svcCtx.Q.Flow
 fq := f.WithContext(l.ctx).Debug().
-    Select(
-        f.SrcIP,
-        f.DstIP,
-        f.SrcIP.Count().As("count"),
-        xfield.NewRaw(
-            "GROUP_CONCAT(DISTINCT ? ORDER BY ? ASC SEPARATOR ',') AS ?",
-            f.Pact, f.Pact, "pacts",
-        ),
-    ).
-    Where(
-        f.SrcIP.NeqCol(f.DstIP),
-        xfield.NewRawCondition(
+	Select(
+		f.SrcIP,
+		f.DstIP,
+		f.SrcIP.Count().As("count"),
+		xfield.NewRaw(
+			"GROUP_CONCAT(DISTINCT ? ORDER BY ? ASC SEPARATOR ',') AS ?",
+			f.Pact, f.Pact, "pacts",
+		),
+	).
+	Where(
+		f.SrcIP.NeqCol(f.DstIP),
+		xfield.NewRawCondition(
 			"? BETWEEN ? AND ?",
-            f.Timestamp, time.UnixMilli(in.GetStartAt()), time.UnixMilli(in.GetEndAt()),
+			f.Timestamp, time.UnixMilli(in.GetStartAt()), time.UnixMilli(in.GetEndAt()),
 		), 
 	).
-    Group(
-        f.SrcIP,
-        f.DstIP,
-    ).
-    Order(
-        field.NewField("", "count").Desc(),
-    )
+	Group(
+		f.SrcIP,
+		f.DstIP,
+	).
+	Order(
+		field.NewField("", "count").Desc(),
+	)
 ```

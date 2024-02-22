@@ -10,12 +10,12 @@
 ```protobuf
 // UploadFileReq 上传文件请求
 message UploadFileReq {
-  int64 user_id = 1;
-  string file_name = 2;
-  string file_type = 3;
-  string file_hash = 4;
-  int64 file_size = 5;
-  bytes file_data = 6;
+    int64 user_id = 1;
+    string file_name = 2;
+    string file_type = 3;
+    string file_hash = 4;
+    int64 file_size = 5;
+    bytes file_data = 6;
 }
 
 // 其中 file_data 就是较大的文件二进制数据

@@ -189,15 +189,15 @@ PS:
 
 ```go
 import (
-    "context"
-    
-    "github.com/zero-micro/go-zero/core/logx"
-    "gorm.io/gorm"
+	"context"
 	
-    "gitlab.xxx.cn/go-tool/timex"
-    
-    "gitlab.xxx.cn/my-project/model"
-    "gitlab.xxx.cn/my-project/pkg/db"
+	"github.com/zero-micro/go-zero/core/logx"
+	"gorm.io/gorm"
+	
+	"gitlab.xxx.cn/go-tool/timex"
+	
+	"gitlab.xxx.cn/my-project/model"
+	"gitlab.xxx.cn/my-project/pkg/db"
 )
 ```
 
@@ -232,15 +232,15 @@ import (
 
 ```go
 func demo () {
-    if xxx {
-        // do something
-    }
-    
-    for _, x := range xxx {
-        // do something
-    }
-    
-    fmt.Println("xxx")
+	if xxx {
+		// do something
+	}
+	
+	for _, x := range xxx {
+		// do something
+	}
+	
+	fmt.Println("xxx")
 }
 ```
   
@@ -248,9 +248,9 @@ func demo () {
 
 ```go
 func demo(id string) (string, error) {
-    ......
+	......
 
-    return "xxx", nil
+	return "xxx", nil
 }
 ```
 
@@ -259,12 +259,12 @@ func demo(id string) (string, error) {
 ```go
 // 推荐
 func demo() (*user.GetUserInfoResp, error) {
-    ......
-    
-    return &user.GetUserInfoResp{
-        Id:   in.Id,
-        Name: in.Name,
-    }, nil
+	......
+	
+	return &user.GetUserInfoResp{
+		Id:   in.Id,
+		Name: in.Name,
+	}, nil
 }
 ```
 
