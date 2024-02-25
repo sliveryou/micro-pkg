@@ -1,4 +1,4 @@
-# gstream
+# 通用 grpc 流式消息内容读写器 gstream
 
 通用 grpc 流式消息内容读写器。
    - authored by sliveryou

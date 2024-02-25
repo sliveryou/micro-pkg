@@ -23,6 +23,8 @@ require (
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.46
 	github.com/xuri/excelize/v2 v2.8.0
 	github.com/zeromicro/go-zero v1.6.2
+	go.etcd.io/etcd/api/v3 v3.5.12
+	go.etcd.io/etcd/client/v3 v3.5.12
 	go.opentelemetry.io/otel/trace v1.19.0
 	golang.org/x/crypto v0.19.0
 	google.golang.org/grpc v1.61.0
@@ -108,9 +110,7 @@ require (
 	github.com/xuri/efp v0.0.0-20230802181842-ad255f2331ca // indirect
 	github.com/xuri/nfp v0.0.0-20230819163627-dc951e3ffe1a // indirect
 	github.com/yuin/gopher-lua v1.1.0 // indirect
-	go.etcd.io/etcd/api/v3 v3.5.12 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.12 // indirect
-	go.etcd.io/etcd/client/v3 v3.5.12 // indirect
 	go.opentelemetry.io/otel v1.19.0 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.17.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.19.0 // indirect

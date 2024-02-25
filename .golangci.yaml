@@ -6,6 +6,7 @@ run:
   skip-dirs:
     - xhash/sm3
     - xhttp/binding
+    - xlock/internal
 
 linters-settings:
   goconst:
@@ -59,7 +60,7 @@ linters-settings:
       - name: get-return
       - name: modifies-parameter
       - name: confusing-results
-      - name: deep-exit
+      # - name: deep-exit
       # - name: unused-parameter
       - name: unreachable-code
       # - name: add-constant
