@@ -31,7 +31,9 @@ type RPCOption func(server *rpcClient)
 // WithHTTPClient 使用配置的 HTTP 客户端
 func WithHTTPClient(hc *http.Client) RPCOption {
 	return func(c *rpcClient) {
-		c.httpClient = hc
+		if hc != nil {
+			c.httpClient = hc
+		}
 	}
 }
 

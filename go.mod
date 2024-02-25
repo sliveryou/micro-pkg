@@ -6,6 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/alicebob/miniredis/v2 v2.31.1
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
+	github.com/casbin/casbin/v2 v2.82.0
 	github.com/glebarez/sqlite v1.10.0
 	github.com/go-stack/stack v1.8.1
 	github.com/golang-jwt/jwt/v5 v5.2.0
@@ -39,6 +40,7 @@ require (
 require (
 	github.com/alicebob/gopher-json v0.0.0-20230218143504-906a9b012302 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/casbin/govaluate v1.1.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/clbanning/mxj v1.8.4 // indirect

@@ -28,7 +28,7 @@ func TestNewJWTMiddleware_Success(t *testing.T) {
 	m := getJWTMiddleware()
 	req := httptest.NewRequest(http.MethodGet, "http://localhost", http.NoBody)
 
-	tokenStr, err := m.j.GenTokenWithPayloads(getTokenMap())
+	tokenStr, err := m.j.GenToken(getToken())
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
 	req.Header.Set("Authorization", "Bearer "+tokenStr)
@@ -131,14 +131,14 @@ func TestNewIgnoreRLogMiddleware(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.Code)
 }
 
-func getTokenMap() map[string]any {
-	return map[string]any{
-		"user_id":   100000,
-		"user_name": "test_user",
-		"role_ids":  []int64{100000, 100001, 100002},
-		"group":     "ADMIN",
-		"is_admin":  true,
-		"score":     123.123,
+func getToken() *_UserInfo {
+	return &_UserInfo{
+		UserID:   100000,
+		UserName: "test_user",
+		RoleIDs:  []int64{100000, 100001, 100002},
+		Group:    "ADMIN",
+		IsAdmin:  true,
+		Score:    123.123,
 	}
 }
 

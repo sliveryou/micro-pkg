@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/go-stack/stack"
+	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/iox"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest/httpx"
@@ -32,6 +33,9 @@ type JWTMiddleware struct {
 //
 // 注意：token 必须为结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
 func NewJWTMiddleware(j *jwt.JWT, token any, errTokenVerify error) (*JWTMiddleware, error) {
+	if j == nil || token == nil || errTokenVerify == nil {
+		return nil, errors.New("xhttp: illegal jwt middleware config")
+	}
 	if err := jwt.CheckTokenType(token); err != nil {
 		return nil, err
 	}

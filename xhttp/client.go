@@ -87,6 +87,10 @@ func NewClient(config ...Config) *Client {
 
 // NewClientWithHTTPClient 使用 HTTP 客户端新建 HTTP 拓展客户端
 func NewClientWithHTTPClient(client *http.Client) *Client {
+	if client == nil {
+		panic(errors.New("nil client is invalid"))
+	}
+
 	return &Client{Client: client}
 }
 

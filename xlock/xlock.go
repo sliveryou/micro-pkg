@@ -30,7 +30,7 @@ etcd 加锁解锁过程：
 // Config 分布式锁配置
 type Config struct {
 	Prefix    string   `json:",optional"` // 锁前缀，如 /xlock/
-	Endpoints []string // 节点列表
+	Endpoints []string `json:",optional"` // 节点列表
 	Username  string   `json:",optional"` // 用户名
 	Password  string   `json:",optional"` // 密码
 }
@@ -42,26 +42,35 @@ type Locker struct {
 }
 
 // NewLocker 新建分布式锁客户端
-func NewLocker(c Config) (*Locker, error) {
-	client, err := clientv3.New(clientv3.Config{
-		Endpoints:   c.Endpoints,
-		Username:    c.Username,
-		Password:    c.Password,
-		DialTimeout: time.Second * 5,
-	})
-	if err != nil {
-		return nil, errors.WithMessage(err, "xlock: new etcd client err")
+func NewLocker(c Config, client ...*clientv3.Client) (*Locker, error) {
+	l := &Locker{
+		prefix: strings.TrimRight(c.Prefix, "/") + "/",
 	}
 
-	return &Locker{
-		prefix: strings.TrimRight(c.Prefix, "/") + "/",
-		client: client,
-	}, nil
+	if len(client) > 0 && client[0] != nil {
+		l.client = client[0]
+	}
+
+	if l.client == nil {
+		cli, err := clientv3.New(clientv3.Config{
+			Endpoints:   c.Endpoints,
+			Username:    c.Username,
+			Password:    c.Password,
+			DialTimeout: time.Second * 5,
+		})
+		if err != nil {
+			return nil, errors.WithMessage(err, "xlock: new etcd client err")
+		}
+
+		l.client = cli
+	}
+
+	return l, nil
 }
 
 // MustNewLocker 新建分布式锁客户端
-func MustNewLocker(c Config) *Locker {
-	l, err := NewLocker(c)
+func MustNewLocker(c Config, client ...*clientv3.Client) *Locker {
+	l, err := NewLocker(c, client...)
 	if err != nil {
 		return nil
 	}

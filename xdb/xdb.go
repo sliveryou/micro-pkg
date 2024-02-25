@@ -40,6 +40,9 @@ func NewDB(c Config) (*gorm.DB, error) {
 	if err := c.fillDefault(); err != nil {
 		return nil, errors.WithMessage(err, "xdb: fill default config err")
 	}
+	if err := c.check(); err != nil {
+		return nil, errors.WithMessage(err, "xdb: check config err")
+	}
 	// 创建数据库失败，不做处理
 	_ = c.createDatabase()
 
@@ -215,6 +218,41 @@ func (c *Config) fillDefault() error {
 	}
 	if c.SlowThreshold == 0 {
 		c.SlowThreshold = fill.SlowThreshold
+	}
+
+	return nil
+}
+
+// check 检查配置
+func (c *Config) check() error {
+	switch c.Type {
+	case MySQL:
+		if c.Host == "" || c.User == "" || c.Database == "" {
+			return errors.New("xdb: illegal mysql config")
+		}
+		if c.Port <= 0 {
+			c.Port = 3306
+		}
+	case PostgreSQL:
+		if c.Host == "" || c.User == "" || c.Database == "" {
+			return errors.New("xdb: illegal postgres config")
+		}
+		if c.Port <= 0 {
+			c.Port = 5432
+		}
+	case SQLite:
+		if c.Database == "" {
+			return errors.New("xdb: illegal sqlite config")
+		}
+	case SQLServer:
+		if c.Host == "" || c.User == "" || c.Database == "" {
+			return errors.New("xdb: illegal sqlserver config")
+		}
+		if c.Port <= 0 {
+			c.Port = 1433
+		}
+	default:
+		return errors.New("xdb: unknown db type")
 	}
 
 	return nil
