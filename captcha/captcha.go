@@ -11,12 +11,13 @@ import (
 )
 
 const (
-	// CachePreOtherBase64Captcha base64 验证码缓存 key 前缀
-	CachePreOtherBase64Captcha = "cache:other:base64_captcha:"
+	// DefaultKeyPrefix 验证码答案缓存 key 前缀
+	DefaultKeyPrefix = "micro.pkg:captcha.answer:"
 )
 
 // Config 验证码相关配置
 type Config struct {
+	KeyPrefix      string        `json:",optional"`    // 验证码答案缓存 key 前缀，为空则使用 DefaultKeyPrefix
 	ImageWidth     int           `json:",default=240"` // 验证码图片宽度
 	ImageHeight    int           `json:",default=80"`  // 验证码图片高度
 	CodeLength     int           `json:",default=6"`   // 验证码编码长度
@@ -42,7 +43,7 @@ func NewCaptcha(c Config, kvStore *xkv.Store) (*Captcha, error) {
 		c.ImageHeight, c.ImageWidth, c.CodeLength, 0.7, 80,
 	)
 	store := NewStore(
-		kvStore, CachePreOtherBase64Captcha, int(c.CodeExpiration.Seconds()),
+		kvStore, c.KeyPrefix, int(c.CodeExpiration.Seconds()),
 	)
 	captcha := base64Captcha.NewCaptcha(driver, store)
 
@@ -76,6 +77,9 @@ func (c *Config) fillDefault() error {
 		return err
 	}
 
+	if c.KeyPrefix == "" {
+		c.KeyPrefix = DefaultKeyPrefix
+	}
 	if c.ImageWidth == 0 {
 		c.ImageWidth = fill.ImageWidth
 	}
