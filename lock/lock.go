@@ -1,4 +1,4 @@
-package xlock
+package lock
 
 import (
 	"context"
@@ -35,6 +35,18 @@ type Config struct {
 	Password  string   `json:",optional"` // 密码
 }
 
+// Option 可选配置
+type Option func(l *Locker)
+
+// WithClient 使用指定 etcd 客户端
+func WithClient(client *clientv3.Client) Option {
+	return func(l *Locker) {
+		if client != nil {
+			l.client = client
+		}
+	}
+}
+
 // Locker 分布式锁客户端
 type Locker struct {
 	prefix string
@@ -42,13 +54,12 @@ type Locker struct {
 }
 
 // NewLocker 新建分布式锁客户端
-func NewLocker(c Config, client ...*clientv3.Client) (*Locker, error) {
+func NewLocker(c Config, opts ...Option) (*Locker, error) {
 	l := &Locker{
 		prefix: strings.TrimRight(c.Prefix, "/") + "/",
 	}
-
-	if len(client) > 0 && client[0] != nil {
-		l.client = client[0]
+	for _, opt := range opts {
+		opt(l)
 	}
 
 	if l.client == nil {
@@ -69,8 +80,8 @@ func NewLocker(c Config, client ...*clientv3.Client) (*Locker, error) {
 }
 
 // MustNewLocker 新建分布式锁客户端
-func MustNewLocker(c Config, client ...*clientv3.Client) *Locker {
-	l, err := NewLocker(c, client...)
+func MustNewLocker(c Config, opts ...Option) *Locker {
+	l, err := NewLocker(c, opts...)
 	if err != nil {
 		return nil
 	}

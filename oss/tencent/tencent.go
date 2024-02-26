@@ -20,11 +20,11 @@ const (
 	CloudTencent = "tencent"
 )
 
-// OptionFunc 可选配置
-type OptionFunc func(c *COS)
+// Option 可选配置
+type Option func(c *COS)
 
 // WithNotSetACL 不设置权限规则
-func WithNotSetACL(notSetACL ...bool) OptionFunc {
+func WithNotSetACL(notSetACL ...bool) Option {
 	return func(c *COS) {
 		c.notSetACL = true
 		if len(notSetACL) > 0 {
@@ -42,7 +42,7 @@ type COS struct {
 }
 
 // NewCOS 创建一个腾讯云 COS 对象
-func NewCOS(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...OptionFunc) (*COS, error) {
+func NewCOS(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...Option) (*COS, error) {
 	u, err := url.Parse(fmt.Sprintf("https://%s.cos.%s.myqcloud.com", bucketName, endpoint))
 	if err != nil {
 		return nil, errors.WithMessage(err, "tencent: new cos err")

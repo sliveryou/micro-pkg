@@ -27,7 +27,7 @@ func TestMain(m *testing.M) {
 func setup() {
 	go mockserver.Run(addr)
 	// wait for mock server to run
-	time.Sleep(time.Millisecond * 5)
+	time.Sleep(5 * time.Millisecond)
 }
 
 func teardown() {

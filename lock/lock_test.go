@@ -1,4 +1,4 @@
-package xlock
+package lock
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/sliveryou/micro-pkg/xlock/internal/mockserver"
+	"github.com/sliveryou/micro-pkg/lock/internal/mockserver"
 )
 
 var (
@@ -38,7 +38,7 @@ func setup() {
 	}
 
 	// wait for mock server to run
-	time.Sleep(time.Millisecond * 3)
+	time.Sleep(5 * time.Millisecond)
 }
 
 func teardown() {

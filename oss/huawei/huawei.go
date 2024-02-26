@@ -16,11 +16,11 @@ const (
 	CloudHuawei = "huawei"
 )
 
-// OptionFunc 可选配置
-type OptionFunc func(o *OBS)
+// Option 可选配置
+type Option func(o *OBS)
 
 // WithNotSetACL 不设置权限规则
-func WithNotSetACL(notSetACL ...bool) OptionFunc {
+func WithNotSetACL(notSetACL ...bool) Option {
 	return func(o *OBS) {
 		o.notSetACL = true
 		if len(notSetACL) > 0 {
@@ -38,7 +38,7 @@ type OBS struct {
 }
 
 // NewOBS 创建一个华为云 OBS 对象
-func NewOBS(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...OptionFunc) (*OBS, error) {
+func NewOBS(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...Option) (*OBS, error) {
 	client, err := obs.New(accessKeyID, accessKeySecret, endpoint)
 	if err != nil {
 		return nil, errors.WithMessage(err, "huawei: new obs err")

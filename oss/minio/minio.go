@@ -39,11 +39,11 @@ const (
 }`
 )
 
-// OptionFunc 可选配置
-type OptionFunc func(m *MinIO)
+// Option 可选配置
+type Option func(m *MinIO)
 
 // WithSecure 使用安全配置
-func WithSecure(secure ...bool) OptionFunc {
+func WithSecure(secure ...bool) Option {
 	return func(m *MinIO) {
 		m.secure = true
 		if len(secure) > 0 {
@@ -53,7 +53,7 @@ func WithSecure(secure ...bool) OptionFunc {
 }
 
 // WithNotSetACL 不设置权限规则
-func WithNotSetACL(notSetACL ...bool) OptionFunc {
+func WithNotSetACL(notSetACL ...bool) Option {
 	return func(m *MinIO) {
 		m.notSetACL = true
 		if len(notSetACL) > 0 {
@@ -72,7 +72,7 @@ type MinIO struct {
 }
 
 // NewMinIO 创建一个 MinIO 对象
-func NewMinIO(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...OptionFunc) (*MinIO, error) {
+func NewMinIO(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...Option) (*MinIO, error) {
 	m := &MinIO{endpoint: endpoint, bucketName: bucketName}
 	for _, opt := range opts {
 		opt(m)

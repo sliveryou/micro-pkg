@@ -21,16 +21,17 @@ go 微服务常用公共包
 - **health** 健康检查包，实现了 [grpc_health_v1](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) 定义的健康检查服务端和客户端，并包含了一些常用中间件的健康检查器
 - **jwt** jwt token 生成和解析包，支持返回 `map[string]any` 类型的 payloads 或反序列化至指定 token 结构体，另外包含 grpc 拦截器，可以自动在 metadata 中传递和解析 token 信息
 - **limit** 基于 redis lua 脚本编写的时间段限流器和令牌桶限流器
+- **lock** 基于 etcd 实现的分布式锁
 - **oss** 通用对象存储服务客户端，支持 aliyun、huawei、tencent、minio、local 和 mock
 - **retry** 通用操作重试包，对操作进行失败重试，可以组合不同的策略
 - **shorturl** 基于 murmur3 hash 的短地址标识符生成包
+- **watcher** 基于 etcd 的键值更新观察器，当观察到键发生创建或更新事件时，会触发回调函数，并实现了 casbin 的 `persist.Watcher` 接口
 - **xdb** 通用数据库连接包，返回 `*gorm.DB` 对象，支持 MySQL、PostgreSQL、SQLite 和 SQLServer
 - **xdb/xfield** gorm gen 字段拓展包，支持构建原始 sql 字段和原始 sql 条件
 - **xgrpc** 常用 grpc 拦截器，包含请求响应日志打印和恐慌捕获恢复等
 - **xhash** 通用 hash 校验和计算包，包含常用 hash 计算和基于 bcrypt hash 的密码生成与校验等
 - **xhttp** http 相关操作库，包含请求参数反序列化和响应参数序列化、http 通用客户端、http 通用中间件 和 ip 获取等
 - **xkv** 通用 redis 集群键值相关操作库
-- **xlock** 基于 etcd 实现的分布式锁
 - **xonce** 操作执行器，只执行一次成功操作，失败可以再次执行
 
 ## 文档

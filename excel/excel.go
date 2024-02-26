@@ -13,14 +13,14 @@ const (
 )
 
 // GetRows 获取 excel 表上的所有行数据
-func GetRows(r io.Reader, sheet string, opt ...excelize.Options) ([][]string, error) {
-	f, err := excelize.OpenReader(r, opt...)
+func GetRows(r io.Reader, sheet string, opts ...excelize.Options) ([][]string, error) {
+	f, err := excelize.OpenReader(r, opts...)
 	if err != nil {
 		return nil, errors.WithMessage(err, "excelize.OpenReader err")
 	}
 	defer f.Close()
 
-	rows, err := f.GetRows(sheet, opt...)
+	rows, err := f.GetRows(sheet, opts...)
 	if err != nil {
 		return nil, errors.WithMessage(err, "f.GetRows err")
 	}
@@ -29,14 +29,14 @@ func GetRows(r io.Reader, sheet string, opt ...excelize.Options) ([][]string, er
 }
 
 // GetFilteredRows 获取 excel 表上的所有大于等于指定行长度的行数据（忽略前 skipRow 行）
-func GetFilteredRows(r io.Reader, sheet string, rowLength, skipRow int, opt ...excelize.Options) ([][]string, error) {
+func GetFilteredRows(r io.Reader, sheet string, rowLength, skipRow int, opts ...excelize.Options) ([][]string, error) {
 	var filteredRows [][]string
 	if err := ReadRows(r, sheet, func(rowNum int, columns []string) bool {
 		if rowNum > skipRow && len(columns) >= rowLength {
 			filteredRows = append(filteredRows, columns)
 		}
 		return true
-	}); err != nil {
+	}, opts...); err != nil {
 		return nil, errors.WithMessage(err, "ReadRows err")
 	}
 
@@ -47,8 +47,8 @@ func GetFilteredRows(r io.Reader, sheet string, rowLength, skipRow int, opt ...e
 type ReadHandler func(rowNum int, columns []string) (isContinue bool)
 
 // ReadRows 流式读取处理 excel 表上的行数据
-func ReadRows(r io.Reader, sheet string, handler ReadHandler, opt ...excelize.Options) error {
-	f, err := excelize.OpenReader(r, opt...)
+func ReadRows(r io.Reader, sheet string, handler ReadHandler, opts ...excelize.Options) error {
+	f, err := excelize.OpenReader(r, opts...)
 	if err != nil {
 		return errors.WithMessage(err, "excelize.OpenReader err")
 	}
@@ -63,7 +63,7 @@ func ReadRows(r io.Reader, sheet string, handler ReadHandler, opt ...excelize.Op
 	rowNum := 0
 	for rows.Next() {
 		rowNum++
-		columns, err := rows.Columns(opt...)
+		columns, err := rows.Columns(opts...)
 		if err != nil {
 			return errors.WithMessagef(err, "rowNum: %d, rows.Columns err", rowNum)
 		}
@@ -79,8 +79,8 @@ func ReadRows(r io.Reader, sheet string, handler ReadHandler, opt ...excelize.Op
 type WriteHandler func(rowNum int) (columns []any, needWrite, isContinue bool)
 
 // WriteRows 流式写入行数据至指定 excel 表中
-func WriteRows(r io.Reader, sheet, saveAs string, handler WriteHandler, opt ...excelize.Options) error {
-	f, err := excelize.OpenReader(r, opt...)
+func WriteRows(r io.Reader, sheet, saveAs string, handler WriteHandler, opts ...excelize.Options) error {
+	f, err := excelize.OpenReader(r, opts...)
 	if err != nil {
 		return errors.WithMessage(err, "excelize.OpenReader err")
 	}

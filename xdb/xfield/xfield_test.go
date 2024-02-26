@@ -132,4 +132,11 @@ func Test_getColumn(t *testing.T) {
 	assert.Equal(t, "my_table", c.Table)
 	assert.Equal(t, "my_column", c.Name)
 	t.Logf("%+v", c)
+
+	db, _ := gorm.Open(tests.DummyDialector{})
+	fsq, ok := fs.In([]string{}...).BeCond().(clause.Expression)
+	assert.True(t, ok)
+	stmt := &gorm.Statement{DB: db}
+	fsq.Build(stmt)
+	t.Log(db.Dialector.Explain(stmt.SQL.String(), stmt.Vars...))
 }

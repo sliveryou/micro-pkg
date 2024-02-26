@@ -6,7 +6,7 @@ run:
   skip-dirs:
     - xhash/sm3
     - xhttp/binding
-    - xlock/internal
+    - lock/internal
 
 linters-settings:
   goconst:

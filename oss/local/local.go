@@ -17,11 +17,11 @@ const (
 	CloudLocal = "local"
 )
 
-// OptionFunc 可选配置
-type OptionFunc func(l *LSS)
+// Option 可选配置
+type Option func(l *LSS)
 
 // WithSecure 使用安全配置
-func WithSecure(secure ...bool) OptionFunc {
+func WithSecure(secure ...bool) Option {
 	return func(l *LSS) {
 		l.secure = true
 		if len(secure) > 0 {
@@ -38,7 +38,7 @@ type LSS struct {
 }
 
 // NewLSS 创建一个本地 LSS 对象
-func NewLSS(endpoint, bucketName string, opts ...OptionFunc) (*LSS, error) {
+func NewLSS(endpoint, bucketName string, opts ...Option) (*LSS, error) {
 	if bucketName == "" {
 		return nil, errors.New("local: illegal lss config")
 	}

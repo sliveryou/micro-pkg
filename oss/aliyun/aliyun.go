@@ -14,11 +14,11 @@ const (
 	CloudAliyun = "aliyun"
 )
 
-// OptionFunc 可选配置
-type OptionFunc func(o *OSS)
+// Option 可选配置
+type Option func(o *OSS)
 
 // WithUploadInternal 使用内网上传配置
-func WithUploadInternal(uploadInternal ...bool) OptionFunc {
+func WithUploadInternal(uploadInternal ...bool) Option {
 	return func(o *OSS) {
 		o.uploadInternal = true
 		if len(uploadInternal) > 0 {
@@ -28,7 +28,7 @@ func WithUploadInternal(uploadInternal ...bool) OptionFunc {
 }
 
 // WithNotSetACL 不设置权限规则
-func WithNotSetACL(notSetACL ...bool) OptionFunc {
+func WithNotSetACL(notSetACL ...bool) Option {
 	return func(o *OSS) {
 		o.notSetACL = true
 		if len(notSetACL) > 0 {
@@ -47,7 +47,7 @@ type OSS struct {
 }
 
 // NewOSS 创建一个阿里云 OSS 对象
-func NewOSS(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...OptionFunc) (*OSS, error) {
+func NewOSS(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...Option) (*OSS, error) {
 	client, err := oss.New(endpoint, accessKeyID, accessKeySecret)
 	if err != nil {
 		return nil, errors.WithMessage(err, "aliyun: new oss err")
