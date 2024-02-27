@@ -27,7 +27,7 @@ require (
 	go.etcd.io/etcd/api/v3 v3.5.12
 	go.etcd.io/etcd/client/v3 v3.5.12
 	go.opentelemetry.io/otel/trace v1.19.0
-	golang.org/x/crypto v0.19.0
+	golang.org/x/crypto v0.20.0
 	google.golang.org/grpc v1.61.0
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/mysql v1.5.4
