@@ -5,11 +5,11 @@ import (
 	"sync/atomic"
 	"time"
 
+	"dario.cat/mergo"
 	casbin "github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
 	cutil "github.com/casbin/casbin/v2/util"
-	"github.com/imdario/mergo"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"

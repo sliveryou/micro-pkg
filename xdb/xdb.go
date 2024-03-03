@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"dario.cat/mergo"
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/glebarez/sqlite"
-	"github.com/imdario/mergo"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/conf"
 	"gorm.io/driver/mysql"

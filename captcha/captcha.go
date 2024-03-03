@@ -3,7 +3,7 @@ package captcha
 import (
 	"time"
 
-	"github.com/imdario/mergo"
+	"dario.cat/mergo"
 	"github.com/mojocn/base64Captcha"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/conf"
