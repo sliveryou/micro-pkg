@@ -9,6 +9,7 @@ import (
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
 	cutil "github.com/casbin/casbin/v2/util"
+	"github.com/imdario/mergo"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -185,12 +186,6 @@ func (c *Config) fillDefault() error {
 	if c.ModelText == "" {
 		c.ModelText = DefaultModelText
 	}
-	if c.RetryDuration == 0 {
-		c.RetryDuration = fill.RetryDuration
-	}
-	if c.RetryMaxTimes == 0 {
-		c.RetryMaxTimes = fill.RetryMaxTimes
-	}
 
-	return nil
+	return mergo.Merge(c, fill)
 }

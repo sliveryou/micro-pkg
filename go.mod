@@ -12,6 +12,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/h2non/filetype v1.1.3
 	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.23.12+incompatible
+	github.com/imdario/mergo v0.3.6
 	github.com/minio/minio-go/v7 v7.0.67
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/mojocn/base64Captcha v1.3.6

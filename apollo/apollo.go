@@ -12,7 +12,7 @@ import (
 
 // Config 阿波罗配置中心相关配置
 type Config struct {
-	IsEnable        bool     // 是否启用
+	IsDisabled      bool     `json:",optional"` // 是否禁用
 	AppID           string   // 应用ID
 	Cluster         string   `json:",default=default"` // 集群
 	NameSpaceNames  []string // 命名空间
@@ -31,7 +31,7 @@ type Apollo struct {
 func NewApollo(c Config) (*Apollo, error) {
 	a := &Apollo{c: c}
 
-	if !c.IsEnable {
+	if c.IsDisabled {
 		a.Client = &MockClient{}
 	} else {
 		if c.AppID == "" || len(c.NameSpaceNames) == 0 || c.MetaAddr == "" {

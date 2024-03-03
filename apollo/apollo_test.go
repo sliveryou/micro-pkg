@@ -36,7 +36,6 @@ func teardown() {
 
 func getApollo() (*Apollo, error) {
 	c := Config{
-		IsEnable:        true,
 		AppID:           "SampleApp",
 		Cluster:         "default",
 		NameSpaceNames:  []string{"application", "client.json", "service.yaml"},

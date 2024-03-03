@@ -22,6 +22,7 @@ go 微服务常用公共包
 - **jwt** jwt token 生成和解析包，支持返回 `map[string]any` 类型的 payloads 或反序列化至指定 token 结构体，另外包含 grpc 拦截器，可以自动在 metadata 中传递和解析 token 信息
 - **limit** 基于 redis lua 脚本编写的时间段限流器和令牌桶限流器
 - **lock** 基于 etcd 实现的分布式锁
+- **notify** 通用通知服务包，包含短信、邮件验证码发送与短信、邮件验证码校验等功能，并支持对发送间隔、验证间隔、一天内同一接收方、一天内同一 IP 和一天内总发送量的限制与监控
 - **oss** 通用对象存储服务客户端，支持 aliyun、huawei、tencent、minio、local 和 mock
 - **retry** 通用操作重试包，对操作进行失败重试，可以组合不同的策略
 - **shorturl** 基于 murmur3 hash 的短地址标识符生成包

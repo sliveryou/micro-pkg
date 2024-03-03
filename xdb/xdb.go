@@ -6,6 +6,7 @@ import (
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/glebarez/sqlite"
+	"github.com/imdario/mergo"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/conf"
 	"gorm.io/driver/mysql"
@@ -198,29 +199,7 @@ func (c *Config) fillDefault() error {
 		return err
 	}
 
-	if c.Type == "" {
-		c.Type = fill.Type
-	}
-	if c.MaxIdleConns == 0 {
-		c.MaxIdleConns = fill.MaxIdleConns
-	}
-	if c.MaxOpenConns == 0 {
-		c.MaxOpenConns = fill.MaxOpenConns
-	}
-	if c.ConnMaxLifeTime == 0 {
-		c.ConnMaxLifeTime = fill.ConnMaxLifeTime
-	}
-	if c.ConnMaxIdleTime == 0 {
-		c.ConnMaxIdleTime = fill.ConnMaxIdleTime
-	}
-	if c.LogLevel == "" {
-		c.LogLevel = fill.LogLevel
-	}
-	if c.SlowThreshold == 0 {
-		c.SlowThreshold = fill.SlowThreshold
-	}
-
-	return nil
+	return mergo.Merge(c, fill)
 }
 
 // check 检查配置

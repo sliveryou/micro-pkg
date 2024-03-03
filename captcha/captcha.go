@@ -3,6 +3,7 @@ package captcha
 import (
 	"time"
 
+	"github.com/imdario/mergo"
 	"github.com/mojocn/base64Captcha"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/conf"
@@ -12,7 +13,7 @@ import (
 
 const (
 	// DefaultKeyPrefix 验证码答案缓存 key 前缀
-	DefaultKeyPrefix = "micro.pkg:captcha.answer:"
+	DefaultKeyPrefix = "micro.pkg:captcha:answer:"
 )
 
 // Config 验证码相关配置
@@ -80,18 +81,6 @@ func (c *Config) fillDefault() error {
 	if c.KeyPrefix == "" {
 		c.KeyPrefix = DefaultKeyPrefix
 	}
-	if c.ImageWidth == 0 {
-		c.ImageWidth = fill.ImageWidth
-	}
-	if c.ImageHeight == 0 {
-		c.ImageHeight = fill.ImageHeight
-	}
-	if c.CodeLength == 0 {
-		c.CodeLength = fill.CodeLength
-	}
-	if c.CodeExpiration == 0 {
-		c.CodeExpiration = fill.CodeExpiration
-	}
 
-	return nil
+	return mergo.Merge(c, fill)
 }

@@ -42,9 +42,10 @@ Database: "database"
 	err = conf.LoadFromYamlBytes([]byte(configYaml2), &c2)
 	require.ErrorContains(t, err, `value "unknown" is not defined in options "[mysql postgres sqlite sqlserver]"`)
 
-	c3 := Config{}
+	c3 := Config{MaxOpenConns: 100}
 	err = c3.fillDefault()
 	require.NoError(t, err)
+	assert.Equal(t, 100, c3.MaxOpenConns)
 	assert.Equal(t, time.Hour, c3.ConnMaxLifeTime)
 	assert.Equal(t, time.Hour, c3.ConnMaxIdleTime)
 	assert.Equal(t, 200*time.Millisecond, c3.SlowThreshold)
