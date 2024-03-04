@@ -43,7 +43,7 @@ type Notify struct {
 // NewNotify 新建通知服务对象
 func NewNotify(c Config, smsClients notifytypes.SmsClientPicker, emailClients notifytypes.EmailClientPicker, kvStore *xkv.Store) (*Notify, error) {
 	if smsClients == nil || emailClients == nil || kvStore == nil || c.Provider == "" {
-		return nil, errors.New("notify: illegal notify configure")
+		return nil, errors.New("notify: illegal notify config")
 	}
 	if err := c.fillDefault(); err != nil {
 		return nil, errors.WithMessage(err, "notify: fill default config err")

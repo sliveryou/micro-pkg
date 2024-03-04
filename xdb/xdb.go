@@ -20,7 +20,7 @@ import (
 
 // Config 数据库相关配置
 type Config struct {
-	Type            Type          `json:",default=mysql,options=[mysql,postgres,sqlite,sqlserver]"` // 数据库类型，枚举（mysql、postgres、sqlite 和 sqlserver）
+	Type            Type          `json:",default=mysql,options=[mysql,postgres,sqlite,sqlserver]"` // 数据库类型（枚举 mysql、postgres、sqlite 和 sqlserver）
 	Host            string        `json:",optional"`                                                // 地址
 	Port            int           `json:",optional"`                                                // 端口
 	User            string        `json:",optional"`                                                // 用户
@@ -32,7 +32,7 @@ type Config struct {
 	MaxOpenConns    int           `json:",default=50"`                                    // 最大打开连接数
 	ConnMaxLifeTime time.Duration `json:",default=1h"`                                    // 连接最大生存时间
 	ConnMaxIdleTime time.Duration `json:",default=1h"`                                    // 连接最大空闲时间
-	LogLevel        LogLevel      `json:",default=info,options=[info,warn,error,silent]"` // 日志级别，枚举（info、warn、error 和 silent）
+	LogLevel        LogLevel      `json:",default=info,options=[info,warn,error,silent]"` // 日志级别（枚举 info、warn、error 和 silent）
 	SlowThreshold   time.Duration `json:",default=200ms"`                                 // 慢查询阈值
 }
 
