@@ -20,6 +20,7 @@ require (
 	github.com/philchia/agollo/v4 v4.1.5
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.4.0
+	github.com/sliveryou/aliyun-api-gateway-sign v1.0.4
 	github.com/sliveryou/go-tool/v2 v2.0.2
 	github.com/sliveryou/submail-go-sdk v1.0.5
 	github.com/spaolacci/murmur3 v1.1.0
@@ -31,7 +32,7 @@ require (
 	go.etcd.io/etcd/api/v3 v3.5.12
 	go.etcd.io/etcd/client/v3 v3.5.12
 	go.opentelemetry.io/otel/trace v1.19.0
-	golang.org/x/crypto v0.20.0
+	golang.org/x/crypto v0.21.0
 	google.golang.org/grpc v1.62.0
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/mysql v1.5.4
@@ -139,8 +140,8 @@ require (
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
-	golang.org/x/sys v0.17.0 // indirect
-	golang.org/x/term v0.17.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/term v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.16.1 // indirect

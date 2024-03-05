@@ -74,25 +74,25 @@ type OpenAPI interface {
 	GetNamespace(ctx context.Context, opts ...APIOption) (*Namespace, error)
 	// CreateNamespace 创建命名空间信息（appId 必填）
 	// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#327-%E5%88%9B%E5%BB%BAnamespace
-	CreateNamespace(ctx context.Context, r CreateNamespaceReq, opts ...APIOption) (*CreateNamespaceResp, error)
+	CreateNamespace(ctx context.Context, r *CreateNamespaceReq, opts ...APIOption) (*CreateNamespaceResp, error)
 	// GetNamespaceLock 获取指定命名空间锁定信息（env、appId、cluster 和 namespace 必填）
 	// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#328-%E8%8E%B7%E5%8F%96%E6%9F%90%E4%B8%AAnamespace%E5%BD%93%E5%89%8D%E7%BC%96%E8%BE%91%E4%BA%BA%E6%8E%A5%E5%8F%A3
 	GetNamespaceLock(ctx context.Context, opts ...APIOption) (*NamespaceLock, error)
 	// AddItem 添加配置信息（env、appId、cluster 和 namespace 必填）
 	// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3210-%E6%96%B0%E5%A2%9E%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
-	AddItem(ctx context.Context, r AddItemReq, opts ...APIOption) (*Item, error)
+	AddItem(ctx context.Context, r *AddItemReq, opts ...APIOption) (*Item, error)
 	// UpdateItem 更新配置信息（env、appId、cluster 和 namespace 必填）
 	// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3211-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
-	UpdateItem(ctx context.Context, r UpdateItemReq, opts ...APIOption) error
+	UpdateItem(ctx context.Context, r *UpdateItemReq, opts ...APIOption) error
 	// CreateOrUpdateItem 创建或者更新配置信息（env、appId、cluster 和 namespace 必填）
 	// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3211-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
-	CreateOrUpdateItem(ctx context.Context, r UpdateItemReq, opts ...APIOption) error
+	CreateOrUpdateItem(ctx context.Context, r *UpdateItemReq, opts ...APIOption) error
 	// DeleteItem 删除配置信息（env、appId、cluster 和 namespace 必填）
 	// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3212-%E5%88%A0%E9%99%A4%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
-	DeleteItem(ctx context.Context, r DeleteItemReq, opts ...APIOption) error
+	DeleteItem(ctx context.Context, r *DeleteItemReq, opts ...APIOption) error
 	// PublishRelease 发布版本配置信息（env、appId、cluster 和 namespace 必填）
 	// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3213-%E5%8F%91%E5%B8%83%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
-	PublishRelease(ctx context.Context, r PublishReleaseReq, opts ...APIOption) (*Release, error)
+	PublishRelease(ctx context.Context, r *PublishReleaseReq, opts ...APIOption) (*Release, error)
 	// GetRelease 获取版本配置信息（env、appId、cluster 和 namespace 必填）
 	// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3214-%E8%8E%B7%E5%8F%96%E6%9F%90%E4%B8%AAnamespace%E5%BD%93%E5%89%8D%E7%94%9F%E6%95%88%E7%9A%84%E5%B7%B2%E5%8F%91%E5%B8%83%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
 	GetRelease(ctx context.Context, opts ...APIOption) (*Release, error)
