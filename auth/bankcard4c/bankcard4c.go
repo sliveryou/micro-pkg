@@ -9,7 +9,10 @@ import (
 	"github.com/pkg/errors"
 
 	sign "github.com/sliveryou/aliyun-api-gateway-sign"
+	"github.com/sliveryou/go-tool/v2/sliceg"
+	"github.com/sliveryou/go-tool/v2/validator"
 
+	"github.com/sliveryou/micro-pkg/errcode"
 	"github.com/sliveryou/micro-pkg/xhttp"
 )
 
@@ -64,10 +67,10 @@ func MustNewBankCard4C(c Config) *BankCard4C {
 
 // AuthenticateReq 银行卡四要素认证请求
 type AuthenticateReq struct {
-	Name     string // 姓名
-	IDCard   string // 身份证号
-	BankCard string // 银行卡卡号
-	Mobile   string // 电话号码
+	Name     string `validate:"required" label:"姓名"`                 // 姓名
+	IDCard   string `validate:"required,idcard" label:"身份证号"`        // 身份证号
+	BankCard string `validate:"required,bankcard" label:"银行卡卡号"`     // 银行卡卡号
+	Mobile   string `validate:"required,len=11,number" label:"电话号码"` // 电话号码
 }
 
 // AuthenticateResp 银行卡四要素认证响应
@@ -79,6 +82,11 @@ type AuthenticateResp struct {
 func (b *BankCard4C) Authenticate(ctx context.Context, req *AuthenticateReq) (*AuthenticateResp, error) {
 	if b.c.IsMock {
 		return &AuthenticateResp{}, nil
+	}
+
+	// 校验请求参数
+	if err := validator.Verify(req); err != nil {
+		return nil, errcode.New(errcode.CodeInvalidParams, err.Error())
 	}
 
 	rawURL := URL
@@ -106,29 +114,28 @@ func (b *BankCard4C) Authenticate(ctx context.Context, req *AuthenticateReq) (*A
 		return nil, errors.WithMessage(err, "client call with request err")
 	}
 
-	if resp.Code == codeSuccess &&
-		resp.Data.Result != nil && *resp.Data.Result == resultConsistent {
-		return &AuthenticateResp{OrderNo: resp.Data.OrderNo}, nil
+	if resp.Code == codeSuccess && resp.Data.Result != nil {
+		if *resp.Data.Result == resultConsistent {
+			return &AuthenticateResp{OrderNo: resp.Data.OrderNo}, nil
+		}
+		return nil, errcode.NewCommon(resp.Data.Desc)
+	} else if resp.Code == codeParamErr {
+		return nil, errcode.NewCommon(resp.Msg)
 	}
 
 	// 获取错误消息
-	var message string
-	messages := []string{
+	messages := sliceg.Compact([]string{
 		resp.Data.Desc, resp.Msg, response.Header.Get("X-Ca-Error-Message"), MsgFailure,
-	}
-	for _, msg := range messages {
-		if msg != "" {
-			message = msg
-			break
-		}
-	}
+	})
 
-	return nil, errors.New(message)
+	return nil, errors.New(messages[0])
 }
 
 const (
 	// codeSuccess 接口请求成功状态码
 	codeSuccess = 200
+	// codeParamErr 接口参数错误状态码
+	codeParamErr = 400
 	// resultConsistent 认证结果：一致
 	resultConsistent = 0
 )

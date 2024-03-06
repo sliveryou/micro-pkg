@@ -22,7 +22,7 @@ func TestBankCard4C_Authenticate(t *testing.T) {
 
 	req := &AuthenticateReq{
 		BankCard: "1234567891234567890",
-		IDCard:   "123456789123456789",
+		IDCard:   "330333199001053317",
 		Mobile:   "12345678910",
 		Name:     "陈测试",
 	}

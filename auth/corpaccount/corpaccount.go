@@ -10,7 +10,10 @@ import (
 
 	sign "github.com/sliveryou/aliyun-api-gateway-sign"
 	"github.com/sliveryou/go-tool/v2/convert"
+	"github.com/sliveryou/go-tool/v2/sliceg"
+	"github.com/sliveryou/go-tool/v2/validator"
 
+	"github.com/sliveryou/micro-pkg/errcode"
 	"github.com/sliveryou/micro-pkg/xhttp"
 )
 
@@ -69,9 +72,9 @@ func MustNewCorpAccount(c Config) *CorpAccount {
 
 // AuthenticateReq 企业银行卡账户认证请求
 type AuthenticateReq struct {
-	CardNo   string // 企业账号
-	AcctName string // 企业名称
-	BankName string // 开户行名称（要和银行列表里名称完全一致：http://lundroid.com/basedata/3.xlsx?spm=5176.product-detail.detail.7.5d11386fyiwyaW&file=3.xlsx）
+	CardNo   string `validate:"required,corpaccount" label:"企业账号"` // 企业账号
+	AcctName string `validate:"required" label:"企业名称"`             // 企业名称
+	BankName string `validate:"required" label:"开户行名称"`            // 开户行名称（要和银行列表里名称完全一致：http://lundroid.com/basedata/3.xlsx?spm=5176.product-detail.detail.7.5d11386fyiwyaW&file=3.xlsx）
 }
 
 // AuthenticateResp 企业银行卡账户认证响应
@@ -85,6 +88,11 @@ type AuthenticateResp struct {
 func (c *CorpAccount) Authenticate(ctx context.Context, req *AuthenticateReq) (*AuthenticateResp, error) {
 	if c.c.IsMock {
 		return &AuthenticateResp{TransAmt: MockTransAmt}, nil
+	}
+
+	// 校验请求参数
+	if err := validator.Verify(req); err != nil {
+		return nil, errcode.New(errcode.CodeInvalidParams, err.Error())
 	}
 
 	rawURL := URL
@@ -111,25 +119,24 @@ func (c *CorpAccount) Authenticate(ctx context.Context, req *AuthenticateReq) (*
 		return nil, errors.WithMessage(err, "client call with request err")
 	}
 
-	if resp.Code != nil && *resp.Code == codeSuccess {
-		return &AuthenticateResp{
-			RequestNo: resp.RequestNo,
-			TransAmt:  convert.ToInt(resp.TransAmt),
-			Abstract:  resp.Abstract,
-		}, nil
-	}
-
-	// 获取错误消息
-	var message string
-	messages := []string{resp.Desc, response.Header.Get("X-Ca-Error-Message"), MsgFailure}
-	for _, msg := range messages {
-		if msg != "" {
-			message = msg
-			break
+	if resp.Code != nil {
+		if code := *resp.Code; code == codeSuccess {
+			return &AuthenticateResp{
+				RequestNo: resp.RequestNo,
+				TransAmt:  convert.ToInt(resp.TransAmt),
+				Abstract:  resp.Abstract,
+			}, nil
+		} else if errMsg, ok := errMap[code]; ok {
+			return nil, errcode.NewCommon(errMsg)
 		}
 	}
 
-	return nil, errors.New(message)
+	// 获取错误消息
+	messages := sliceg.Compact([]string{
+		resp.Desc, response.Header.Get("X-Ca-Error-Message"), MsgFailure,
+	})
+
+	return nil, errors.New(messages[0])
 }
 
 const (
@@ -144,4 +151,10 @@ type apiResp struct {
 	RequestNo int64  `json:"requestNo"` // 请求编号
 	TransAmt  string `json:"transamt"`  // 打款随机金额，单位（分）
 	Abstract  string `json:"abstract"`  // 打款摘要
+}
+
+var errMap = map[int]string{
+	2: "账号与开户名不符",
+	3: "开户行名称错误",
+	4: "仅支持对公账户验证",
 }

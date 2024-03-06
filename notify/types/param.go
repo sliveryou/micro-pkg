@@ -2,6 +2,8 @@ package types
 
 import (
 	"time"
+
+	"github.com/sliveryou/go-tool/v2/validator"
 )
 
 //go:generate enumer -type NotifyMethod -json -linecomment -output param_string.go
@@ -29,13 +31,7 @@ func (p *SendParams) IsValid() bool {
 		return false
 	}
 
-	if !p.NotifyMethod.IsANotifyMethod() || p.IP == "" ||
-		p.Provider == "" || p.Receiver == "" ||
-		p.TemplateID == "" {
-		return false
-	}
-
-	return true
+	return p.CommonParams.IsValid()
 }
 
 // VerifyParams 校验通知参数结构详情
@@ -51,13 +47,7 @@ func (p *VerifyParams) IsValid() bool {
 		return false
 	}
 
-	if !p.NotifyMethod.IsANotifyMethod() || p.IP == "" ||
-		p.Provider == "" || p.Receiver == "" ||
-		p.TemplateID == "" || p.Code == "" {
-		return false
-	}
-
-	return true
+	return p.CommonParams.IsValid() && p.Code != ""
 }
 
 // CommonParams 通用通知参数结构详情
@@ -67,6 +57,28 @@ type CommonParams struct {
 	Provider     string       // 提供方
 	Receiver     string       // 接受方
 	TemplateID   string       // 模板编号
+}
+
+// IsValid 判断参数是否合法
+func (p CommonParams) IsValid() bool {
+	if p.IP == "" || p.Provider == "" || p.TemplateID == "" {
+		return false
+	}
+
+	switch p.NotifyMethod {
+	case Sms:
+		if err := validator.VerifyVar(p.Receiver, "len=11,number"); err != nil {
+			return false
+		}
+	case Email:
+		if err := validator.VerifyVar(p.Receiver, "email"); err != nil {
+			return false
+		}
+	default:
+		return false
+	}
+
+	return true
 }
 
 // CommonParam 通用参数结构详情

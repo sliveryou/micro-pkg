@@ -6,12 +6,12 @@ require (
 	dario.cat/mergo v1.0.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/alicebob/miniredis/v2 v2.31.1
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.686
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.687
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/casbin/casbin/v2 v2.82.0
 	github.com/glebarez/sqlite v1.10.0
 	github.com/go-stack/stack v1.8.1
-	github.com/golang-jwt/jwt/v5 v5.2.0
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/h2non/filetype v1.1.3
 	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.23.12+incompatible
 	github.com/minio/minio-go/v7 v7.0.67
@@ -21,7 +21,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.4.0
 	github.com/sliveryou/aliyun-api-gateway-sign v1.0.4
-	github.com/sliveryou/go-tool/v2 v2.0.2
+	github.com/sliveryou/go-tool/v2 v2.0.3
 	github.com/sliveryou/submail-go-sdk v1.0.5
 	github.com/spaolacci/murmur3 v1.1.0
 	github.com/stretchr/testify v1.9.0
@@ -65,7 +65,7 @@ require (
 	github.com/go-openapi/swag v0.22.4 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.18.0 // indirect
+	github.com/go-playground/validator/v10 v10.19.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
@@ -137,7 +137,7 @@ require (
 	golang.org/x/exp v0.0.0-20230420155350-5d9e357047b1 // indirect
 	golang.org/x/image v0.14.0 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/net v0.22.0 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
