@@ -11,7 +11,7 @@ require (
 	github.com/casbin/casbin/v2 v2.82.0
 	github.com/glebarez/sqlite v1.10.0
 	github.com/go-stack/stack v1.8.1
-	github.com/golang-jwt/jwt/v5 v5.2.0
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/h2non/filetype v1.1.3
 	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.23.12+incompatible
 	github.com/minio/minio-go/v7 v7.0.67
