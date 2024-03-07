@@ -1,9 +1,9 @@
 package limit
 
 import (
-	"errors"
 	"time"
 
+	"github.com/pkg/errors"
 	redis "github.com/redis/go-redis/v9"
 
 	"github.com/sliveryou/go-tool/v2/timex"
@@ -133,7 +133,7 @@ func (tl *TokenLimit) AllowN(now time.Time, n int, opts ...TokenOption) (bool, e
 	if errors.Is(err, redis.Nil) {
 		return false, nil
 	} else if err != nil {
-		return false, err
+		return false, errors.WithMessage(err, "store eval script err")
 	}
 
 	code, ok := resp.(int64)

@@ -226,12 +226,12 @@ func (resp *RPCResponse) GetInt64() (int64, error) {
 
 	val, ok := resp.Result.(json.Number)
 	if !ok {
-		return 0, errors.Errorf("parse int64 from %v err", resp.Result)
+		return 0, errors.Errorf("parse number from %v err", resp.Result)
 	}
 
 	i, err := val.Int64()
 	if err != nil {
-		return 0, err
+		return 0, errors.Errorf("parse int64 from %v err", resp.Result)
 	}
 
 	return i, nil
@@ -245,12 +245,12 @@ func (resp *RPCResponse) GetFloat64() (float64, error) {
 
 	val, ok := resp.Result.(json.Number)
 	if !ok {
-		return 0, errors.Errorf("parse float64 from %v err", resp.Result)
+		return 0, errors.Errorf("parse number from %v err", resp.Result)
 	}
 
 	f, err := val.Float64()
 	if err != nil {
-		return 0, err
+		return 0, errors.Errorf("parse float64 from %v err", resp.Result)
 	}
 
 	return f, nil

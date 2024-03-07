@@ -15,6 +15,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/status"
 
 	"github.com/sliveryou/go-tool/v2/convert"
 	"github.com/sliveryou/go-tool/v2/sliceg"
@@ -132,7 +133,7 @@ func TestNewCommon(t *testing.T) {
 	}
 }
 
-func TestErr_Error(t *testing.T) {
+func TestErr_String(t *testing.T) {
 	cases := []struct {
 		code        uint32
 		msg         string
@@ -153,11 +154,11 @@ func TestErr_Error(t *testing.T) {
 
 		assert.True(t, ok)
 		assert.NotNil(t, err)
-		assert.Equal(t, c.expectError, err.Error())
+		assert.Equal(t, c.expectError, err.String())
 	}
 }
 
-func TestErr_String(t *testing.T) {
+func TestErr_Error(t *testing.T) {
 	cases := []struct {
 		code         uint32
 		msg          string
@@ -178,7 +179,7 @@ func TestErr_String(t *testing.T) {
 
 		assert.True(t, ok)
 		assert.NotNil(t, err)
-		assert.Equal(t, c.expectString, err.String())
+		assert.Equal(t, c.expectString, err.Error())
 	}
 }
 
@@ -207,7 +208,7 @@ func TestErr_GRPCStatus(t *testing.T) {
 		grpcStatus := err.GRPCStatus()
 		assert.NotNil(t, grpcStatus)
 		assert.Equal(t, uint32(grpcStatus.Code()), err.Code)
-		assert.Equal(t, grpcStatus.Message(), err.String())
+		assert.Equal(t, grpcStatus.Message(), err.Error())
 		if uint32(grpcStatus.Code()) > GrpcMaxCode {
 			assert.Equal(t, grpcStatus.Code().String(), fmt.Sprintf("Code(%d)", err.Code))
 		}
@@ -280,6 +281,40 @@ func TestIs(t *testing.T) {
 	}
 }
 
+func TestWrap(t *testing.T) {
+	err1 := ErrInvalidParams
+	s1, ok := status.FromError(err1)
+	assert.True(t, ok)
+	assert.Equal(t, "rpc error: code = Code(100) desc = code: 100, msg: 请求参数错误, http code: 200", s1.Err().Error())
+	e1, ok := FromMessage(s1.Err().Error())
+	assert.True(t, ok)
+	assert.True(t, Is(e1, ErrInvalidParams))
+
+	err2 := errors.WithMessage(err1, "with message 1")
+	s2, ok := status.FromError(err2)
+	assert.True(t, ok)
+	assert.Equal(t, "rpc error: code = Code(100) desc = with message 1: code: 100, msg: 请求参数错误, http code: 200", s2.Err().Error())
+	e2, ok := FromMessage(s2.Err().Error())
+	assert.True(t, ok)
+	assert.True(t, Is(e2, ErrInvalidParams))
+
+	err3 := errors.WithStack(err2)
+	s3, ok := status.FromError(err3)
+	assert.True(t, ok)
+	assert.Equal(t, "rpc error: code = Code(100) desc = with message 1: code: 100, msg: 请求参数错误, http code: 200", s3.Err().Error())
+	e3, ok := FromMessage(s3.Err().Error())
+	assert.True(t, ok)
+	assert.True(t, Is(e3, ErrInvalidParams))
+
+	err4 := errors.WithMessage(err3, "with message 2")
+	s4, ok := status.FromError(err4)
+	assert.True(t, ok)
+	assert.Equal(t, "rpc error: code = Code(100) desc = with message 2: with message 1: code: 100, msg: 请求参数错误, http code: 200", s4.Err().Error())
+	e4, ok := FromMessage(s4.Err().Error())
+	assert.True(t, ok)
+	assert.True(t, Is(e4, ErrInvalidParams))
+}
+
 func genDoc(fileNames ...string) (string, error) {
 	b := &strings.Builder{}
 	rowMap := make(map[int64]docRow)
@@ -321,7 +356,7 @@ func collectConstants(fileNames ...string) (string, error) {
 		fSet := token.NewFileSet()
 		f, err := parser.ParseFile(fSet, fileName, nil, parser.AllErrors)
 		if err != nil {
-			return "", err
+			return "", errors.WithMessage(err, "parser.ParseFile err")
 		}
 
 		// 解析 ast
@@ -343,7 +378,7 @@ func collectConstants(fileNames ...string) (string, error) {
 
 	out, err := format.Source([]byte(b.String()))
 	if err != nil {
-		return "", err
+		return "", errors.WithMessage(err, "format.Source err")
 	}
 
 	return string(out), nil
@@ -364,7 +399,7 @@ func genDocRows(fileName string) ([]docRow, error) {
 	fSet := token.NewFileSet()
 	f, err := parser.ParseFile(fSet, fileName, nil, parser.AllErrors)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithMessage(err, "parser.ParseFile err")
 	}
 
 	// 解析 ast

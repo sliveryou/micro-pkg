@@ -75,12 +75,12 @@ type Err struct {
 
 // String Err 实现 String 方法
 func (e *Err) String() string {
-	return fmt.Sprintf("code: %d, msg: %s, http code: %d", e.Code, e.Msg, e.HTTPCode)
+	return e.Msg
 }
 
 // Error Err 实现 Error 方法
 func (e *Err) Error() string {
-	return e.Msg
+	return fmt.Sprintf("code: %d, msg: %s, http code: %d", e.Code, e.Msg, e.HTTPCode)
 }
 
 // Format Err 实现 Format 方法
@@ -88,7 +88,7 @@ func (e *Err) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 'v':
 		if s.Flag('+') {
-			io.WriteString(s, e.String())
+			io.WriteString(s, e.Error())
 			return
 		}
 		fallthrough
@@ -101,7 +101,7 @@ func (e *Err) Format(s fmt.State, verb rune) {
 
 // GRPCStatus Err 实现 GRPCStatus 方法
 func (e *Err) GRPCStatus() *status.Status {
-	return status.New(codes.Code(e.Code), e.String())
+	return status.New(codes.Code(e.Code), e.Error())
 }
 
 // New 新建业务错误

@@ -129,7 +129,7 @@ type client struct {
 func (c *client) newRequest(ctx context.Context, method, url string, body io.Reader) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
-		return nil, errors.WithMessagef(err, "http.NewRequestWithContext err, method: %s, url: %s", method, url)
+		return nil, errors.WithMessagef(err, "new http request err, method: %s, url: %s", method, url)
 	}
 
 	req.Header.Set(xhttp.HeaderAuthorization, c.config.Token)
@@ -151,7 +151,7 @@ func (c *client) do(ctx context.Context, method, url string, request, response a
 	if request != nil {
 		reqBody, err = json.Marshal(request)
 		if err != nil {
-			return errors.WithMessage(err, "json.Marshal err")
+			return errors.WithMessage(err, "json marshal err")
 		}
 
 		reqBodyReader = bytes.NewReader(reqBody)
@@ -159,23 +159,23 @@ func (c *client) do(ctx context.Context, method, url string, request, response a
 
 	req, err = c.newRequest(ctx, method, url, reqBodyReader)
 	if err != nil {
-		return errors.WithMessage(err, "c.newRequest err")
+		return errors.WithMessage(err, "new request err")
 	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return errors.WithMessage(err, "c.httpClient.Do err")
+		return errors.WithMessage(err, "http client do err")
 	}
 	defer resp.Body.Close()
 
 	respBody, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return errors.WithMessage(err, "io.ReadAll err")
+		return errors.WithMessage(err, "read resp body err")
 	}
 
 	if resp.StatusCode == http.StatusOK {
 		if response != nil {
-			return errors.WithMessage(json.Unmarshal(respBody, response), "json.Unmarshal err")
+			return errors.WithMessage(json.Unmarshal(respBody, response), "json unmarshal err")
 		}
 
 		return nil

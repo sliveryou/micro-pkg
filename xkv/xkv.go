@@ -40,7 +40,7 @@ func (s *Store) GetInt(key string) (int, error) {
 func (s *Store) GetIntCtx(ctx context.Context, key string) (int, error) {
 	value, err := s.GetCtx(ctx, key)
 	if err != nil {
-		return 0, err
+		return 0, errors.Wrap(err, "get err")
 	}
 
 	return convert.ToInt(value), nil
@@ -65,7 +65,7 @@ func (s *Store) GetInt64(key string) (int64, error) {
 func (s *Store) GetInt64Ctx(ctx context.Context, key string) (int64, error) {
 	value, err := s.GetCtx(ctx, key)
 	if err != nil {
-		return 0, err
+		return 0, errors.Wrap(err, "get err")
 	}
 
 	return convert.ToInt64(value), nil
@@ -90,7 +90,7 @@ func (s *Store) GetBytes(key string) ([]byte, error) {
 func (s *Store) GetBytesCtx(ctx context.Context, key string) ([]byte, error) {
 	value, err := s.GetCtx(ctx, key)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "get err")
 	}
 
 	return []byte(value), nil

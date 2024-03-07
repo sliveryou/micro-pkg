@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/sliveryou/micro-pkg/xhash/sm3"
@@ -53,13 +54,13 @@ func HashReader(h hash.Hash, r io.Reader) (string, error) {
 func HashFile(h hash.Hash, filePath string, fileName ...string) (string, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
-		return "", err
+		return "", errors.WithMessage(err, "os.Open err")
 	}
 	defer f.Close()
 
 	_, err = io.Copy(h, f)
 	if err != nil {
-		return "", err
+		return "", errors.WithMessage(err, "io.Copy err")
 	}
 
 	if len(fileName) > 0 && fileName[0] != "" {

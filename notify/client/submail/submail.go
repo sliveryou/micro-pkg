@@ -91,7 +91,7 @@ func (s *Submail) SendSms(receiver, templateID string, params ...notifytypes.Par
 		Vars:    notifytypes.Params(params).ToMap(),
 	}
 
-	return s.smsClient.XSend(xsp)
+	return errors.WithMessage(s.smsClient.XSend(xsp), "sms client xsend err")
 }
 
 // SendEmail 发送邮件
@@ -108,5 +108,5 @@ func (s *Submail) SendEmail(receiver, templateID string, params ...notifytypes.P
 		Asynchronous: false,
 	}
 
-	return s.emailClient.XSend(xsp)
+	return errors.WithMessage(s.emailClient.XSend(xsp), "email client xsend err")
 }

@@ -1,7 +1,7 @@
 package limit
 
 import (
-	"errors"
+	"github.com/pkg/errors"
 
 	"github.com/sliveryou/micro-pkg/xkv"
 )
@@ -143,7 +143,7 @@ func (pl *PeriodLimit) Take(key string, opts ...Option) (int, error) {
 		op.quota, op.period,
 	)
 	if err != nil {
-		return Unknown, err
+		return Unknown, errors.WithMessage(err, "store eval script err")
 	}
 
 	code, ok := resp.(int64)
@@ -178,7 +178,7 @@ func (pl *PeriodLimit) Get(key string, opts ...Option) (int, error) {
 		op.quota, op.period,
 	)
 	if err != nil {
-		return InvalidQuota, err
+		return InvalidQuota, errors.WithMessage(err, "store eval script err")
 	}
 
 	remain, ok := resp.(int64)

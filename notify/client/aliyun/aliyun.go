@@ -22,6 +22,9 @@ const (
 	codeOK = "OK"
 )
 
+// ErrEmailTmplNotExist 邮件模板不存在错误
+var ErrEmailTmplNotExist = errcode.NewCommon("邮件模板信息不存在")
+
 // App 应用相关配置
 type App struct {
 	IsDisabled      bool   `json:",optional"`            // 是否禁用
@@ -148,7 +151,7 @@ func (a *Aliyun) SendSms(receiver, templateID string, params ...notifytypes.Para
 func (a *Aliyun) SendEmail(receiver, templateID string, params ...notifytypes.Param) error {
 	ee, ok := a.emailExtraMap[templateID]
 	if !ok {
-		return errcode.NewCommon("邮件模板信息不存在")
+		return ErrEmailTmplNotExist
 	}
 
 	textBody := ee.TextBody

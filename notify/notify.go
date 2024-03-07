@@ -49,9 +49,9 @@ func NewNotify(c Config, smsClients notifytypes.SmsClientPicker, emailClients no
 		return nil, errors.WithMessage(err, "notify: fill default config err")
 	}
 
-	// 默认限流时间段为 3600 * 24 秒，默认限流时间段内配额为 10 次
+	// 默认限流时间段为 24*3600 秒 = 24 小时，默认限流时间段内配额为 15 次
 	periodLimit, err := limit.NewPeriodLimit(
-		3600*24, 10, "", kvStore)
+		24*3600, 15, "", kvStore)
 	if err != nil {
 		return nil, errors.WithMessage(err, "notify: new period limit err")
 	}
@@ -141,7 +141,7 @@ func (n *Notify) checkSend(p notifytypes.CommonParams) error {
 	providerKey := notifytypes.GenProviderLimitKey(p)
 	ok, err := n.periodLimit.Allow(providerKey, limit.WithQuota(n.c.ProviderQuota))
 	if err != nil {
-		return errors.WithMessage(err, "provider limit allow err")
+		return errors.Wrap(err, "provider limit allow err")
 	}
 	if !ok {
 		return notifytypes.ErrProviderOverQuota
@@ -151,7 +151,7 @@ func (n *Notify) checkSend(p notifytypes.CommonParams) error {
 	ipSourceKey := notifytypes.GenIPSourceLimitKey(p)
 	ok, err = n.periodLimit.Allow(ipSourceKey, limit.WithQuota(n.c.IPSourceQuota))
 	if err != nil {
-		return errors.WithMessage(err, "ip source limit allow err")
+		return errors.Wrap(err, "ip source limit allow err")
 	}
 	if !ok {
 		return notifytypes.ErrIPSourceOverQuota
@@ -161,7 +161,7 @@ func (n *Notify) checkSend(p notifytypes.CommonParams) error {
 	receiverKey := notifytypes.GenReceiverLimitKey(p)
 	ok, err = n.periodLimit.Allow(receiverKey, limit.WithQuota(n.c.ReceiverQuota))
 	if err != nil {
-		return errors.WithMessage(err, "receiver limit allow err")
+		return errors.Wrap(err, "receiver limit allow err")
 	}
 	if !ok {
 		return notifytypes.ErrReceiverOverQuota
@@ -172,7 +172,7 @@ func (n *Notify) checkSend(p notifytypes.CommonParams) error {
 	ok, err = n.periodLimit.Allow(sendKey,
 		limit.WithPeriod(n.c.SendPeriod), limit.WithQuota(n.c.SendQuota))
 	if err != nil {
-		return errors.WithMessage(err, "send limit allow err")
+		return errors.Wrap(err, "send limit allow err")
 	}
 	if !ok {
 		return notifytypes.ErrSendTooFrequently
@@ -203,7 +203,7 @@ func (n *Notify) handleSend(p *notifytypes.SendParams) error {
 		key := notifytypes.GenCodeKey(p.CommonParams)
 		err = n.kvStore.SetString(key, cp.Value, int(cp.Expiration.Seconds()))
 		if err != nil {
-			return errors.WithMessagef(err, "kv store set string by "+
+			return errors.Wrapf(err, "kv store set string by "+
 				"key = %v, value = %v err", key, cp.Value)
 		}
 	}
@@ -215,14 +215,14 @@ func (n *Notify) handleSend(p *notifytypes.SendParams) error {
 			if !isExist {
 				return notifytypes.ErrEmailSupport
 			}
-			return errors.WithMessagef(ec.SendEmail(p.Receiver, p.TemplateID, p.Params...),
+			return errors.Wrapf(ec.SendEmail(p.Receiver, p.TemplateID, p.Params...),
 				"send email by key = %v, params = %+v err", key, p)
 		default:
 			sc, key, isExist := n.smsClients.Pick()
 			if !isExist {
 				return notifytypes.ErrSmsSupport
 			}
-			return errors.WithMessagef(sc.SendSms(p.Receiver, p.TemplateID, p.Params...),
+			return errors.Wrapf(sc.SendSms(p.Receiver, p.TemplateID, p.Params...),
 				"send sms by key = %v, params = %+v err", key, p)
 		}
 	}
@@ -246,7 +246,7 @@ func (n *Notify) checkVerify(p notifytypes.CommonParams) error {
 	ok, err := n.periodLimit.Allow(verifyKey,
 		limit.WithPeriod(n.c.VerifyPeriod), limit.WithQuota(n.c.VerifyQuota))
 	if err != nil {
-		return errors.WithMessage(err, "verify limit allow err")
+		return errors.Wrap(err, "verify limit allow err")
 	}
 	if !ok {
 		return notifytypes.ErrVerifyTooFrequently
@@ -277,7 +277,7 @@ func (n *Notify) handleVerify(p *notifytypes.VerifyParams) error {
 	key := notifytypes.GenCodeKey(p.CommonParams)
 	cacheCode, err := n.kvStore.Get(key)
 	if err != nil {
-		return errors.WithMessagef(err, "kv store get by key = %v err", key)
+		return errors.Wrapf(err, "kv store get by key = %v err", key)
 	}
 
 	if cacheCode == "" {

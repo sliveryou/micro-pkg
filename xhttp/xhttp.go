@@ -3,7 +3,6 @@ package xhttp
 import (
 	"bytes"
 	"context"
-	"errors"
 	"io"
 	"mime/multipart"
 	"net"
@@ -11,6 +10,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/mapping"
 	"github.com/zeromicro/go-zero/rest/httpx"
@@ -134,7 +134,7 @@ func ParseJsonBody(r *http.Request, v any) error {
 func FromFile(r *http.Request, name string) (*multipart.FileHeader, error) {
 	if r.MultipartForm == nil {
 		if err := r.ParseMultipartForm(defaultMultipartMemory); err != nil {
-			return nil, err
+			return nil, errors.WithMessage(err, "r.ParseMultipartForm err")
 		}
 	}
 
@@ -143,7 +143,7 @@ func FromFile(r *http.Request, name string) (*multipart.FileHeader, error) {
 		if errors.Is(err, http.ErrMissingFile) {
 			return nil, errcode.ErrInvalidParams
 		}
-		return nil, err
+		return nil, errors.WithMessage(err, "r.FormFile err")
 	}
 	f.Close()
 
@@ -248,7 +248,7 @@ func CopyHTTPRequest(r *http.Request) (*http.Request, error) {
 	if r.Body != nil {
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithMessage(err, "io.ReadAll err")
 		}
 
 		r.Body = io.NopCloser(bytes.NewReader(body))

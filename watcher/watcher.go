@@ -92,11 +92,12 @@ func (w *Watcher) Update() error {
 	defer cancel()
 
 	resp, err := w.client.Put(ctx, w.c.Key, "")
-	if err == nil {
-		w.lastSentRev = resp.Header.GetRevision()
+	if err != nil {
+		return errors.WithMessagef(err, "client put key: %s err", w.c.Key)
 	}
+	w.lastSentRev = resp.Header.GetRevision()
 
-	return err
+	return nil
 }
 
 // Close 关闭 etcd 观察器

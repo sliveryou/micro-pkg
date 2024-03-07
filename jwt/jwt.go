@@ -157,7 +157,7 @@ func (j *JWT) ParseTokenFromRequest(r *http.Request, token any) error {
 func (j *JWT) ParseTokenPayloads(tokenString string) (map[string]any, error) {
 	token, err := j.newParser().Parse(trimBearerPrefix(tokenString), j.keyFunc())
 	if err != nil {
-		return nil, errors.WithMessage(err, "jwt.Parse err")
+		return nil, errors.WithMessage(err, "parse from token string err")
 	}
 
 	payloads, err := extractPayloads(token)
@@ -173,7 +173,7 @@ func (j *JWT) ParseTokenPayloadsFromRequest(r *http.Request) (map[string]any, er
 	token, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor,
 		j.keyFunc(), request.WithParser(j.newParser()))
 	if err != nil {
-		return nil, errors.WithMessage(err, "request.ParseFromRequest err")
+		return nil, errors.WithMessage(err, "parse from request err")
 	}
 
 	payloads, err := extractPayloads(token)

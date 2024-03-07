@@ -6,7 +6,7 @@ require (
 	dario.cat/mergo v1.0.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/alicebob/miniredis/v2 v2.31.1
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.687
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.688
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/casbin/casbin/v2 v2.82.0
 	github.com/glebarez/sqlite v1.10.0

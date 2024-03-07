@@ -115,7 +115,7 @@ func UnmarshalYaml(content string, value any, zeroFields ...bool) error {
 		return errors.WithMessage(err, "new map structure decoder err")
 	}
 
-	return d.Decode(m)
+	return errors.WithMessage(d.Decode(m), "decode value err")
 }
 
 // MustUnmarshalYaml 将 content 字符串 yaml 反序列化到 value 中

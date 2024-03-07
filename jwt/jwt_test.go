@@ -112,22 +112,22 @@ func TestJWT_ParseTokenPayloads(t *testing.T) {
 	tok, err := genTestToken("another-issuer", "ABCDEFGH", jwt.SigningMethodHS256, tokenMap, 72*time.Hour)
 	require.NoError(t, err)
 	_, err = j.ParseTokenPayloads(tok)
-	require.EqualError(t, err, "jwt.Parse err: token has invalid claims: token has invalid issuer")
+	require.EqualError(t, err, "parse from token string err: token has invalid claims: token has invalid issuer")
 
 	tok, err = genTestToken("test-issuer", "ABCD", jwt.SigningMethodHS256, tokenMap, 72*time.Hour)
 	require.NoError(t, err)
 	_, err = j.ParseTokenPayloads(tok)
-	require.EqualError(t, err, "jwt.Parse err: token signature is invalid: signature is invalid")
+	require.EqualError(t, err, "parse from token string err: token signature is invalid: signature is invalid")
 
 	tok, err = genTestToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS512, tokenMap, 72*time.Hour)
 	require.NoError(t, err)
 	_, err = j.ParseTokenPayloads(tok)
-	require.EqualError(t, err, "jwt.Parse err: token signature is invalid: signing method HS512 is invalid")
+	require.EqualError(t, err, "parse from token string err: token signature is invalid: signing method HS512 is invalid")
 
 	tok, err = genTestToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS256, tokenMap)
 	require.NoError(t, err)
 	_, err = j.ParseTokenPayloads(tok)
-	require.EqualError(t, err, "jwt.Parse err: token has invalid claims: token is missing required claim: exp claim is required")
+	require.EqualError(t, err, "parse from token string err: token has invalid claims: token is missing required claim: exp claim is required")
 
 	tok, err = genTestToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS256, tokenMap, 72*time.Hour)
 	require.NoError(t, err)
@@ -151,7 +151,7 @@ func TestJWT_ParseTokenFromRequest(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "http://localhost", http.NoBody)
 	_, err = j.ParseTokenPayloadsFromRequest(req)
-	require.EqualError(t, err, "request.ParseFromRequest err: no token present in request")
+	require.EqualError(t, err, "parse from request err: no token present in request")
 
 	req.Header.Set("Authorization", "Bearer "+tokenStr)
 	payloads, err := j.ParseTokenPayloadsFromRequest(req)
@@ -175,7 +175,7 @@ func TestJWT_ParseTokenPayloadsFromRequest(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost", http.NoBody)
 	uip := &_UserInfo{}
 	err = j.ParseTokenFromRequest(req, uip)
-	require.EqualError(t, err, "request.ParseFromRequest err: no token present in request")
+	require.EqualError(t, err, "parse from request err: no token present in request")
 
 	req.Header.Set("Authorization", tokenStr)
 	err = j.ParseTokenFromRequest(req, uip)

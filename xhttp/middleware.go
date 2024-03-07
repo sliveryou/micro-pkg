@@ -37,7 +37,7 @@ func NewJWTMiddleware(j *jwt.JWT, token any, errTokenVerify error) (*JWTMiddlewa
 		return nil, errors.New("xhttp: illegal jwt middleware config")
 	}
 	if err := jwt.CheckTokenType(token); err != nil {
-		return nil, err
+		return nil, errors.WithMessage(err, "xhttp: check token type err")
 	}
 
 	return &JWTMiddleware{
@@ -65,7 +65,7 @@ func (m *JWTMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		target := reflect.New(m.t).Elem().Addr().Interface()
 
 		if err := m.j.ParseTokenFromRequest(r, target); err != nil {
-			l.Errorf("jwt middleware parse token from request err: %v", err)
+			l.Errorf("jwt middleware parse token err: %v", err)
 			ErrorCtx(ctx, w, m.errTokenVerify)
 			return
 		}

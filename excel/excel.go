@@ -65,7 +65,7 @@ func ReadRows(r io.Reader, sheet string, handler ReadHandler, opts ...excelize.O
 		rowNum++
 		columns, err := rows.Columns(opts...)
 		if err != nil {
-			return errors.WithMessagef(err, "rowNum: %d, rows.Columns err", rowNum)
+			return errors.WithMessagef(err, "rows.Columns err, rowNum: %d", rowNum)
 		}
 		if isContinue := handler(rowNum, columns); !isContinue {
 			return nil
@@ -101,10 +101,10 @@ func WriteRows(r io.Reader, sheet, saveAs string, handler WriteHandler, opts ...
 		if needWrite {
 			cellName, err := excelize.CoordinatesToCellName(1, rowNum)
 			if err != nil {
-				return errors.WithMessagef(err, "rowNum: %d, excelize.CoordinatesToCellName err", rowNum)
+				return errors.WithMessagef(err, "excelize.CoordinatesToCellName err, rowNum: %d", rowNum)
 			}
 			if err := sw.SetRow(cellName, columns); err != nil {
-				return errors.WithMessagef(err, "rowNum: %d, cellName: %s, sw.SetRow err", rowNum, cellName)
+				return errors.WithMessagef(err, "sw.SetRow err, rowNum: %d, cellName: %s", rowNum, cellName)
 			}
 		}
 	}

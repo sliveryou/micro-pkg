@@ -32,6 +32,9 @@ const (
 	VideoVerifyURL = "https://aip.baidubce.com/rest/2.0/face/v1/faceliveness/verify"
 	// PersonVerifyURL 人脸实名认证接口地址
 	PersonVerifyURL = "https://aip.baidubce.com/rest/2.0/face/v3/person/verify"
+
+	cacheName = "face auth"
+	cacheKey  = "access token"
 )
 
 var (
@@ -67,7 +70,7 @@ func NewFace(c Config) (*Face, error) {
 	}
 
 	// 设置鉴权认证 token 缓存，过期时间为 24 小时
-	cache, err := collection.NewCache(24*time.Hour, collection.WithName("face access token"))
+	cache, err := collection.NewCache(24*time.Hour, collection.WithName(cacheName))
 	if err != nil {
 		return nil, errors.WithMessage(err, "collection.NewCache err")
 	}
@@ -141,7 +144,7 @@ func (f *Face) Authenticate(ctx context.Context, req *AuthenticateReq) (*Authent
 
 // getAccessToken 获取鉴权认证 token
 func (f *Face) getAccessToken(ctx context.Context) (string, error) {
-	item, err := f.cache.Take("access token", func() (any, error) {
+	item, err := f.cache.Take(cacheKey, func() (any, error) {
 		var resp getAccessTokenResp
 
 		rawURL := AccessTokenURL
