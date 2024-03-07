@@ -47,7 +47,7 @@ func (s *sm3) pad() []byte {
 	msg = append(msg, uint8(s.length>>0&0xff))
 
 	if len(msg)%64 != 0 {
-		panic(errors.New("s: invalid msg length"))
+		panic(errors.New("sm3: invalid msg length"))
 	}
 
 	return msg

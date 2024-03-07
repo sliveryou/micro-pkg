@@ -120,7 +120,7 @@ func (s *Store) SetString(key, value string, seconds ...int) error {
 func (s *Store) SetStringCtx(ctx context.Context, key, value string, seconds ...int) error {
 	if len(seconds) > 0 {
 		return errors.Wrapf(s.SetexCtx(ctx, key, value, seconds[0]),
-			"setex by seconds = %v err", seconds[0])
+			"setex by seconds: %d err", seconds[0])
 	}
 
 	return errors.Wrap(s.SetCtx(ctx, key, value), "set err")

@@ -72,7 +72,7 @@ func NewFace(c Config) (*Face, error) {
 	// 设置鉴权认证 token 缓存，过期时间为 24 小时
 	cache, err := collection.NewCache(24*time.Hour, collection.WithName(cacheName))
 	if err != nil {
-		return nil, errors.WithMessage(err, "collection.NewCache err")
+		return nil, errors.WithMessage(err, "face: new cache err")
 	}
 
 	cc := xhttp.GetDefaultConfig()

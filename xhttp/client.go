@@ -98,7 +98,7 @@ func NewClientWithHTTPClient(client *http.Client) *Client {
 func (c *Client) GetRequest(ctx context.Context, method, url string, header map[string]string, data io.Reader) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, method, url, data)
 	if err != nil {
-		return nil, errors.WithMessagef(err, "new http request err, method = %s, url = %s, header = %v",
+		return nil, errors.WithMessagef(err, "new http request err, method: %s, url: %s, header: %v",
 			method, url, header)
 	}
 

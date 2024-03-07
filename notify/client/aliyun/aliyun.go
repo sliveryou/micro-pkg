@@ -182,7 +182,7 @@ func (a *Aliyun) SendEmail(receiver, templateID string, params ...notifytypes.Pa
 	var cp commonResponse
 	err = json.Unmarshal(resp.GetHttpContentBytes(), &cp)
 	if err != nil {
-		return errors.WithMessage(err, "json.Unmarshal err")
+		return errors.WithMessage(err, "json unmarshal err")
 	}
 
 	if !resp.IsSuccess() {

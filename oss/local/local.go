@@ -93,7 +93,7 @@ func (l *LSS) PutObject(key string, reader io.Reader) (string, error) {
 
 	dest, err := os.Create(destPath)
 	if err != nil {
-		return "", errors.WithMessagef(err, "local: lss create dest path = %s err", destPath)
+		return "", errors.WithMessagef(err, "local: lss create dest path: %s err", destPath)
 	}
 	defer dest.Close()
 
@@ -125,13 +125,13 @@ func (l *LSS) UploadFile(key, filePath string, partSize int64, routines int) (st
 	if filePath != destPath {
 		src, err := os.Open(filePath)
 		if err != nil {
-			return "", errors.WithMessagef(err, "local: lss open file path = %v err", filePath)
+			return "", errors.WithMessagef(err, "local: lss open file path: %s err", filePath)
 		}
 		defer src.Close()
 
 		dest, err := os.Create(destPath)
 		if err != nil {
-			return "", errors.WithMessagef(err, "local: lss create dest path = %v err", destPath)
+			return "", errors.WithMessagef(err, "local: lss create dest path: %s err", destPath)
 		}
 		defer dest.Close()
 
@@ -159,7 +159,7 @@ func (l *LSS) mkdir(destPath string) error {
 	destDir := filepath.Dir(destPath)
 	if !filex.IsExist(destDir) {
 		return errors.WithMessagef(filex.Mkdir(destDir),
-			"local lss mkdir dest dir = %s err", destDir)
+			"local lss mkdir dest dir: %s err", destDir)
 	}
 
 	return nil

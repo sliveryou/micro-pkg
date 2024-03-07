@@ -204,7 +204,7 @@ func (n *Notify) handleSend(p *notifytypes.SendParams) error {
 		err = n.kvStore.SetString(key, cp.Value, int(cp.Expiration.Seconds()))
 		if err != nil {
 			return errors.Wrapf(err, "kv store set string by "+
-				"key = %v, value = %v err", key, cp.Value)
+				"key: %s, value: %s err", key, cp.Value)
 		}
 	}
 
@@ -216,14 +216,14 @@ func (n *Notify) handleSend(p *notifytypes.SendParams) error {
 				return notifytypes.ErrEmailSupport
 			}
 			return errors.Wrapf(ec.SendEmail(p.Receiver, p.TemplateID, p.Params...),
-				"send email by key = %v, params = %+v err", key, p)
+				"send email by key: %s, params: %+v err", key, p)
 		default:
 			sc, key, isExist := n.smsClients.Pick()
 			if !isExist {
 				return notifytypes.ErrSmsSupport
 			}
 			return errors.Wrapf(sc.SendSms(p.Receiver, p.TemplateID, p.Params...),
-				"send sms by key = %v, params = %+v err", key, p)
+				"send sms by key: %s, params: %+v err", key, p)
 		}
 	}
 
@@ -277,7 +277,7 @@ func (n *Notify) handleVerify(p *notifytypes.VerifyParams) error {
 	key := notifytypes.GenCodeKey(p.CommonParams)
 	cacheCode, err := n.kvStore.Get(key)
 	if err != nil {
-		return errors.Wrapf(err, "kv store get by key = %v err", key)
+		return errors.Wrapf(err, "kv store get by key: %s err", key)
 	}
 
 	if cacheCode == "" {

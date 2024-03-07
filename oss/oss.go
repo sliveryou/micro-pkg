@@ -57,7 +57,7 @@ func checkConfig(c Config) (err error) {
 	default:
 		if c.EndPoint == "" || c.AccessKeyID == "" ||
 			c.AccessKeySecret == "" || c.BucketName == "" {
-			err = errors.Errorf("oss: illegal oss cloud %v config", cloud)
+			err = errors.Errorf("oss: illegal oss cloud %s config", cloud)
 		}
 	}
 
