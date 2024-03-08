@@ -35,7 +35,7 @@ const (
 
 // ExpressBird 快递鸟客户端结构详情
 type ExpressBird struct {
-	appID       string // 应用id（为快递鸟中分配的 EBusinessID）
+	appID       string // 应用ID（为快递鸟中分配的 EBusinessID）
 	secretKey   string // 应用密钥
 	requestType string // 请求指令类型（可以为 1002、8001 和 8002）
 	client      *xhttp.Client

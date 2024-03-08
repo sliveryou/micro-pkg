@@ -20,7 +20,7 @@ const (
 
 	// codeOK 调用成功状态码
 	codeOK = "OK"
-	// defaultRegionID 默认地域id
+	// defaultRegionID 默认地域ID
 	defaultRegionID = "cn-hangzhou"
 )
 
@@ -30,25 +30,11 @@ var ErrEmailTmplNotExist = errcode.NewCommon("邮件模板信息不存在")
 // App 应用相关配置
 type App struct {
 	IsDisabled      bool   `json:",optional"`            // 是否禁用
-	RegionID        string `json:",default=cn-hangzhou"` // 地域id
-	AccessKeyID     string // 访问鉴权id
-	AccessKeySecret string // 访问鉴权私钥
-	SignName        string // 短信签名名称
-	AccountName     string // 发信地址（邮件应用使用）
-}
-
-// isValid 判断应用相关配置是否合法
-func (a *App) isValid() bool {
-	if !a.IsDisabled {
-		if a.AccessKeyID == "" || a.AccessKeySecret == "" || a.SignName == "" {
-			return false
-		}
-		if a.RegionID == "" {
-			a.RegionID = defaultRegionID
-		}
-	}
-
-	return true
+	RegionID        string `json:",default=cn-hangzhou"` // 地域ID
+	AccessKeyID     string `json:",optional"`            // 访问鉴权ID
+	AccessKeySecret string `json:",optional"`            // 访问鉴权私钥
+	SignName        string `json:",optional"`            // 短信签名名称
+	AccountName     string `json:",optional"`            // 发信地址（邮件应用使用）
 }
 
 // Config 阿里云通知服务相关配置
@@ -68,14 +54,17 @@ type Aliyun struct {
 
 // NewAliyun 新建阿里云通知服务对象
 func NewAliyun(c Config, opts ...notifytypes.Option) (*Aliyun, error) {
-	a := &Aliyun{c: c, baseClient: notifytypes.NewBaseClient(
-		c.Sms.IsDisabled, c.Email.IsDisabled, opts...), emailExtraMap: make(map[string]EmailExtra)}
+	if err := c.check(); err != nil {
+		return nil, errors.WithMessage(err, "aliyun: check config err")
+	}
+
+	a := &Aliyun{
+		c:             c,
+		baseClient:    notifytypes.NewBaseClient(c.Sms.IsDisabled, c.Email.IsDisabled, opts...),
+		emailExtraMap: make(map[string]EmailExtra),
+	}
 
 	if !c.Sms.IsDisabled {
-		if !c.Sms.isValid() {
-			return nil, errors.New("aliyun: illegal aliyun sms config")
-		}
-
 		config := sdk.NewConfig()
 		config.Transport = a.baseClient.HTTPClient.Transport
 		config.Timeout = a.baseClient.HTTPClient.Timeout
@@ -89,10 +78,6 @@ func NewAliyun(c Config, opts ...notifytypes.Option) (*Aliyun, error) {
 	}
 
 	if !c.Email.IsDisabled {
-		if !c.Email.isValid() || c.Email.AccountName == "" {
-			return nil, errors.New("aliyun: illegal aliyun email config")
-		}
-
 		config := sdk.NewConfig()
 		config.Transport = a.baseClient.HTTPClient.Transport
 		config.Timeout = a.baseClient.HTTPClient.Timeout
@@ -214,6 +199,37 @@ func (a *Aliyun) LoadEmailExtraMap(eem map[string]EmailExtra) {
 	if eem != nil {
 		a.emailExtraMap = eem
 	}
+}
+
+// isValid 判断应用相关配置是否合法
+func (a *App) isValid(isEmailApp ...bool) bool {
+	if !a.IsDisabled {
+		if a.AccessKeyID == "" || a.AccessKeySecret == "" || a.SignName == "" {
+			return false
+		}
+		// 如果为邮件应用且发信地址为空
+		if len(isEmailApp) > 0 && isEmailApp[0] && a.AccountName == "" {
+			return false
+		}
+		if a.RegionID == "" {
+			a.RegionID = defaultRegionID
+		}
+	}
+
+	return true
+}
+
+// check 检查配置
+func (c *Config) check() error {
+	if !c.Sms.isValid() {
+		return errors.New("illegal aliyun sms config")
+	}
+
+	if !c.Email.isValid(true) {
+		return errors.New("illegal aliyun email config")
+	}
+
+	return nil
 }
 
 // EmailExtra 邮件额外信息

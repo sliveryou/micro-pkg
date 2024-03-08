@@ -50,8 +50,8 @@ var (
 // Config 人脸识别认证相关配置
 type Config struct {
 	IsMock    bool   `json:",optional"` // 是否模拟通过
-	APIKey    string // 接口key
-	SecretKey string // 接口密钥
+	APIKey    string `json:",optional"` // 接口Key
+	SecretKey string `json:",optional"` // 接口密钥
 }
 
 // Face 人脸识别认证器结构详情
@@ -100,7 +100,7 @@ type AuthenticateReq struct {
 
 // AuthenticateResp 人脸识别认证响应
 type AuthenticateResp struct {
-	LogID int64 // 日志id
+	LogID int64 // 日志ID
 }
 
 // Authenticate 人脸识别认证
@@ -300,7 +300,7 @@ type videoVerifyResult struct {
 type videoVerifyPic struct {
 	Pic           string  `json:"videoVerifyPic"` // base64 编码后的图片信息
 	FaceToken     string  `json:"face_token"`     // 人脸图片的唯一标识
-	FaceID        string  `json:"face_id"`        // 人脸图片id
+	FaceID        string  `json:"face_id"`        // 人脸图片ID
 	LivenessScore float64 `json:"liveness_score"` // 此图片的活体分数，范围 [0,1]
 	Spoofing      float64 `json:"spoofing"`       // 判断此图片是合成图的分数，范围 [0,1]
 }
@@ -324,7 +324,7 @@ type personVerifyReq struct {
 type personVerifyResp struct {
 	ErrorCode int64              `json:"error_code"` // 错误码
 	ErrorMsg  string             `json:"error_msg"`  // 错误消息
-	LogID     int64              `json:"log_id"`     // 日志id
+	LogID     int64              `json:"log_id"`     // 日志ID
 	Result    personVerifyResult `json:"result"`     // 结果
 }
 

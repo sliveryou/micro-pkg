@@ -17,14 +17,14 @@ const (
 
 // Config 阿波罗配置中心客户端相关配置
 type Config struct {
-	IsDisabled         bool     `json:",optional"` // 是否禁用
-	AppID              string   // 应用ID
+	IsDisabled         bool     `json:",optional"`        // 是否禁用
+	AppID              string   `json:",optional"`        // 应用ID
 	Cluster            string   `json:",default=default"` // 集群
-	NameSpaceNames     []string // 命名空间
-	CacheDir           string   `json:",optional"` // 配置缓存目录
-	MetaAddr           string   // 服务地址
-	AccessKeySecret    string   `json:",optional"` // 访问鉴权密钥
-	InsecureSkipVerify bool     `json:",optional"` // 跳过安全验证
+	NameSpaceNames     []string `json:",optional"`        // 命名空间
+	CacheDir           string   `json:",optional"`        // 配置缓存目录
+	MetaAddr           string   `json:",optional"`        // 服务地址
+	AccessKeySecret    string   `json:",optional"`        // 访问鉴权密钥
+	InsecureSkipVerify bool     `json:",optional"`        // 跳过安全验证
 }
 
 // Apollo 阿波罗配置中心客户端
@@ -35,10 +35,10 @@ type Apollo struct {
 
 // NewApollo 新建阿波罗配置中心客户端
 func NewApollo(c Config) (*Apollo, error) {
-	a := &Apollo{c: c}
+	var client agollo.Client
 
 	if c.IsDisabled {
-		a.Client = &MockClient{}
+		client = &MockClient{}
 	} else {
 		if c.AppID == "" || len(c.NameSpaceNames) == 0 || c.MetaAddr == "" {
 			return nil, errors.New("apollo: illegal apollo config")
@@ -47,7 +47,7 @@ func NewApollo(c Config) (*Apollo, error) {
 			c.Cluster = DefaultCluster
 		}
 
-		client := agollo.NewClient(&agollo.Conf{
+		ac := agollo.NewClient(&agollo.Conf{
 			AppID:              c.AppID,
 			Cluster:            c.Cluster,
 			NameSpaceNames:     c.NameSpaceNames,
@@ -57,15 +57,15 @@ func NewApollo(c Config) (*Apollo, error) {
 			InsecureSkipVerify: c.InsecureSkipVerify,
 		})
 
-		err := client.Start()
+		err := ac.Start()
 		if err != nil {
 			return nil, errors.WithMessage(err, "apollo: client start err")
 		}
 
-		a.Client = client
+		client = ac
 	}
 
-	return a, nil
+	return &Apollo{c: c, Client: client}, nil
 }
 
 // MustNewApollo 新建阿波罗配置中心客户端

@@ -207,31 +207,31 @@ func (c *Config) check() error {
 	switch c.Type {
 	case MySQL:
 		if c.Host == "" || c.User == "" || c.Database == "" {
-			return errors.New("xdb: illegal mysql config")
+			return errors.New("illegal mysql config")
 		}
 		if c.Port <= 0 {
 			c.Port = 3306
 		}
 	case PostgreSQL:
 		if c.Host == "" || c.User == "" || c.Database == "" {
-			return errors.New("xdb: illegal postgres config")
+			return errors.New("illegal postgres config")
 		}
 		if c.Port <= 0 {
 			c.Port = 5432
 		}
 	case SQLite:
 		if c.Database == "" {
-			return errors.New("xdb: illegal sqlite config")
+			return errors.New("illegal sqlite config")
 		}
 	case SQLServer:
 		if c.Host == "" || c.User == "" || c.Database == "" {
-			return errors.New("xdb: illegal sqlserver config")
+			return errors.New("illegal sqlserver config")
 		}
 		if c.Port <= 0 {
 			c.Port = 1433
 		}
 	default:
-		return errors.New("xdb: unknown db type")
+		return errors.New("unknown db type")
 	}
 
 	return nil

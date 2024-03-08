@@ -17,24 +17,10 @@ const (
 
 // App 应用相关配置
 type App struct {
-	IsDisabled bool   `json:",optional"` // 是否禁用
-	AppID      string // 应用id
-	AppKey     string // 应用key
+	IsDisabled bool   `json:",optional"`                               // 是否禁用
+	AppID      string `json:",optional"`                               // 应用ID
+	AppKey     string `json:",optional"`                               // 应用Key
 	SignType   string `json:",default=sha1,options=[normal,sha1,md5]"` // 签名类型（枚举 normal、sha1 和 md5）
-}
-
-// isValid 判断应用相关配置是否合法
-func (a *App) isValid() bool {
-	if !a.IsDisabled {
-		if a.AppID == "" || a.AppKey == "" {
-			return false
-		}
-		if a.SignType == "" {
-			a.SignType = smclient.SignTypeSha1
-		}
-	}
-
-	return true
 }
 
 // Config 赛邮云通知服务相关配置
@@ -53,23 +39,21 @@ type Submail struct {
 
 // NewSubmail 新建赛邮云通知服务对象
 func NewSubmail(c Config, opts ...notifytypes.Option) (*Submail, error) {
-	s := &Submail{c: c, baseClient: notifytypes.NewBaseClient(
-		c.Sms.IsDisabled, c.Email.IsDisabled, opts...)}
+	if err := c.check(); err != nil {
+		return nil, errors.WithMessage(err, "submail: check config err")
+	}
+
+	s := &Submail{
+		c:          c,
+		baseClient: notifytypes.NewBaseClient(c.Sms.IsDisabled, c.Email.IsDisabled, opts...),
+	}
 
 	if !c.Sms.IsDisabled {
-		if !c.Sms.isValid() {
-			return nil, errors.New("submail: illegal submail sms config")
-		}
-
 		s.smsClient = sms.New(c.Sms.AppID, c.Sms.AppKey, c.Sms.SignType,
 			smclient.WithHTTPClient(s.baseClient.HTTPClient))
 	}
 
 	if !c.Email.IsDisabled {
-		if !c.Email.isValid() {
-			return nil, errors.New("submail: illegal submail email config")
-		}
-
 		s.emailClient = mail.New(c.Email.AppID, c.Email.AppKey, c.Email.SignType,
 			smclient.WithHTTPClient(s.baseClient.HTTPClient))
 	}
@@ -123,4 +107,31 @@ func (s *Submail) SendEmail(receiver, templateID string, params ...notifytypes.P
 	}
 
 	return errors.WithMessage(s.emailClient.XSend(xsp), "email client xsend err")
+}
+
+// isValid 判断应用相关配置是否合法
+func (a *App) isValid() bool {
+	if !a.IsDisabled {
+		if a.AppID == "" || a.AppKey == "" {
+			return false
+		}
+		if a.SignType == "" {
+			a.SignType = smclient.SignTypeSha1
+		}
+	}
+
+	return true
+}
+
+// check 检查配置
+func (c *Config) check() error {
+	if !c.Sms.isValid() {
+		return errors.New("illegal submail sms config")
+	}
+
+	if !c.Email.isValid() {
+		return errors.New("illegal submail email config")
+	}
+
+	return nil
 }

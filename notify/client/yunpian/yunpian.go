@@ -19,7 +19,7 @@ const (
 // App 应用相关配置
 type App struct {
 	IsDisabled bool   `json:",optional"` // 是否禁用
-	APIKey     string // 接口key
+	APIKey     string `json:",optional"` // 接口Key
 }
 
 // Config 云片通知服务相关配置

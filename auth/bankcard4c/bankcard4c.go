@@ -31,8 +31,8 @@ const (
 // Config 银行卡四要素认证相关配置
 type Config struct {
 	IsMock       bool   `json:",optional"` // 是否模拟通过
-	AppKey       string // 应用key
-	AppKeySecret string // 应用密钥
+	AppKey       string `json:",optional"` // 应用Key
+	AppKeySecret string `json:",optional"` // 应用密钥
 }
 
 // BankCard4C 银行卡四要素认证器结构详情

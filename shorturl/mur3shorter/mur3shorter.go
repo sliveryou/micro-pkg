@@ -25,7 +25,7 @@ type Shorter struct {
 func NewShorter(length int64, alphabet ...string) (*Shorter, error) {
 	a := DefaultAlphabet
 	if length < 1 {
-		return nil, errors.New("murmur3: illegal shorter config")
+		return nil, errors.New("mur3shorter: illegal shorter config")
 	}
 	if len(alphabet) > 0 && len(alphabet[0]) == 62 {
 		a = alphabet[0]

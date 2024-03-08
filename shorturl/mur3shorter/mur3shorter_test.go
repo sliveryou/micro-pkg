@@ -18,7 +18,7 @@ func TestNewShorter(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, s)
 
-	assert.PanicsWithError(t, "murmur3: illegal shorter config", func() {
+	assert.PanicsWithError(t, "mur3shorter: illegal shorter config", func() {
 		MustNewShorter(0)
 	})
 }

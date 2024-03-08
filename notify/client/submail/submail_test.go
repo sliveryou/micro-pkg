@@ -3,7 +3,10 @@ package submail
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	smclient "github.com/sliveryou/submail-go-sdk/client"
 
 	notifytypes "github.com/sliveryou/micro-pkg/notify/types"
 	"github.com/sliveryou/micro-pkg/xhttp"
@@ -31,6 +34,26 @@ func getSubmail() (*Submail, error) {
 		notifytypes.WithHTTPClient(httpClient),
 		notifytypes.WithSmsTmplMap(sTmpl),
 		notifytypes.WithEmailTmplMap(eTmpl))
+}
+
+func TestMustNewSubmail(t *testing.T) {
+	c := Config{
+		Sms: App{
+			AppID:  "appID",
+			AppKey: "appKey",
+		},
+		Email: App{
+			AppID:  "appID",
+			AppKey: "appKey",
+		},
+	}
+
+	assert.NotPanics(t, func() {
+		a := MustNewSubmail(c)
+		assert.NotNil(t, a)
+		assert.Equal(t, smclient.SignTypeSha1, a.c.Sms.SignType)
+		assert.Equal(t, smclient.SignTypeSha1, a.c.Email.SignType)
+	})
 }
 
 func TestSubmail_SendSmsCode(t *testing.T) {

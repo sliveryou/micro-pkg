@@ -105,7 +105,7 @@ DELETE /v1/proof/1 删除存证
 ```go
 // Department 部门
 type Department struct {
-	Id          int64  `json:"id"`          // 部门id
+	Id          int64  `json:"id"`          // 部门ID
 	Name        string `json:"name"`        // 部门名称
 	Description string `json:"description"` // 部门描述
 }
@@ -120,7 +120,7 @@ type DepartmentPage struct {
 
 // GetDepartmentReq 查询部门请求
 type GetDepartmentReq struct {
-	Id int64 `path:"id" validate:"required" label:"部门id"` // 部门id
+	Id int64 `path:"id" validate:"required" label:"部门ID"` // 部门ID
 }
 
 // GetDepartmentResp 查询部门响应
@@ -157,7 +157,7 @@ type CreateDepartmentResp struct {
 
 // UpdateDepartmentReq 更新部门请求
 type UpdateDepartmentReq struct {
-	Id          int64   `path:"id" validate:"required" label:"部门id" swaggerignore:"true"` // 部门id
+	Id          int64   `path:"id" validate:"required" label:"部门ID" swaggerignore:"true"` // 部门ID
 	Name        string  `json:"name" validate:"required" label:"部门名称"`                    // 部门名称
 	Description *string `json:"description,optional"`                                     // 部门描述
 }

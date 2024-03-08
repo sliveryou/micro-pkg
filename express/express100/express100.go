@@ -37,7 +37,7 @@ const (
 
 // Express100 快递100客户端结构详情
 type Express100 struct {
-	appID     string // 应用id（为快递100中分配的 CustomerId）
+	appID     string // 应用ID（为快递100中分配的 CustomerID）
 	secretKey string // 应用密钥
 	client    *xhttp.Client
 }

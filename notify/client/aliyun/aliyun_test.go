@@ -3,6 +3,7 @@ package aliyun
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	notifytypes "github.com/sliveryou/micro-pkg/notify/types"
@@ -33,6 +34,29 @@ func getAliyun() (*Aliyun, error) {
 		notifytypes.WithHTTPClient(httpClient),
 		notifytypes.WithSmsTmplMap(sTmpl),
 	)
+}
+
+func TestMustNewAliyun(t *testing.T) {
+	c := Config{
+		Sms: App{
+			AccessKeyID:     "accessKeyID",
+			AccessKeySecret: "accessKeySecret",
+			SignName:        "测试",
+		},
+		Email: App{
+			AccessKeyID:     "accessKeyID",
+			AccessKeySecret: "accessKeySecret",
+			SignName:        "测试",
+			AccountName:     "sliveryou@outlook.com",
+		},
+	}
+
+	assert.NotPanics(t, func() {
+		a := MustNewAliyun(c)
+		assert.NotNil(t, a)
+		assert.Equal(t, defaultRegionID, a.c.Sms.RegionID)
+		assert.Equal(t, defaultRegionID, a.c.Email.RegionID)
+	})
 }
 
 func TestAliyun_SendSmsCode(t *testing.T) {

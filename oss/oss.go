@@ -40,10 +40,10 @@ type Config struct {
 	UploadInternal  bool   `json:",optional"`                                         // 是否使用内网上传（用于 aliyun 云服务商模式）
 	NotSetACL       bool   `json:",optional"`                                         // 不设置权限规则
 	Cloud           string `json:",options=[aliyun,huawei,tencent,minio,local,mock]"` // 云服务商（当前支持 aliyun、huawei、tencent、minio、local 和 mock）
-	EndPoint        string // 端节点
-	AccessKeyID     string // 访问鉴权ID
-	AccessKeySecret string // 访问鉴权私钥
-	BucketName      string // 存储桶名称
+	EndPoint        string `json:",optional"`                                         // 端节点
+	AccessKeyID     string `json:",optional"`                                         // 访问鉴权ID
+	AccessKeySecret string `json:",optional"`                                         // 访问鉴权私钥
+	BucketName      string `json:",optional"`                                         // 存储桶名称
 }
 
 // checkConfig 检查配置

@@ -36,9 +36,8 @@ func newBuilder(chKey ...ContextKey) balancer.Builder {
 		ck = chKey[0]
 	}
 
-	return base.NewBalancerBuilder(Name,
-		&chPickerBuilder{chKey: ck},
-		base.Config{HealthCheck: true},
+	return base.NewBalancerBuilder(
+		Name, &chPickerBuilder{chKey: ck}, base.Config{HealthCheck: true},
 	)
 }
 
