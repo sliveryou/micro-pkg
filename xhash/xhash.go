@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
+	"encoding/base64"
 	"encoding/hex"
 	"hash"
 	"io"
@@ -47,6 +48,26 @@ func HashReader(h hash.Hash, r io.Reader) (string, error) {
 	}
 
 	return hex.EncodeToString(h.Sum(nil)), nil
+}
+
+// Base64HashReader 根据提供的 hash.Hash 对象计算 io.Reader 具体内容的 base64 hash
+func Base64HashReader(h hash.Hash, r io.Reader) (string, error) {
+	_, err := io.Copy(h, r)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(h.Sum(nil)), nil
+}
+
+// HashString 根据提供的 hash.Hash 对象计算所给 s 字符串具体内容的 hash
+func HashString(h hash.Hash, s string) (string, error) {
+	return HashReader(h, strings.NewReader(s))
+}
+
+// Base64HashString 根据提供的 hash.Hash 对象计算所给 s 字符串具体内容的 base64 hash
+func Base64HashString(h hash.Hash, s string) (string, error) {
+	return Base64HashReader(h, strings.NewReader(s))
 }
 
 // HashFile 根据提供的 hash.Hash 对象计算文件路径指向的文件具体内容的 hash，

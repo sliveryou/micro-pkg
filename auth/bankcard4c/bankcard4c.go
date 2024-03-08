@@ -30,7 +30,7 @@ const (
 
 // Config 银行卡四要素认证相关配置
 type Config struct {
-	IsMock       bool   // 是否模拟通过
+	IsMock       bool   `json:",optional"` // 是否模拟通过
 	AppKey       string // 应用key
 	AppKeySecret string // 应用密钥
 }

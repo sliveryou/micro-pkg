@@ -49,7 +49,7 @@ var (
 
 // Config 人脸识别认证相关配置
 type Config struct {
-	IsMock    bool   // 是否模拟通过
+	IsMock    bool   `json:",optional"` // 是否模拟通过
 	APIKey    string // 接口key
 	SecretKey string // 接口密钥
 }

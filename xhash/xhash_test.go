@@ -30,6 +30,66 @@ func TestHashReader(t *testing.T) {
 	}
 }
 
+func TestBase64HashReader(t *testing.T) {
+	cases := []struct {
+		h          hash.Hash
+		r          io.Reader
+		expectHash string
+	}{
+		{h: New("md5"), r: strings.NewReader("test md5"), expectHash: "Dk47JoHokxwGeiPFg8h41Q=="},
+		{h: New("sm3"), r: strings.NewReader("test sm3"), expectHash: "6lAL1DVmE94JwE28IyBWZhLmbUnNfWCSEAdOiS0H8Po="},
+		{h: New("sha1"), r: strings.NewReader("test sha1"), expectHash: "uZwHEzPU28oNkpjlyNdIDxdsr9w="},
+		{h: New("sha256"), r: strings.NewReader("test sha256"), expectHash: "xx0TfaFAxa/v19uOeiVd9FwqxGBk6TRBbcBAIKkfP9I="},
+		{h: New("sha512"), r: strings.NewReader("test sha512"), expectHash: "JHvRQdO4qIbr4fYPpi2f9g/9wz78Q+jXbSSvSwIyTr7Cs/xVxdDaf5vV74U2s9IFbsb/XUUtfkvAt3zbZvr8hQ=="},
+	}
+
+	for _, c := range cases {
+		s, err := Base64HashReader(c.h, c.r)
+		require.NoError(t, err)
+		assert.Equal(t, c.expectHash, s)
+	}
+}
+
+func TestHashString(t *testing.T) {
+	cases := []struct {
+		h          hash.Hash
+		s          string
+		expectHash string
+	}{
+		{h: New("md5"), s: "test md5", expectHash: "0e4e3b2681e8931c067a23c583c878d5"},
+		{h: New("sm3"), s: "test sm3", expectHash: "ea500bd4356613de09c04dbc2320566612e66d49cd7d609210074e892d07f0fa"},
+		{h: New("sha1"), s: "test sha1", expectHash: "b99c071333d4dbca0d9298e5c8d7480f176cafdc"},
+		{h: New("sha256"), s: "test sha256", expectHash: "c71d137da140c5afefd7db8e7a255df45c2ac46064e934416dc04020a91f3fd2"},
+		{h: New("sha512"), s: "test sha512", expectHash: "247bd141d3b8a886ebe1f60fa62d9ff60ffdc33efc43e8d76d24af4b02324ebec2b3fc55c5d0da7f9bd5ef8536b3d2056ec6ff5d452d7e4bc0b77cdb66fafc85"},
+	}
+
+	for _, c := range cases {
+		s, err := HashString(c.h, c.s)
+		require.NoError(t, err)
+		assert.Equal(t, c.expectHash, s)
+	}
+}
+
+func TestBase64HashString(t *testing.T) {
+	cases := []struct {
+		h          hash.Hash
+		s          string
+		expectHash string
+	}{
+		{h: New("md5"), s: "test md5", expectHash: "Dk47JoHokxwGeiPFg8h41Q=="},
+		{h: New("sm3"), s: "test sm3", expectHash: "6lAL1DVmE94JwE28IyBWZhLmbUnNfWCSEAdOiS0H8Po="},
+		{h: New("sha1"), s: "test sha1", expectHash: "uZwHEzPU28oNkpjlyNdIDxdsr9w="},
+		{h: New("sha256"), s: "test sha256", expectHash: "xx0TfaFAxa/v19uOeiVd9FwqxGBk6TRBbcBAIKkfP9I="},
+		{h: New("sha512"), s: "test sha512", expectHash: "JHvRQdO4qIbr4fYPpi2f9g/9wz78Q+jXbSSvSwIyTr7Cs/xVxdDaf5vV74U2s9IFbsb/XUUtfkvAt3zbZvr8hQ=="},
+	}
+
+	for _, c := range cases {
+		s, err := Base64HashString(c.h, c.s)
+		require.NoError(t, err)
+		assert.Equal(t, c.expectHash, s)
+	}
+}
+
 func TestHashFile(t *testing.T) {
 	cases := []struct {
 		h          hash.Hash

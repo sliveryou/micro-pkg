@@ -8,6 +8,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestMustNewOSS(t *testing.T) {
+	assert.PanicsWithError(t, "oss: illegal oss cloud unknown config", func() {
+		c := Config{
+			Cloud: "unknown",
+		}
+		MustNewOSS(c)
+	})
+}
+
 func TestAliyunGetURL(t *testing.T) {
 	c := Config{
 		NotSetACL:       true,
