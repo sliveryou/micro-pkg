@@ -20,6 +20,8 @@ const (
 
 	// codeOK 调用成功状态码
 	codeOK = "OK"
+	// defaultRegionID 默认地域id
+	defaultRegionID = "cn-hangzhou"
 )
 
 // ErrEmailTmplNotExist 邮件模板不存在错误
@@ -33,6 +35,20 @@ type App struct {
 	AccessKeySecret string // 访问鉴权私钥
 	SignName        string // 短信签名名称
 	AccountName     string // 发信地址（邮件应用使用）
+}
+
+// isValid 判断应用相关配置是否合法
+func (a *App) isValid() bool {
+	if !a.IsDisabled {
+		if a.AccessKeyID == "" || a.AccessKeySecret == "" || a.SignName == "" {
+			return false
+		}
+		if a.RegionID == "" {
+			a.RegionID = defaultRegionID
+		}
+	}
+
+	return true
 }
 
 // Config 阿里云通知服务相关配置
@@ -56,8 +72,7 @@ func NewAliyun(c Config, opts ...notifytypes.Option) (*Aliyun, error) {
 		c.Sms.IsDisabled, c.Email.IsDisabled, opts...), emailExtraMap: make(map[string]EmailExtra)}
 
 	if !c.Sms.IsDisabled {
-		if c.Sms.RegionID == "" || c.Sms.AccessKeyID == "" ||
-			c.Sms.AccessKeySecret == "" || c.Sms.SignName == "" {
+		if !c.Sms.isValid() {
 			return nil, errors.New("aliyun: illegal aliyun sms config")
 		}
 
@@ -74,8 +89,7 @@ func NewAliyun(c Config, opts ...notifytypes.Option) (*Aliyun, error) {
 	}
 
 	if !c.Email.IsDisabled {
-		if c.Email.RegionID == "" || c.Email.AccessKeyID == "" ||
-			c.Email.AccessKeySecret == "" || c.Email.SignName == "" || c.Email.AccountName == "" {
+		if !c.Email.isValid() || c.Email.AccountName == "" {
 			return nil, errors.New("aliyun: illegal aliyun email config")
 		}
 
@@ -149,6 +163,9 @@ func (a *Aliyun) SendSms(receiver, templateID string, params ...notifytypes.Para
 
 // SendEmail 发送邮件
 func (a *Aliyun) SendEmail(receiver, templateID string, params ...notifytypes.Param) error {
+	if a.c.Email.IsDisabled {
+		return notifytypes.ErrEmailSupport
+	}
 	ee, ok := a.emailExtraMap[templateID]
 	if !ok {
 		return ErrEmailTmplNotExist

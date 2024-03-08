@@ -27,7 +27,7 @@ etcd 加锁解锁过程：
   4. 完成业务流程后，删除对应的 key 释放锁。
 */
 
-// Config 分布式锁配置
+// Config 分布式锁相关配置
 type Config struct {
 	Prefix    string   `json:",optional"` // 锁前缀，如 /xlock/
 	Endpoints []string `json:",optional"` // 节点列表

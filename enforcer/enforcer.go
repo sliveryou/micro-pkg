@@ -32,11 +32,11 @@ g = _, _
 e = some(where (p.eft == allow))
 
 [matchers]
-m = r.sub == p.sub && URIMatch(r.obj, p.obj) && r.act == p.act
+m = r.sub == p.sub && uriMatch(r.obj, p.obj) && r.act == p.act
 `
 )
 
-// Config 决策规则执行器配置
+// Config 决策规则执行器相关配置
 type Config struct {
 	ModelText     string        `json:",optional"`      // casbin 模型文本，为空则使用 DefaultModelText
 	RetryDuration time.Duration `json:",default=500ms"` // 加载决策规则重试间隔
@@ -99,7 +99,7 @@ func (e *Enforcer) init() error {
 		return errors.WithMessage(err, "se.LoadPolicy err")
 	}
 
-	se.AddFunction("URIMatch", URIMatchWrapper)
+	se.AddFunction("uriMatch", URIMatchFunc)
 	e.SyncedEnforcer = se
 
 	_ = e.w.SetUpdateCallback(func(string) {
@@ -165,13 +165,14 @@ func URIMatch(key1, key2 string) bool {
 	return cutil.KeyMatch3(key1, key2)
 }
 
-// URIMatchWrapper URI 决策规则函数装饰器
-func URIMatchWrapper(args ...any) (any, error) {
-	var key1, key2 string
-	if len(args) >= 2 {
-		key1, _ = args[0].(string)
-		key2, _ = args[1].(string)
+// URIMatchFunc URI 决策规则函数装饰器
+func URIMatchFunc(args ...any) (any, error) {
+	if err := checkArgs(2, args...); err != nil {
+		return false, errors.WithMessage(err, "uriMatch err")
 	}
+
+	key1, _ := args[0].(string)
+	key2, _ := args[1].(string)
 
 	return URIMatch(key1, key2), nil
 }
@@ -188,4 +189,20 @@ func (c *Config) fillDefault() error {
 	}
 
 	return mergo.Merge(c, fill)
+}
+
+// checkArgs 检测可变参数
+func checkArgs(expectedLen int, args ...any) error {
+	if len(args) != expectedLen {
+		return errors.Errorf("expected %d arguments, but got %d", expectedLen, len(args))
+	}
+
+	for _, p := range args {
+		_, ok := p.(string)
+		if !ok {
+			return errors.New("argument must be a string")
+		}
+	}
+
+	return nil
 }

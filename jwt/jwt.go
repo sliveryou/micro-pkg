@@ -27,6 +27,8 @@ const (
 
 	jwtHeaderAlg = "alg"
 	jwtAlgHS256  = "HS256"
+
+	defaultExpiration = 72 * time.Hour
 )
 
 var (
@@ -58,7 +60,7 @@ func NewJWT(c Config) (*JWT, error) {
 		return nil, errors.New("jwt: illegal jwt config")
 	}
 	if c.Expiration == 0 {
-		c.Expiration = 72 * time.Hour
+		c.Expiration = defaultExpiration
 	}
 
 	return &JWT{c: c}, nil

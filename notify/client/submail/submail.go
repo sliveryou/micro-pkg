@@ -23,6 +23,20 @@ type App struct {
 	SignType   string `json:",default=sha1,options=[normal,sha1,md5]"` // 签名类型（枚举 normal、sha1 和 md5）
 }
 
+// isValid 判断应用相关配置是否合法
+func (a *App) isValid() bool {
+	if !a.IsDisabled {
+		if a.AppID == "" || a.AppKey == "" {
+			return false
+		}
+		if a.SignType == "" {
+			a.SignType = smclient.SignTypeSha1
+		}
+	}
+
+	return true
+}
+
 // Config 赛邮云通知服务相关配置
 type Config struct {
 	Sms   App // 短信应用相关配置
@@ -43,7 +57,7 @@ func NewSubmail(c Config, opts ...notifytypes.Option) (*Submail, error) {
 		c.Sms.IsDisabled, c.Email.IsDisabled, opts...)}
 
 	if !c.Sms.IsDisabled {
-		if c.Sms.AppID == "" || c.Sms.AppKey == "" {
+		if !c.Sms.isValid() {
 			return nil, errors.New("submail: illegal submail sms config")
 		}
 
@@ -52,7 +66,7 @@ func NewSubmail(c Config, opts ...notifytypes.Option) (*Submail, error) {
 	}
 
 	if !c.Email.IsDisabled {
-		if c.Email.AppID == "" || c.Email.AppKey == "" {
+		if !c.Email.isValid() {
 			return nil, errors.New("submail: illegal submail email config")
 		}
 

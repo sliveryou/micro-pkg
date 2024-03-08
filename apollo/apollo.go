@@ -10,15 +10,21 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// Config 阿波罗配置中心相关配置
+const (
+	// DefaultCluster 默认集群
+	DefaultCluster = "default"
+)
+
+// Config 阿波罗配置中心客户端相关配置
 type Config struct {
-	IsDisabled      bool     `json:",optional"` // 是否禁用
-	AppID           string   // 应用ID
-	Cluster         string   `json:",default=default"` // 集群
-	NameSpaceNames  []string // 命名空间
-	CacheDir        string   `json:",optional"` // 配置缓存目录
-	MetaAddr        string   // 服务地址
-	AccessKeySecret string   `json:",optional"` // 访问鉴权密钥
+	IsDisabled         bool     `json:",optional"` // 是否禁用
+	AppID              string   // 应用ID
+	Cluster            string   `json:",default=default"` // 集群
+	NameSpaceNames     []string // 命名空间
+	CacheDir           string   `json:",optional"` // 配置缓存目录
+	MetaAddr           string   // 服务地址
+	AccessKeySecret    string   `json:",optional"` // 访问鉴权密钥
+	InsecureSkipVerify bool     `json:",optional"` // 跳过安全验证
 }
 
 // Apollo 阿波罗配置中心客户端
@@ -38,16 +44,17 @@ func NewApollo(c Config) (*Apollo, error) {
 			return nil, errors.New("apollo: illegal apollo config")
 		}
 		if c.Cluster == "" {
-			c.Cluster = "default"
+			c.Cluster = DefaultCluster
 		}
 
 		client := agollo.NewClient(&agollo.Conf{
-			AppID:           c.AppID,
-			Cluster:         c.Cluster,
-			NameSpaceNames:  c.NameSpaceNames,
-			CacheDir:        c.CacheDir,
-			MetaAddr:        c.MetaAddr,
-			AccesskeySecret: c.AccessKeySecret,
+			AppID:              c.AppID,
+			Cluster:            c.Cluster,
+			NameSpaceNames:     c.NameSpaceNames,
+			CacheDir:           c.CacheDir,
+			MetaAddr:           c.MetaAddr,
+			AccesskeySecret:    c.AccessKeySecret,
+			InsecureSkipVerify: c.InsecureSkipVerify,
 		})
 
 		err := client.Start()
