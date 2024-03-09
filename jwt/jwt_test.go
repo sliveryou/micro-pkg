@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/sliveryou/go-tool/v2/sliceg"
 	"github.com/sliveryou/go-tool/v2/timex"
 )
 
@@ -221,7 +220,7 @@ func genTestToken(issuer, secretKey string, method jwt.SigningMethod, payloads m
 	}
 
 	for k, v := range payloads {
-		if !sliceg.Contain(standardClaims, k) {
+		if _, ok := standardClaimSet[k]; !ok {
 			claims[k] = v
 		}
 	}

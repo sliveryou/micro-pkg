@@ -356,7 +356,7 @@ func collectConstants(fileNames ...string) (string, error) {
 		fSet := token.NewFileSet()
 		f, err := parser.ParseFile(fSet, fileName, nil, parser.AllErrors)
 		if err != nil {
-			return "", errors.WithMessage(err, "parser.ParseFile err")
+			return "", errors.WithMessage(err, "parse file err")
 		}
 
 		// 解析 ast
@@ -378,7 +378,7 @@ func collectConstants(fileNames ...string) (string, error) {
 
 	out, err := format.Source([]byte(b.String()))
 	if err != nil {
-		return "", errors.WithMessage(err, "format.Source err")
+		return "", errors.WithMessage(err, "format err")
 	}
 
 	return string(out), nil
@@ -399,7 +399,7 @@ func genDocRows(fileName string) ([]docRow, error) {
 	fSet := token.NewFileSet()
 	f, err := parser.ParseFile(fSet, fileName, nil, parser.AllErrors)
 	if err != nil {
-		return nil, errors.WithMessage(err, "parser.ParseFile err")
+		return nil, errors.WithMessage(err, "parse file err")
 	}
 
 	// 解析 ast

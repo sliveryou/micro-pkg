@@ -12,13 +12,13 @@ import (
 
 func getAliyun() (*Aliyun, error) {
 	c := Config{
-		Sms: App{
+		Sms: &App{
 			RegionID:        "cn-hangzhou",
 			AccessKeyID:     "accessKeyID",
 			AccessKeySecret: "accessKeySecret",
 			SignName:        "测试",
 		},
-		Email: App{
+		Email: &App{
 			RegionID:        "cn-hangzhou",
 			AccessKeyID:     "accessKeyID",
 			AccessKeySecret: "accessKeySecret",
@@ -37,25 +37,40 @@ func getAliyun() (*Aliyun, error) {
 }
 
 func TestMustNewAliyun(t *testing.T) {
-	c := Config{
-		Sms: App{
-			AccessKeyID:     "accessKeyID",
-			AccessKeySecret: "accessKeySecret",
-			SignName:        "测试",
-		},
-		Email: App{
-			AccessKeyID:     "accessKeyID",
-			AccessKeySecret: "accessKeySecret",
-			SignName:        "测试",
-			AccountName:     "sliveryou@outlook.com",
-		},
-	}
-
 	assert.NotPanics(t, func() {
+		c := Config{
+			Sms: &App{
+				AccessKeyID:     "accessKeyID",
+				AccessKeySecret: "accessKeySecret",
+				SignName:        "测试",
+			},
+			Email: &App{
+				AccessKeyID:     "accessKeyID",
+				AccessKeySecret: "accessKeySecret",
+				SignName:        "测试",
+				AccountName:     "sliveryou@outlook.com",
+			},
+		}
+
 		a := MustNewAliyun(c)
 		assert.NotNil(t, a)
 		assert.Equal(t, defaultRegionID, a.c.Sms.RegionID)
 		assert.Equal(t, defaultRegionID, a.c.Email.RegionID)
+	})
+
+	assert.NotPanics(t, func() {
+		c := Config{
+			Sms: &App{
+				AccessKeyID:     "accessKeyID",
+				AccessKeySecret: "accessKeySecret",
+				SignName:        "测试",
+			},
+		}
+
+		a := MustNewAliyun(c)
+		assert.NotNil(t, a)
+		assert.NotNil(t, a.smsClient)
+		assert.Nil(t, a.emailClient)
 	})
 }
 

@@ -12,7 +12,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 
-	"github.com/sliveryou/go-tool/v2/sliceg"
 	"github.com/sliveryou/go-tool/v2/timex"
 )
 
@@ -32,8 +31,8 @@ const (
 )
 
 var (
-	standardClaims = []string{
-		jwtAudience, jwtExpire, jwtID, jwtIssueAt, jwtIssuer, jwtNotBefore, jwtSubject,
+	standardClaimSet = map[string]struct{}{
+		jwtAudience: {}, jwtExpire: {}, jwtID: {}, jwtIssueAt: {}, jwtIssuer: {}, jwtNotBefore: {}, jwtSubject: {},
 	}
 
 	errInvalidToken    = stderrors.New("invalid jwt token")
@@ -109,7 +108,7 @@ func (j *JWT) GenTokenWithPayloads(payloads map[string]any, expiration ...time.D
 	claims[jwtExpire] = now.Add(et).Unix() // expiration time，过期时间
 
 	for k, v := range payloads {
-		if !sliceg.Contain(standardClaims, k) {
+		if _, ok := standardClaimSet[k]; !ok {
 			claims[k] = v
 		}
 	}
@@ -228,7 +227,7 @@ func extractPayloads(token *jwt.Token) (map[string]any, error) {
 
 	payloads := make(map[string]any)
 	for k, v := range claims {
-		if !sliceg.Contain(standardClaims, k) {
+		if _, ok := standardClaimSet[k]; !ok {
 			payloads[k] = v
 		}
 	}

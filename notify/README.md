@@ -40,7 +40,6 @@
 ```go
 // Config 通知服务相关配置
 type Config struct {
-	IsDisabled    bool   `json:",optional"` // 是否禁用
 	Provider      string // 提供方
 	SendPeriod    int    `json:",default=60"`    // 发送时间段（与发送配额搭配，如发送时间段为 60，发送配额为 1，表示 60s 内对同一接收方只允许发送 1 次）
 	SendQuota     int    `json:",default=1"`     // 发送时间段内发送配额

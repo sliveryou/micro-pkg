@@ -18,8 +18,6 @@ var (
 	// ErrVerifyTooFrequently 验证过于频繁错误
 	ErrVerifyTooFrequently = errcode.NewCommon("验证过于频繁，请稍后再试")
 
-	// ErrProviderSupport 暂不支持该提供方错误
-	ErrProviderSupport = errcode.NewCommon("暂不支持该提供方")
 	// ErrEmailSupport 暂不支持邮件通知服务错误
 	ErrEmailSupport = errcode.NewCommon("暂不支持邮件通知服务")
 	// ErrSmsSupport 暂不支持短信通知服务错误

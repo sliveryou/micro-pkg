@@ -35,6 +35,9 @@ const (
 
 	cacheName = "face auth"
 	cacheKey  = "access token"
+
+	defaultGrantType = "client_credentials"
+	defaultImageType = "BASE64"
 )
 
 var (
@@ -124,19 +127,19 @@ func (f *Face) Authenticate(ctx context.Context, req *AuthenticateReq) (*Authent
 	// 获取鉴权认证 token
 	accessToken, err := f.getAccessToken(ctx)
 	if err != nil {
-		return nil, errors.WithMessage(err, "getAccessToken err")
+		return nil, errors.WithMessage(err, "get access token err")
 	}
 
 	// 视频活体检测
 	validPic, err := f.videoVerify(ctx, accessToken, req.VideoBase64)
 	if err != nil {
-		return nil, errors.WithMessage(err, "videoVerify err")
+		return nil, errors.WithMessage(err, "video verify err")
 	}
 
 	// 人脸实名认证
 	logID, err := f.personVerify(ctx, accessToken, validPic, req.Name, req.IDCard)
 	if err != nil {
-		return nil, errors.WithMessage(err, "personVerify err")
+		return nil, errors.WithMessage(err, "person verify err")
 	}
 
 	return &AuthenticateResp{LogID: logID}, nil
@@ -149,7 +152,7 @@ func (f *Face) getAccessToken(ctx context.Context) (string, error) {
 
 		rawURL := AccessTokenURL
 		values := make(url.Values)
-		values.Set("grant_type", "client_credentials")
+		values.Set("grant_type", defaultGrantType)
 		values.Set("client_id", f.c.APIKey)
 		values.Set("client_secret", f.c.SecretKey)
 		rawURL += "?" + values.Encode()
@@ -230,14 +233,14 @@ func (f *Face) personVerify(ctx context.Context, accessToken, validPic, name, id
 	}
 	req := &personVerifyReq{
 		Image:        validPic,
-		ImageType:    "BASE64",
+		ImageType:    defaultImageType,
 		IDCardNumber: idCard,
 		Name:         name,
 	}
 
 	b, err := json.Marshal(req)
 	if err != nil {
-		return 0, errors.WithMessage(err, "json marshal req err")
+		return 0, errors.WithMessage(err, "json marshal request err")
 	}
 
 	err = f.client.Call(ctx, http.MethodPost, rawURL, header, bytes.NewReader(b), &resp)

@@ -18,8 +18,7 @@ const (
 
 // App 应用相关配置
 type App struct {
-	IsDisabled bool   `json:",optional"` // 是否禁用
-	APIKey     string `json:",optional"` // 接口Key
+	APIKey string // 接口Key
 }
 
 // Config 云片通知服务相关配置
@@ -36,21 +35,17 @@ type YunPian struct {
 
 // NewYunPian 新建云片通知服务对象
 func NewYunPian(c Config, opts ...notifytypes.Option) (*YunPian, error) {
-	y := &YunPian{c: c, baseClient: notifytypes.NewBaseClient(
-		c.Sms.IsDisabled, true, opts...)}
-
-	if !c.Sms.IsDisabled {
-		if c.Sms.APIKey == "" {
-			return nil, errors.New("yunpian: illegal yunpian sms config")
-		}
-
-		smsClient := sdk.New(c.Sms.APIKey)
-		smsClient.WithHttp(y.baseClient.HTTPClient)
-
-		y.smsClient = smsClient
+	if c.Sms.APIKey == "" {
+		return nil, errors.New("yunpian: illegal yunpian sms config")
 	}
 
-	return y, nil
+	baseClient := notifytypes.NewBaseClient(opts...)
+	smsClient := sdk.New(c.Sms.APIKey)
+	smsClient.WithHttp(baseClient.HTTPClient)
+
+	return &YunPian{
+		c: c, baseClient: baseClient, smsClient: smsClient,
+	}, nil
 }
 
 // MustNewYunPian 新建云片通知服务对象
@@ -70,11 +65,6 @@ func (y *YunPian) Platform() string {
 
 // SendSms 发送短信
 func (y *YunPian) SendSms(receiver, templateID string, params ...notifytypes.Param) error {
-	parsed, err := y.baseClient.ParseSmsTmpl(templateID)
-	if err != nil {
-		return err
-	}
-
 	var tplValue string
 	if len(params) > 0 {
 		var buf strings.Builder
@@ -91,7 +81,7 @@ func (y *YunPian) SendSms(receiver, templateID string, params ...notifytypes.Par
 	// https://www.yunpian.com/official/document/sms/zh_CN/domestic_tpl_single_send
 	p := sdk.NewParam(3)
 	p[sdk.MOBILE] = receiver
-	p[sdk.TPL_ID] = parsed
+	p[sdk.TPL_ID] = y.baseClient.ParseSmsTmpl(templateID)
 	p[sdk.TPL_VALUE] = tplValue
 
 	resp := y.smsClient.Sms().TplSingleSend(p)

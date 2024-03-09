@@ -14,12 +14,12 @@ import (
 
 func getSubmail() (*Submail, error) {
 	c := Config{
-		Sms: App{
+		Sms: &App{
 			AppID:    "appID",
 			AppKey:   "appKey",
 			SignType: "sha1",
 		},
-		Email: App{
+		Email: &App{
 			AppID:    "appID",
 			AppKey:   "appKey",
 			SignType: "sha1",
@@ -37,22 +37,36 @@ func getSubmail() (*Submail, error) {
 }
 
 func TestMustNewSubmail(t *testing.T) {
-	c := Config{
-		Sms: App{
-			AppID:  "appID",
-			AppKey: "appKey",
-		},
-		Email: App{
-			AppID:  "appID",
-			AppKey: "appKey",
-		},
-	}
-
 	assert.NotPanics(t, func() {
+		c := Config{
+			Sms: &App{
+				AppID:  "appID",
+				AppKey: "appKey",
+			},
+			Email: &App{
+				AppID:  "appID",
+				AppKey: "appKey",
+			},
+		}
+
 		a := MustNewSubmail(c)
 		assert.NotNil(t, a)
 		assert.Equal(t, smclient.SignTypeSha1, a.c.Sms.SignType)
 		assert.Equal(t, smclient.SignTypeSha1, a.c.Email.SignType)
+	})
+
+	assert.NotPanics(t, func() {
+		c := Config{
+			Sms: &App{
+				AppID:  "appID",
+				AppKey: "appKey",
+			},
+		}
+
+		a := MustNewSubmail(c)
+		assert.NotNil(t, a)
+		assert.NotNil(t, a.smsClient)
+		assert.Nil(t, a.emailClient)
 	})
 }
 

@@ -12,8 +12,7 @@ import (
 func getYunPian() (*YunPian, error) {
 	c := Config{
 		Sms: App{
-			IsDisabled: false,
-			APIKey:     "apiKey",
+			APIKey: "apiKey",
 		},
 	}
 

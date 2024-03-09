@@ -29,18 +29,17 @@ var ErrEmailTmplNotExist = errcode.NewCommon("邮件模板信息不存在")
 
 // App 应用相关配置
 type App struct {
-	IsDisabled      bool   `json:",optional"`            // 是否禁用
 	RegionID        string `json:",default=cn-hangzhou"` // 地域ID
-	AccessKeyID     string `json:",optional"`            // 访问鉴权ID
-	AccessKeySecret string `json:",optional"`            // 访问鉴权私钥
-	SignName        string `json:",optional"`            // 短信签名名称
-	AccountName     string `json:",optional"`            // 发信地址（邮件应用使用）
+	AccessKeyID     string // 访问鉴权ID
+	AccessKeySecret string // 访问鉴权私钥
+	SignName        string // 签名名称
+	AccountName     string `json:",optional"` // 发信地址（邮件应用使用）
 }
 
 // Config 阿里云通知服务相关配置
 type Config struct {
-	Sms   App // 短信应用相关配置
-	Email App // 邮件应用相关配置
+	Sms   *App // 短信应用相关配置
+	Email *App // 邮件应用相关配置
 }
 
 // Aliyun 阿里云通知服务结构详情
@@ -60,11 +59,11 @@ func NewAliyun(c Config, opts ...notifytypes.Option) (*Aliyun, error) {
 
 	a := &Aliyun{
 		c:             c,
-		baseClient:    notifytypes.NewBaseClient(c.Sms.IsDisabled, c.Email.IsDisabled, opts...),
+		baseClient:    notifytypes.NewBaseClient(opts...),
 		emailExtraMap: make(map[string]EmailExtra),
 	}
 
-	if !c.Sms.IsDisabled {
+	if c.Sms != nil {
 		config := sdk.NewConfig()
 		config.Transport = a.baseClient.HTTPClient.Transport
 		config.Timeout = a.baseClient.HTTPClient.Timeout
@@ -77,7 +76,7 @@ func NewAliyun(c Config, opts ...notifytypes.Option) (*Aliyun, error) {
 		a.smsClient = smsClient
 	}
 
-	if !c.Email.IsDisabled {
+	if c.Email != nil {
 		config := sdk.NewConfig()
 		config.Transport = a.baseClient.HTTPClient.Transport
 		config.Timeout = a.baseClient.HTTPClient.Timeout
@@ -110,9 +109,8 @@ func (a *Aliyun) Platform() string {
 
 // SendSms 发送短信
 func (a *Aliyun) SendSms(receiver, templateID string, params ...notifytypes.Param) error {
-	parsed, err := a.baseClient.ParseSmsTmpl(templateID)
-	if err != nil {
-		return err
+	if a.smsClient == nil {
+		return notifytypes.ErrSmsSupport
 	}
 
 	var templateParam string
@@ -131,7 +129,7 @@ func (a *Aliyun) SendSms(receiver, templateID string, params ...notifytypes.Para
 	req.Scheme = "https"
 	req.PhoneNumbers = receiver
 	req.SignName = a.c.Sms.SignName
-	req.TemplateCode = parsed
+	req.TemplateCode = a.baseClient.ParseSmsTmpl(templateID)
 	req.TemplateParam = templateParam
 
 	resp, err := a.smsClient.SendSms(req)
@@ -148,9 +146,10 @@ func (a *Aliyun) SendSms(receiver, templateID string, params ...notifytypes.Para
 
 // SendEmail 发送邮件
 func (a *Aliyun) SendEmail(receiver, templateID string, params ...notifytypes.Param) error {
-	if a.c.Email.IsDisabled {
+	if a.emailClient == nil {
 		return notifytypes.ErrEmailSupport
 	}
+
 	ee, ok := a.emailExtraMap[templateID]
 	if !ok {
 		return ErrEmailTmplNotExist
@@ -184,7 +183,7 @@ func (a *Aliyun) SendEmail(receiver, templateID string, params ...notifytypes.Pa
 	var cp commonResponse
 	err = json.Unmarshal(resp.GetHttpContentBytes(), &cp)
 	if err != nil {
-		return errors.WithMessage(err, "json unmarshal err")
+		return errors.WithMessage(err, "json unmarshal response err")
 	}
 
 	if !resp.IsSuccess() {
@@ -203,7 +202,7 @@ func (a *Aliyun) LoadEmailExtraMap(eem map[string]EmailExtra) {
 
 // isValid 判断应用相关配置是否合法
 func (a *App) isValid(isEmailApp ...bool) bool {
-	if !a.IsDisabled {
+	if a != nil {
 		if a.AccessKeyID == "" || a.AccessKeySecret == "" || a.SignName == "" {
 			return false
 		}

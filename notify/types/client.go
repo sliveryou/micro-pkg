@@ -162,8 +162,8 @@ func WithEmailTmplMap(m map[string]string) Option {
 }
 
 // NewBaseClient 新建基础客户端
-func NewBaseClient(isSmsDisabled, isEmailDisabled bool, opts ...Option) *BaseClient {
-	bc := &BaseClient{isSmsDisabled: isSmsDisabled, isEmailDisabled: isEmailDisabled}
+func NewBaseClient(opts ...Option) *BaseClient {
+	bc := &BaseClient{}
 
 	for _, opt := range opts {
 		opt(bc)
@@ -178,19 +178,13 @@ func NewBaseClient(isSmsDisabled, isEmailDisabled bool, opts ...Option) *BaseCli
 
 // BaseClient 基础客户端
 type BaseClient struct {
-	HTTPClient      *http.Client      // HTTP 客户端
-	isSmsDisabled   bool              // 是否禁用短信
-	isEmailDisabled bool              // 是否禁用邮件
-	smsTmplMap      map[string]string // 短信对应模板映射
-	emailTmplMap    map[string]string // 邮件对应模板映射
+	HTTPClient   *http.Client      // HTTP 客户端
+	smsTmplMap   map[string]string // 短信对应模板映射
+	emailTmplMap map[string]string // 邮件对应模板映射
 }
 
 // ParseSmsTmpl 解析短信对应模板
-func (bc *BaseClient) ParseSmsTmpl(templateID string) (string, error) {
-	if bc.isSmsDisabled {
-		return "", ErrSmsSupport
-	}
-
+func (bc *BaseClient) ParseSmsTmpl(templateID string) string {
 	parsed := templateID
 	if bc.smsTmplMap != nil {
 		if t, ok := bc.smsTmplMap[templateID]; ok && t != "" {
@@ -198,15 +192,11 @@ func (bc *BaseClient) ParseSmsTmpl(templateID string) (string, error) {
 		}
 	}
 
-	return parsed, nil
+	return parsed
 }
 
 // ParseEmailTmpl 解析邮件对应模板
-func (bc *BaseClient) ParseEmailTmpl(templateID string) (string, error) {
-	if bc.isEmailDisabled {
-		return "", ErrEmailSupport
-	}
-
+func (bc *BaseClient) ParseEmailTmpl(templateID string) string {
 	parsed := templateID
 	if bc.emailTmplMap != nil {
 		if t, ok := bc.emailTmplMap[templateID]; ok && t != "" {
@@ -214,7 +204,7 @@ func (bc *BaseClient) ParseEmailTmpl(templateID string) (string, error) {
 		}
 	}
 
-	return parsed, nil
+	return parsed
 }
 
 // MockClient 模拟短信、邮件客户端

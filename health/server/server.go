@@ -16,7 +16,10 @@ import (
 	"github.com/sliveryou/micro-pkg/health/checker/compositechecker"
 )
 
-const healthHeader = "health"
+const (
+	healthHeader      = "health"
+	defaultServerName = "health.rpc"
+)
 
 // healthServer 健康检查服务器
 type healthServer struct {
@@ -28,7 +31,7 @@ type healthServer struct {
 // NewHealthServer 新建健康检查服务器
 func NewHealthServer(serverName string, compositeChecker *compositechecker.Checker) (grpc_health_v1.HealthServer, error) {
 	if serverName == "" {
-		serverName = "health"
+		serverName = defaultServerName
 	}
 	if compositeChecker == nil {
 		return nil, errors.New("health: illegal health config")
@@ -74,13 +77,13 @@ func (s *healthServer) Check(ctx context.Context, in *grpc_health_v1.HealthCheck
 
 	b, err := json.Marshal(h)
 	if err != nil {
-		l.Errorf("%s service json.Marshal health err: %v", s.serverName, err)
-		return nil, status.Errorf(codes.Internal, "%s service json.Marshal health err: %v", s.serverName, err)
+		l.Errorf("%s service json marshal health err: %v", s.serverName, err)
+		return nil, status.Errorf(codes.Internal, "%s service json marshal health err: %v", s.serverName, err)
 	}
 	message := string(b)
 	l.Infof("%s service check health: %s", s.serverName, message)
 	if err := grpc.SendHeader(ctx, metadata.Pairs(healthHeader, message)); err != nil {
-		return nil, status.Errorf(codes.Internal, "%s service grpc.SendHeader err: %v", s.serverName, err)
+		return nil, status.Errorf(codes.Internal, "%s service send header err: %v", s.serverName, err)
 	}
 
 	return &grpc_health_v1.HealthCheckResponse{
@@ -92,5 +95,5 @@ func (s *healthServer) Check(ctx context.Context, in *grpc_health_v1.HealthCheck
 func (s *healthServer) Watch(in *grpc_health_v1.HealthCheckRequest, w grpc_health_v1.Health_WatchServer) error {
 	// 暂不提供 Watch 功能
 	return status.Errorf(codes.Unimplemented,
-		"%s service Watch() is not implemented", s.serverName)
+		"%s service method Watch is not implemented", s.serverName)
 }

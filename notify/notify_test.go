@@ -52,8 +52,7 @@ func getNotify() (*Notify, error) {
 	ep.Add("mock-email-1", mockClient)
 
 	c := Config{
-		IsDisabled: false,
-		Provider:   "test",
+		Provider: "test",
 	}
 
 	return NewNotify(c, sp, ep, store)

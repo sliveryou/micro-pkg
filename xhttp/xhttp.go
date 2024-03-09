@@ -134,7 +134,7 @@ func ParseJsonBody(r *http.Request, v any) error {
 func FromFile(r *http.Request, name string) (*multipart.FileHeader, error) {
 	if r.MultipartForm == nil {
 		if err := r.ParseMultipartForm(defaultMultipartMemory); err != nil {
-			return nil, errors.WithMessage(err, "r.ParseMultipartForm err")
+			return nil, errors.WithMessage(err, "request parse multipart form err")
 		}
 	}
 
@@ -143,7 +143,7 @@ func FromFile(r *http.Request, name string) (*multipart.FileHeader, error) {
 		if errors.Is(err, http.ErrMissingFile) {
 			return nil, errcode.ErrInvalidParams
 		}
-		return nil, errors.WithMessage(err, "r.FormFile err")
+		return nil, errors.WithMessage(err, "request form file err")
 	}
 	f.Close()
 
@@ -248,7 +248,7 @@ func CopyHTTPRequest(r *http.Request) (*http.Request, error) {
 	if r.Body != nil {
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			return nil, errors.WithMessage(err, "io.ReadAll err")
+			return nil, errors.WithMessage(err, "read all request body err")
 		}
 
 		r.Body = io.NopCloser(bytes.NewReader(body))

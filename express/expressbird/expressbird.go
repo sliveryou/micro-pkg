@@ -31,20 +31,32 @@ const (
 	sortDesc = "1"
 	// shipperCodeSF 快递公司编码：顺丰
 	shipperCodeSF = "SF"
+
+	requestType1002 = "1002"
+	requestType8001 = "8001"
+	requestType8002 = "8002"
 )
+
+// requestTypes 请求指令类型列表
+var requestTypes = []string{
+	"", requestType1002, requestType8001, requestType8002,
+}
 
 // ExpressBird 快递鸟客户端结构详情
 type ExpressBird struct {
 	appID       string // 应用ID（为快递鸟中分配的 EBusinessID）
 	secretKey   string // 应用密钥
-	requestType string // 请求指令类型（可以为 1002、8001 和 8002）
+	requestType string // 请求指令类型（枚举 1002、8001 和 8002）
 	client      *xhttp.Client
 }
 
 // NewExpressBird 新建快递鸟客户端对象
 func NewExpressBird(appID, secretKey, requestType string) (*ExpressBird, error) {
-	if appID == "" || secretKey == "" || !sliceg.Contain([]string{"1002", "8001", "8002"}, requestType) {
+	if appID == "" || secretKey == "" || !sliceg.Contain(requestTypes, requestType) {
 		return nil, errors.New("expressbird: illegal expressbird config")
+	}
+	if requestType == "" {
+		requestType = requestType1002
 	}
 
 	return &ExpressBird{

@@ -23,7 +23,7 @@ type Config struct {
 	Cloud       string `json:",options=[express100,expressBird]"` // 云服务商（当前支持 express100 和 expressBird）
 	AppID       string // 应用ID
 	SecretKey   string // 应用密钥
-	RequestType string `json:",optional"` // 请求指令类型（expressBird 云服务商专用，可以为 1002、8001 和 8002）
+	RequestType string `json:",optional"` // 请求指令类型（expressBird 云服务商专用，枚举 1002、8001 和 8002）
 }
 
 // NewExpress 新建快递查询客户端对象

@@ -23,9 +23,8 @@ func TestMustNewExpress(t *testing.T) {
 
 	assert.PanicsWithError(t, "express: new express client err: expressbird: illegal expressbird config", func() {
 		c := Config{
-			Cloud:     expressbird.CloudExpressBird,
-			AppID:     "appID",
-			SecretKey: "secretKey",
+			Cloud: expressbird.CloudExpressBird,
+			AppID: "appID",
 		}
 		MustNewExpress(c)
 	})

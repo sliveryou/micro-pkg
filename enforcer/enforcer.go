@@ -83,20 +83,20 @@ func MustNewEnforcer(c Config, a persist.Adapter, w persist.Watcher) *Enforcer {
 func (e *Enforcer) init() error {
 	m, err := model.NewModelFromString(e.c.ModelText)
 	if err != nil {
-		return errors.WithMessage(err, "model.NewModelFromString err")
+		return errors.WithMessage(err, "new model from string err")
 	}
 
 	se, err := casbin.NewSyncedEnforcer(m, e.a)
 	if err != nil {
-		return errors.WithMessage(err, "casbin.NewSyncedEnforcer err")
+		return errors.WithMessage(err, "new synced enforcer err")
 	}
 
 	if err := se.SetWatcher(e.w); err != nil {
-		return errors.WithMessage(err, "se.SetWatcher err")
+		return errors.WithMessage(err, "enforcer set watcher err")
 	}
 
 	if err := se.LoadPolicy(); err != nil {
-		return errors.WithMessage(err, "se.LoadPolicy err")
+		return errors.WithMessage(err, "enforcer load policy err")
 	}
 
 	se.AddFunction("uriMatch", URIMatchFunc)

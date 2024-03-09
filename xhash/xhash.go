@@ -18,22 +18,33 @@ import (
 	"github.com/sliveryou/micro-pkg/xhash/sm3"
 )
 
+// 摘要名称
+const (
+	MD5    = "md5"
+	SM3    = "sm3"
+	SHA1   = "sha1"
+	SHA224 = "sha224"
+	SHA256 = "sha256"
+	SHA384 = "sha384"
+	SHA512 = "sha512"
+)
+
 // New 根据提供的摘要名称新建 hash.Hash 对象
 func New(digest string) hash.Hash {
 	switch strings.ToLower(digest) {
-	case "md5":
+	case MD5:
 		return md5.New()
-	case "sm3":
+	case SM3:
 		return sm3.New()
-	case "sha1":
+	case SHA1:
 		return sha1.New()
-	case "sha224":
+	case SHA224:
 		return sha256.New224()
-	case "sha256":
+	case SHA256:
 		return sha256.New()
-	case "sha384":
+	case SHA384:
 		return sha512.New384()
-	case "sha512":
+	case SHA512:
 		return sha512.New()
 	default:
 		return md5.New()
@@ -75,13 +86,13 @@ func Base64HashString(h hash.Hash, s string) (string, error) {
 func HashFile(h hash.Hash, filePath string, fileName ...string) (string, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
-		return "", errors.WithMessage(err, "os.Open err")
+		return "", errors.WithMessagef(err, "open %s err", filePath)
 	}
 	defer f.Close()
 
 	_, err = io.Copy(h, f)
 	if err != nil {
-		return "", errors.WithMessage(err, "io.Copy err")
+		return "", errors.WithMessage(err, "calculate hash err")
 	}
 
 	if len(fileName) > 0 && fileName[0] != "" {

@@ -17,7 +17,7 @@ const (
 
 // Config 阿波罗配置中心客户端相关配置
 type Config struct {
-	IsDisabled         bool     `json:",optional"`        // 是否禁用
+	IsMock             bool     `json:",optional"`        // 是否模拟
 	AppID              string   `json:",optional"`        // 应用ID
 	Cluster            string   `json:",default=default"` // 集群
 	NameSpaceNames     []string `json:",optional"`        // 命名空间
@@ -37,7 +37,7 @@ type Apollo struct {
 func NewApollo(c Config) (*Apollo, error) {
 	var client agollo.Client
 
-	if c.IsDisabled {
+	if c.IsMock {
 		client = &MockClient{}
 	} else {
 		if c.AppID == "" || len(c.NameSpaceNames) == 0 || c.MetaAddr == "" {

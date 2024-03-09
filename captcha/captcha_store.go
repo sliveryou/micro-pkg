@@ -23,7 +23,7 @@ func (s *Store) Set(id, value string) error {
 	key := s.keyPrefix + id
 	err := s.kvStore.SetString(key, value, s.expiration)
 	if err != nil {
-		logx.Errorf("captcha: Store.Set err: %v", err)
+		logx.Errorf("captcha: store set err: %v, key: %s", err, key)
 		return err
 	}
 
@@ -35,7 +35,7 @@ func (s *Store) Get(id string, clear bool) string {
 	key := s.keyPrefix + id
 	value, err := s.kvStore.Get(key)
 	if err != nil {
-		logx.Errorf("captcha: Store.Get err: %v", err)
+		logx.Errorf("captcha: store get err: %v, key: %s", err, key)
 		return ""
 	}
 
@@ -51,7 +51,7 @@ func (s *Store) Verify(id, answer string, clear bool) bool {
 	key := s.keyPrefix + id
 	value, err := s.kvStore.Get(key)
 	if err != nil {
-		logx.Errorf("captcha: Store.Verify err: %v", err)
+		logx.Errorf("captcha: store verify err: %v, key: %s", err, key)
 		return false
 	}
 

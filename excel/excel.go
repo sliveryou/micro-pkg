@@ -14,15 +14,19 @@ const (
 
 // GetRows 获取 excel 表上的所有行数据
 func GetRows(r io.Reader, sheet string, opts ...excelize.Options) ([][]string, error) {
+	if sheet == "" {
+		sheet = DefaultSheet
+	}
+
 	f, err := excelize.OpenReader(r, opts...)
 	if err != nil {
-		return nil, errors.WithMessage(err, "excelize.OpenReader err")
+		return nil, errors.WithMessage(err, "open reader err")
 	}
 	defer f.Close()
 
 	rows, err := f.GetRows(sheet, opts...)
 	if err != nil {
-		return nil, errors.WithMessage(err, "f.GetRows err")
+		return nil, errors.WithMessage(err, "get rows err")
 	}
 
 	return rows, nil
@@ -37,7 +41,7 @@ func GetFilteredRows(r io.Reader, sheet string, rowLength, skipRow int, opts ...
 		}
 		return true
 	}, opts...); err != nil {
-		return nil, errors.WithMessage(err, "ReadRows err")
+		return nil, errors.WithMessage(err, "read rows err")
 	}
 
 	return filteredRows, nil
@@ -48,15 +52,19 @@ type ReadHandler func(rowNum int, columns []string) (isContinue bool)
 
 // ReadRows 流式读取处理 excel 表上的行数据
 func ReadRows(r io.Reader, sheet string, handler ReadHandler, opts ...excelize.Options) error {
+	if sheet == "" {
+		sheet = DefaultSheet
+	}
+
 	f, err := excelize.OpenReader(r, opts...)
 	if err != nil {
-		return errors.WithMessage(err, "excelize.OpenReader err")
+		return errors.WithMessage(err, "open reader err")
 	}
 	defer f.Close()
 
 	rows, err := f.Rows(sheet)
 	if err != nil {
-		return errors.WithMessage(err, "f.Rows err")
+		return errors.WithMessage(err, "get rows iterator err")
 	}
 	defer rows.Close()
 
@@ -65,7 +73,7 @@ func ReadRows(r io.Reader, sheet string, handler ReadHandler, opts ...excelize.O
 		rowNum++
 		columns, err := rows.Columns(opts...)
 		if err != nil {
-			return errors.WithMessagef(err, "rows.Columns err, rowNum: %d", rowNum)
+			return errors.WithMessagef(err, "get row columns err, row num: %d", rowNum)
 		}
 		if isContinue := handler(rowNum, columns); !isContinue {
 			return nil
@@ -80,15 +88,19 @@ type WriteHandler func(rowNum int) (columns []any, needWrite, isContinue bool)
 
 // WriteRows 流式写入行数据至指定 excel 表中
 func WriteRows(r io.Reader, sheet, saveAs string, handler WriteHandler, opts ...excelize.Options) error {
+	if sheet == "" {
+		sheet = DefaultSheet
+	}
+
 	f, err := excelize.OpenReader(r, opts...)
 	if err != nil {
-		return errors.WithMessage(err, "excelize.OpenReader err")
+		return errors.WithMessage(err, "open reader err")
 	}
 	defer f.Close()
 
 	sw, err := f.NewStreamWriter(sheet)
 	if err != nil {
-		return errors.WithMessage(err, "f.NewStreamWriter err")
+		return errors.WithMessage(err, "new stream writer err")
 	}
 
 	rowNum := 0
@@ -101,20 +113,20 @@ func WriteRows(r io.Reader, sheet, saveAs string, handler WriteHandler, opts ...
 		if needWrite {
 			cellName, err := excelize.CoordinatesToCellName(1, rowNum)
 			if err != nil {
-				return errors.WithMessagef(err, "excelize.CoordinatesToCellName err, rowNum: %d", rowNum)
+				return errors.WithMessagef(err, "coordinates to cell name err, row num: %d", rowNum)
 			}
 			if err := sw.SetRow(cellName, columns); err != nil {
-				return errors.WithMessagef(err, "sw.SetRow err, rowNum: %d, cellName: %s", rowNum, cellName)
+				return errors.WithMessagef(err, "set row err, row num: %d, cell name: %s", rowNum, cellName)
 			}
 		}
 	}
 
 	if err := sw.Flush(); err != nil {
-		return errors.WithMessage(err, "sw.Flush err")
+		return errors.WithMessage(err, "stream writer flush err")
 	}
 
 	if err := f.SaveAs(saveAs); err != nil {
-		return errors.WithMessage(err, "f.SaveAs err")
+		return errors.WithMessagef(err, "sheet save as %s err", saveAs)
 	}
 
 	return nil

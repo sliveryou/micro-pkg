@@ -5,6 +5,7 @@ import (
 
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
+	"github.com/pkg/errors"
 )
 
 // MockAdapter 模拟决策规则适配器
@@ -20,7 +21,7 @@ func (a *MockAdapter) LoadPolicy(m model.Model) error {
 		p := strings.Join(s, ",")
 
 		if err := persist.LoadPolicyLine(p, m); err != nil {
-			return err
+			return errors.WithMessagef(err, "load policy line: %s err", p)
 		}
 	}
 

@@ -20,7 +20,6 @@ var MockCode = "123456"
 
 // Config 通知服务相关配置
 type Config struct {
-	IsDisabled    bool   `json:",optional"` // 是否禁用
 	Provider      string // 提供方
 	SendPeriod    int    `json:",default=60"`    // 发送时间段（与发送配额搭配，如发送时间段为 60，发送配额为 1，表示 60s 内对同一接收方只允许发送 1 次）
 	SendQuota     int    `json:",default=1"`     // 发送时间段内发送配额
@@ -183,10 +182,6 @@ func (n *Notify) checkSend(p notifytypes.CommonParams) error {
 
 // handleSend 处理发送通知
 func (n *Notify) handleSend(p *notifytypes.SendParams) error {
-	if n.c.IsDisabled {
-		return notifytypes.ErrProviderSupport
-	}
-
 	// 处理发送通知参数
 	cp, err := n.handleSendParams(p)
 	if err != nil {
@@ -257,10 +252,6 @@ func (n *Notify) checkVerify(p notifytypes.CommonParams) error {
 
 // handleVerify 处理校验通知
 func (n *Notify) handleVerify(p *notifytypes.VerifyParams) error {
-	if n.c.IsDisabled {
-		return notifytypes.ErrProviderSupport
-	}
-
 	// 处理校验通知参数
 	err := n.handleVerifyParams(p)
 	if err != nil {

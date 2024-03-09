@@ -151,7 +151,7 @@ func (c *client) do(ctx context.Context, method, url string, request, response a
 	if request != nil {
 		reqBody, err = json.Marshal(request)
 		if err != nil {
-			return errors.WithMessage(err, "json marshal err")
+			return errors.WithMessage(err, "json marshal request err")
 		}
 
 		reqBodyReader = bytes.NewReader(reqBody)
@@ -175,14 +175,16 @@ func (c *client) do(ctx context.Context, method, url string, request, response a
 
 	if resp.StatusCode == http.StatusOK {
 		if response != nil {
-			return errors.WithMessage(json.Unmarshal(respBody, response), "json unmarshal err")
+			return errors.WithMessage(json.Unmarshal(respBody, response), "json unmarshal response err")
 		}
 
 		return nil
 	}
 
-	return errors.WithMessagef(parseError(resp.StatusCode),
-		"error message: %s", string(respBody))
+	return errors.WithMessagef(
+		parseError(resp.StatusCode),
+		"resp body: %s", string(respBody),
+	)
 }
 
 // GetEnvClusters 获取对应应用环境下的所有集群信息（appId 必填）
