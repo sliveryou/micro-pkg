@@ -34,7 +34,7 @@ func WithClient(client *clientv3.Client) Option {
 // Watcher etcd 观察器
 type Watcher struct {
 	c           Config
-	lock        sync.RWMutex
+	mu          sync.RWMutex
 	client      *clientv3.Client
 	cancel      context.CancelFunc
 	lastSentRev int64
@@ -75,8 +75,8 @@ func MustNewWatcher(c Config, opts ...Option) *Watcher {
 
 // SetUpdateCallback 设置 etcd 更新回调函数
 func (w *Watcher) SetUpdateCallback(callback func(string)) error {
-	w.lock.Lock()
-	defer w.lock.Unlock()
+	w.mu.Lock()
+	defer w.mu.Unlock()
 
 	w.callback = callback
 
@@ -85,8 +85,8 @@ func (w *Watcher) SetUpdateCallback(callback func(string)) error {
 
 // Update 触发 etcd 更新事件
 func (w *Watcher) Update() error {
-	w.lock.Lock()
-	defer w.lock.Unlock()
+	w.mu.Lock()
+	defer w.mu.Unlock()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -140,11 +140,11 @@ func (w *Watcher) startWatch() {
 			for _, ev := range wr.Events {
 				// 监听创建和更新事件
 				if ev.IsCreate() || ev.IsModify() {
-					w.lock.RLock()
+					w.mu.RLock()
 					if rev := ev.Kv.ModRevision; w.callback != nil {
 						w.callback(strconv.FormatInt(rev, 10))
 					}
-					w.lock.RUnlock()
+					w.mu.RUnlock()
 				}
 			}
 		}

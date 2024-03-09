@@ -56,12 +56,12 @@ func FromMD(md metadata.MD) (string, bool) {
 	return "", true
 }
 
-// TokenInterceptor 默认令牌服务端一元拦截器
+// TokenInterceptor 令牌服务端一元拦截器
 func TokenInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 	return handler(wrapServerContext(ctx), req)
 }
 
-// TokenStreamInterceptor 默认令牌服务端流拦截器
+// TokenStreamInterceptor 令牌服务端流拦截器
 func TokenStreamInterceptor(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 	wss := newWrappedServerStream(ss)
 	wss.WrappedContext = wrapServerContext(wss.WrappedContext)
@@ -69,12 +69,12 @@ func TokenStreamInterceptor(srv any, ss grpc.ServerStream, info *grpc.StreamServ
 	return handler(srv, wss)
 }
 
-// TokenClientInterceptor 默认令牌客户端一元拦截器
+// TokenClientInterceptor 令牌客户端一元拦截器
 func TokenClientInterceptor(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	return invoker(wrapClientContext(ctx), method, req, reply, cc, opts...)
 }
 
-// TokenStreamClientInterceptor 默认令牌客户端流拦截器
+// TokenStreamClientInterceptor 令牌客户端流拦截器
 func TokenStreamClientInterceptor(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	return streamer(wrapClientContext(ctx), desc, cc, method, opts...)
 }

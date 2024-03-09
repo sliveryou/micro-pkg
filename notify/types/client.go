@@ -23,15 +23,15 @@ func NewSmsClientPicker() SmsClientPicker {
 
 // smsClientPicker 短信客户端选取器
 type smsClientPicker struct {
-	sync.RWMutex                      // 读写锁
-	r            *rand.Rand           // 随机源
-	pickMap      map[string]SmsClient // 短信客户端选取 map
+	mu      sync.RWMutex         // 读写锁
+	r       *rand.Rand           // 随机源
+	pickMap map[string]SmsClient // 短信客户端选取 map
 }
 
 // Pick 选取一个短信客户端
 func (p *smsClientPicker) Pick() (sc SmsClient, key string, isExist bool) {
-	p.RLock()
-	defer p.RUnlock()
+	p.mu.RLock()
+	defer p.mu.RUnlock()
 
 	rn := p.r.Intn(len(p.pickMap))
 	for k := range p.pickMap {
@@ -47,8 +47,8 @@ func (p *smsClientPicker) Pick() (sc SmsClient, key string, isExist bool) {
 
 // Get 获取一个短信客户端
 func (p *smsClientPicker) Get(key string) (sc SmsClient, isExist bool) {
-	p.RLock()
-	defer p.RUnlock()
+	p.mu.RLock()
+	defer p.mu.RUnlock()
 
 	sc, isExist = p.pickMap[key]
 	return
@@ -56,16 +56,16 @@ func (p *smsClientPicker) Get(key string) (sc SmsClient, isExist bool) {
 
 // Add 添加一个短信客户端
 func (p *smsClientPicker) Add(key string, value SmsClient) {
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	p.pickMap[key] = value
 }
 
 // Remove 移除一个短信客户端
 func (p *smsClientPicker) Remove(keys ...string) {
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	for _, key := range keys {
 		delete(p.pickMap, key)
@@ -82,15 +82,15 @@ func NewEmailClientPicker() EmailClientPicker {
 
 // emailClientPicker 邮件客户端选取器
 type emailClientPicker struct {
-	sync.RWMutex                        // 读写锁
-	r            *rand.Rand             // 随机源
-	pickMap      map[string]EmailClient // 邮件客户端选取map
+	mu      sync.RWMutex           // 读写锁
+	r       *rand.Rand             // 随机源
+	pickMap map[string]EmailClient // 邮件客户端选取map
 }
 
 // Pick 选取一个邮件客户端
 func (p *emailClientPicker) Pick() (ec EmailClient, key string, isExist bool) {
-	p.RLock()
-	defer p.RUnlock()
+	p.mu.RLock()
+	defer p.mu.RUnlock()
 
 	rn := p.r.Intn(len(p.pickMap))
 	for k := range p.pickMap {
@@ -106,8 +106,8 @@ func (p *emailClientPicker) Pick() (ec EmailClient, key string, isExist bool) {
 
 // Get 获取一个邮件客户端
 func (p *emailClientPicker) Get(key string) (ec EmailClient, isExist bool) {
-	p.RLock()
-	defer p.RUnlock()
+	p.mu.RLock()
+	defer p.mu.RUnlock()
 
 	ec, isExist = p.pickMap[key]
 	return
@@ -115,16 +115,16 @@ func (p *emailClientPicker) Get(key string) (ec EmailClient, isExist bool) {
 
 // Add 添加一个邮件客户端
 func (p *emailClientPicker) Add(key string, value EmailClient) {
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	p.pickMap[key] = value
 }
 
 // Remove 移除一个邮件客户端
 func (p *emailClientPicker) Remove(keys ...string) {
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	for _, key := range keys {
 		delete(p.pickMap, key)

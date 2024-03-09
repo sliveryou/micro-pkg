@@ -8,7 +8,7 @@ import (
 // OnceSuccess 操作执行器（只执行一次成功操作）
 type OnceSuccess struct {
 	done uint32
-	m    sync.Mutex
+	mu   sync.Mutex
 }
 
 // Success 判断操作执行是否成功
@@ -22,8 +22,8 @@ func (o *OnceSuccess) Do(f func() error) error {
 		return nil
 	}
 
-	o.m.Lock()
-	defer o.m.Unlock()
+	o.mu.Lock()
+	defer o.mu.Unlock()
 
 	if o.done == 0 {
 		if err := f(); err != nil {

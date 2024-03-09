@@ -50,9 +50,6 @@ const (
 	GrpcMaxCode = 17
 )
 
-var descRegex = regexp.MustCompile(`code: (\d+), msg: (.+), http code: (\d+)`)
-
-// 业务错误
 var (
 	// OK 成功
 	OK = New(CodeOK, MsgOK)
@@ -64,6 +61,8 @@ var (
 	ErrUnexpected = New(CodeUnexpected, MsgUnexpected)
 	// ErrInvalidParams 请求参数错误
 	ErrInvalidParams = New(CodeInvalidParams, MsgInvalidParams)
+
+	descRegex = regexp.MustCompile(`code: (\d+), msg: (.+), http code: (\d+)`)
 )
 
 // Err 业务错误结构详情

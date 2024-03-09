@@ -13,9 +13,9 @@ import (
 	"github.com/sliveryou/micro-pkg/health/client"
 )
 
-var _ health.Checker = (*Checker)(nil)
-
 const healthHeader = "health"
+
+var _ health.Checker = (*Checker)(nil)
 
 // Checker 服务检查器结构详情
 type Checker struct {

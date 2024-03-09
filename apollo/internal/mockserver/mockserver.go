@@ -24,14 +24,14 @@ type result struct {
 type mockServer struct {
 	server http.Server
 
-	lock          sync.Mutex
+	mu            sync.Mutex
 	notifications map[string]int
 	config        map[string]map[string]string
 }
 
 func (s *mockServer) NotificationHandler(rw http.ResponseWriter, req *http.Request) {
-	s.lock.Lock()
-	defer s.lock.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	_ = req.ParseForm()
 	var notifications []notification
 	if err := json.Unmarshal([]byte(req.FormValue("notifications")), &notifications); err != nil {
@@ -67,8 +67,8 @@ func (s *mockServer) ConfigHandler(rw http.ResponseWriter, req *http.Request) {
 var server *mockServer
 
 func (s *mockServer) Set(namespace, key, value string) {
-	server.lock.Lock()
-	defer server.lock.Unlock()
+	server.mu.Lock()
+	defer server.mu.Unlock()
 
 	notificationID := s.notifications[namespace]
 	notificationID++
@@ -83,15 +83,15 @@ func (s *mockServer) Set(namespace, key, value string) {
 }
 
 func (s *mockServer) Get(namespace string) map[string]string {
-	server.lock.Lock()
-	defer server.lock.Unlock()
+	server.mu.Lock()
+	defer server.mu.Unlock()
 
 	return s.config[namespace]
 }
 
 func (s *mockServer) Delete(namespace, key string) {
-	server.lock.Lock()
-	defer server.lock.Unlock()
+	server.mu.Lock()
+	defer server.mu.Unlock()
 
 	if kv, ok := s.config[namespace]; ok {
 		delete(kv, key)

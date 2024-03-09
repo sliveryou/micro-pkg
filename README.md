@@ -15,6 +15,7 @@ go 微服务常用公共包
 - **auth** 身份认证包，包含阿里云银行卡四要素认证、阿里云企业银行卡账户认证和百度云人脸识别认证
 - **balancer** grpc 平衡器，包含了一致性 hash 平衡器
 - **captcha** base64 编码的图形验证码包，使用 redis 缓存验证码答案
+- **disabler** 功能禁用器，可以判断 API 或 RPC 能否放行，并包含了 grpc 服务端拦截器
 - **enforcer** 基于 casbin 实现的接口决策规则执行器
 - **errcode** 通用业务错误码包，记录了业务状态码、业务消息和 HTTP 状态码，并实现了 `GRPCStatus() *status.Status` 接口，可在 grpc 调用中流转
 - **excel** 常用 excel 操作包，包含获取所有行数据、流式读取行数据和流式写入行数据等操作 

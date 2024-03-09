@@ -25,11 +25,11 @@ func DefaultHash(data []byte) uint64 {
 
 // Ketama 基于 Ketama 算法的一致性 hash 负载均衡器
 type Ketama struct {
-	sync.RWMutex                   // 读写锁
-	replicas     int               // 每个真实节点对应复制的虚拟节点数
-	hashFunc     HashFunc          // hash 生成函数
-	ring         []uint64          // 排序后的 hash 环
-	nodeMap      map[uint64]string // 虚拟节点到真实节点的映射
+	mu       sync.RWMutex      // 读写锁
+	replicas int               // 每个真实节点对应复制的虚拟节点数
+	hashFunc HashFunc          // hash 生成函数
+	ring     []uint64          // 排序后的 hash 环
+	nodeMap  map[uint64]string // 虚拟节点到真实节点的映射
 }
 
 // New 新建一个 Ketama 对象
@@ -64,8 +64,8 @@ func (k *Ketama) AddWithReplicas(node string, replicas int) {
 		replicas = k.replicas
 	}
 
-	k.Lock()
-	defer k.Unlock()
+	k.mu.Lock()
+	defer k.mu.Unlock()
 
 	for i := 0; i < replicas; i++ {
 		hash := k.hashFunc([]byte(node + strconv.Itoa(i)))
@@ -95,8 +95,8 @@ func (k *Ketama) Add(node string) {
 
 // Get 获取节点
 func (k *Ketama) Get(key string) (string, bool) {
-	k.RLock()
-	defer k.RUnlock()
+	k.mu.RLock()
+	defer k.mu.RUnlock()
 
 	if len(k.ring) == 0 {
 		return "", false
@@ -113,8 +113,8 @@ func (k *Ketama) Get(key string) (string, bool) {
 
 // Remove 移除节点
 func (k *Ketama) Remove(nodes ...string) {
-	k.Lock()
-	defer k.Unlock()
+	k.mu.Lock()
+	defer k.mu.Unlock()
 
 	deletedHashes := make([]uint64, 0)
 	for _, node := range nodes {

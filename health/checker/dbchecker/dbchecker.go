@@ -10,6 +10,8 @@ import (
 	"github.com/sliveryou/micro-pkg/xdb"
 )
 
+var _ health.Checker = (*Checker)(nil)
+
 // Checker 数据库检查器结构详情
 type Checker struct {
 	t  xdb.Type

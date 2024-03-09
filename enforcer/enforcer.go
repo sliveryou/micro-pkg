@@ -1,7 +1,6 @@
 package enforcer
 
 import (
-	"strings"
 	"sync/atomic"
 	"time"
 
@@ -9,7 +8,6 @@ import (
 	casbin "github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
-	cutil "github.com/casbin/casbin/v2/util"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -29,10 +27,10 @@ p = sub, obj, act, eft
 g = _, _
 
 [policy_effect]
-e = some(where (p.eft == allow))
+e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 
 [matchers]
-m = r.sub == p.sub && uriMatch(r.obj, p.obj) && r.act == p.act
+m = g(r.sub, p.sub) && keyMatch3(r.obj, p.obj) && (r.act == p.act || p.act == "*")
 `
 )
 
@@ -95,11 +93,6 @@ func (e *Enforcer) init() error {
 		return errors.WithMessage(err, "enforcer set watcher err")
 	}
 
-	if err := se.LoadPolicy(); err != nil {
-		return errors.WithMessage(err, "enforcer load policy err")
-	}
-
-	se.AddFunction("uriMatch", URIMatchFunc)
 	e.SyncedEnforcer = se
 
 	_ = e.w.SetUpdateCallback(func(string) {
@@ -158,25 +151,6 @@ func (e *Enforcer) Reload(retryDuration time.Duration, retryMaxTimes int) {
 	})
 }
 
-// URIMatch URI 决策规则函数
-func URIMatch(key1, key2 string) bool {
-	key1 = strings.Split(key1, "?")[0]
-
-	return cutil.KeyMatch3(key1, key2)
-}
-
-// URIMatchFunc URI 决策规则函数装饰器
-func URIMatchFunc(args ...any) (any, error) {
-	if err := checkArgs(2, args...); err != nil {
-		return false, errors.WithMessage(err, "uriMatch err")
-	}
-
-	key1, _ := args[0].(string)
-	key2, _ := args[1].(string)
-
-	return URIMatch(key1, key2), nil
-}
-
 // fillDefault 填充默认值
 func (c *Config) fillDefault() error {
 	fill := &Config{}
@@ -189,20 +163,4 @@ func (c *Config) fillDefault() error {
 	}
 
 	return mergo.Merge(c, fill)
-}
-
-// checkArgs 检测可变参数
-func checkArgs(expectedLen int, args ...any) error {
-	if len(args) != expectedLen {
-		return errors.Errorf("expected %d arguments, but got %d", expectedLen, len(args))
-	}
-
-	for _, p := range args {
-		_, ok := p.(string)
-		if !ok {
-			return errors.New("argument must be a string")
-		}
-	}
-
-	return nil
 }

@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+// errUnsupportedType 不支持数据库类型错误
 var errUnsupportedType = errors.New("unsupported database type")
 
 // Type 数据库类型
