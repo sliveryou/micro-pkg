@@ -31,9 +31,10 @@ func TestParseMineType(t *testing.T) {
 	}
 
 	type mimeType struct {
-		MimeType string `json:"mime_type"`
-		Source   string `json:"source"`
-		Priority int    `json:"priority"`
+		MimeType       string `json:"mime_type"`
+		Source         string `json:"source"`
+		Priority       int    `json:"priority"`
+		SecondPriority int    `json:"second_priority"`
 	}
 
 	type extension struct {
@@ -74,12 +75,34 @@ func TestParseMineType(t *testing.T) {
 				priority = 1
 			}
 
-			ei.MimeTypes = append(ei.MimeTypes, mimeType{MimeType: mt, Source: mti.Source, Priority: priority})
-			sort.Slice(ei.MimeTypes, func(i, j int) bool {
-				if ei.MimeTypes[i].Priority != ei.MimeTypes[j].Priority {
-					return ei.MimeTypes[i].Priority > ei.MimeTypes[j].Priority
+			// application, audio, font, image, message, model, text, video
+			var secondPriority int
+			if strings.HasPrefix(mt, "video") {
+				secondPriority = 3
+			} else if strings.HasPrefix(mt, "audio") {
+				secondPriority = 2
+			} else if strings.HasPrefix(mt, "application") {
+				if mt == ContentTypeStream {
+					priority = -1
+					secondPriority = -1
+				} else {
+					secondPriority = 1
 				}
-				return len(ei.MimeTypes[i].MimeType) < len(ei.MimeTypes[j].MimeType)
+			}
+
+			ei.MimeTypes = append(ei.MimeTypes, mimeType{
+				MimeType: mt, Source: mti.Source,
+				Priority: priority, SecondPriority: secondPriority,
+			})
+			sort.Slice(ei.MimeTypes, func(i, j int) bool {
+				ti, tj := ei.MimeTypes[i], ei.MimeTypes[j]
+				if ti.Priority != tj.Priority {
+					return ti.Priority > tj.Priority
+				}
+				if ti.SecondPriority != tj.SecondPriority {
+					return ti.SecondPriority > tj.SecondPriority
+				}
+				return len(ti.MimeType) < len(tj.MimeType)
 			})
 			em[ext] = ei
 		}
@@ -90,9 +113,6 @@ func TestParseMineType(t *testing.T) {
 	b.WriteString("var extToMimeType = map[string]string{\n")
 	for _, ext := range exts {
 		ei := em[ext]
-		if ei.MimeTypes[0].MimeType == ApplicationStream && len(ei.MimeTypes) > 1 {
-			ei.MimeTypes[0], ei.MimeTypes[1] = ei.MimeTypes[1], ei.MimeTypes[0]
-		}
 		b.WriteString(fmt.Sprintf("\t%q: %q,\n", ei.Extension, ei.MimeTypes[0].MimeType))
 	}
 	b.WriteString("}")
@@ -120,7 +140,12 @@ func TestTypeByExtension(t *testing.T) {
 		expect   string
 	}{
 		{filePath: "test.txt", expect: "text/plain"},
+		{filePath: "test.html", expect: "text/html"},
+		{filePath: "test.json", expect: "application/json"},
 		{filePath: "test.pdf", expect: "application/pdf"},
+		{filePath: "test.zip", expect: "application/zip"},
+		{filePath: "test.mp3", expect: "audio/mpeg"},
+		{filePath: "test.mp4", expect: "video/mp4"},
 		{filePath: "test.jpg", expect: "image/jpeg"},
 		{filePath: "test", expect: "application/octet-stream"},
 		{filePath: "/root/dir/test.txt", expect: "text/plain"},
@@ -132,7 +157,7 @@ func TestTypeByExtension(t *testing.T) {
 
 	for _, c := range cases {
 		got := TypeByExtension(c.filePath)
-		assert.Equal(t, got, c.expect)
+		assert.Equal(t, c.expect, got)
 	}
 }
 
@@ -189,5 +214,5 @@ func TestParseEndpoint(t *testing.T) {
 type _mockReader struct{}
 
 func (m *_mockReader) Read(p []byte) (n int, err error) {
-	return 0, nil
+	return 0, io.EOF
 }

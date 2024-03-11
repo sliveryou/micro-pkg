@@ -75,15 +75,14 @@ func (c *rpcClient) newRequest(ctx context.Context, req any) (*http.Request, err
 	if err != nil {
 		return nil, errors.WithMessagef(err, "json marshal %v err", req)
 	}
-	// fmt.Println(string(body))
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost, c.endpoint, bytes.NewReader(body))
 	if err != nil {
 		return nil, errors.WithMessage(err, "new http request err")
 	}
 
-	request.Header.Set(HeaderAccept, ApplicationJSON)
-	request.Header.Set(HeaderContentType, ApplicationJSON)
+	request.Header.Set(HeaderAccept, ContentTypeJSON)
+	request.Header.Set(HeaderContentType, ContentTypeJSON)
 
 	for k, v := range c.customHeaders {
 		request.Header.Set(k, v)

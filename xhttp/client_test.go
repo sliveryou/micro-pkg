@@ -49,8 +49,8 @@ func TestClient(t *testing.T) {
 				method: "GET",
 				url:    "https://www.httpbin.org/ip",
 				header: map[string]string{
-					"Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-					"User-Agent":      "Go-HTTP-Request",
+					HeaderAcceptLanguage: "zh-CN,zh;q=0.9,en;q=0.8",
+					HeaderUserAgent:      "Go-HTTP-Request",
 				},
 				body: nil,
 			},
@@ -61,8 +61,8 @@ func TestClient(t *testing.T) {
 				method: "GET",
 				url:    "https://www.httpbin.org/get",
 				header: map[string]string{
-					"Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-					"User-Agent":      "Go-HTTP-Request",
+					HeaderAcceptLanguage: "zh-CN,zh;q=0.9,en;q=0.8",
+					HeaderUserAgent:      "Go-HTTP-Request",
 				},
 				body: nil,
 			},
@@ -73,8 +73,8 @@ func TestClient(t *testing.T) {
 				method: "POST",
 				url:    "https://www.httpbin.org/post",
 				header: map[string]string{
-					"Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-					"User-Agent":      "Go-HTTP-Request",
+					HeaderAcceptLanguage: "zh-CN,zh;q=0.9,en;q=0.8",
+					HeaderUserAgent:      "Go-HTTP-Request",
 				},
 				body: strings.NewReader("a=b&c=d"),
 			},

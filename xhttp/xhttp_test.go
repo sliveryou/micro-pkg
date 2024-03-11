@@ -36,7 +36,7 @@ func TestParse(t *testing.T) {
     	"total_size": 8 
 	}`))
 	require.NoError(t, err)
-	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set(HeaderContentType, ContentTypeJSON)
 
 	req := &_UploadFileChunkReq{}
 	err = Parse(r, req)
@@ -65,7 +65,7 @@ func TestParseForm(t *testing.T) {
 	r, err = http.NewRequest(http.MethodPost, "http://test.com/api/test",
 		strings.NewReader("file_type=txt&file_hashes=a&file_hashes=b&file_seqs=1&file_seqs=2"))
 	require.NoError(t, err)
-	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	r.Header.Set(HeaderContentType, ContentTypeForm)
 
 	req2 := _GetFilesReq{}
 	err = ParseForm(r, &req2)
@@ -87,7 +87,7 @@ func TestParseJsonBody(t *testing.T) {
     	"total_size": 8 
 	}`))
 	require.NoError(t, err)
-	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set(HeaderContentType, ContentTypeJSON)
 
 	req := &_UploadFileChunkReq{}
 	err = ParseJsonBody(r, req)
@@ -122,7 +122,7 @@ func TestFromFile(t *testing.T) {
 	require.NoError(t, err)
 
 	r := httptest.NewRequest(http.MethodPost, "http://test.com/api/file/upload", body)
-	r.Header.Set("Content-Type", contentType)
+	r.Header.Set(HeaderContentType, contentType)
 	w := httptest.NewRecorder()
 	testFileHandler(w, r)
 
@@ -212,7 +212,7 @@ func TestCopyRequest(t *testing.T) {
     	"total_seq": 1,
     	"total_size": 8
 	}`))
-	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set(HeaderContentType, ContentTypeJSON)
 	w := httptest.NewRecorder()
 	testHandler(w, r)
 
@@ -236,7 +236,7 @@ func TestErrorCtx1(t *testing.T) {
     	"total_seq": 1,
     	"total_size": 8
 	}`))
-	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set(HeaderContentType, ContentTypeJSON)
 	w := httptest.NewRecorder()
 	testHandler(w, r)
 
@@ -259,7 +259,7 @@ func TestErrorCtx2(t *testing.T) {
     	"total_seq": 1,
     	"total_size": 8
 	}`))
-	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set(HeaderContentType, ContentTypeJSON)
 	w := httptest.NewRecorder()
 	testHandler(w, r)
 

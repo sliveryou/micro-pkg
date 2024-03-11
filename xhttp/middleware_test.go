@@ -32,7 +32,7 @@ func TestNewJWTMiddleware_Success(t *testing.T) {
 	tokenStr, err := m.j.GenToken(getToken())
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
-	req.Header.Set("Authorization", "Bearer "+tokenStr)
+	req.Header.Set(HeaderAuthorization, "Bearer "+tokenStr)
 
 	handler := m.Handle(func(w http.ResponseWriter, r *http.Request) {
 		t.Log("JWTMiddleware Handle request")
@@ -152,7 +152,7 @@ func TestNewRLogMiddleware(t *testing.T) {
 		io.Copy(&buf, req.Body)
 		t.Log(buf.String())
 
-		w.Header().Set(HeaderContentType, ApplicationJSON)
+		w.Header().Set(HeaderContentType, ContentTypeJSON)
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"code":200,"msg":"ok"}`))
 	})

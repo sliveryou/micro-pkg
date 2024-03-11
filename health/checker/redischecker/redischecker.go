@@ -29,7 +29,7 @@ func NewChecker(rc redis.RedisConf, opts ...redis.Option) *Checker {
 // NewCheckerWithRedis 通过已有 redis 客户端新建 redis 检查器
 func NewCheckerWithRedis(rds *redis.Redis) *Checker {
 	if rds == nil {
-		panic(errors.New("nil redis is invalid"))
+		panic(errors.New("redischecker: nil redis is invalid"))
 	}
 
 	return &Checker{rds: rds}

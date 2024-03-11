@@ -185,7 +185,7 @@ func (f *Face) videoVerify(ctx context.Context, accessToken, videoBase64 string)
 
 	rawURL := VideoVerifyURL + "?access_token=" + accessToken
 	header := map[string]string{
-		xhttp.HeaderContentType: xhttp.ApplicationForm,
+		xhttp.HeaderContentType: xhttp.ContentTypeForm,
 	}
 	data := "video_base64=" + videoBase64
 
@@ -229,7 +229,7 @@ func (f *Face) personVerify(ctx context.Context, accessToken, validPic, name, id
 
 	rawURL := fmt.Sprintf("%s?access_token=%s", PersonVerifyURL, accessToken)
 	header := map[string]string{
-		xhttp.HeaderContentType: xhttp.ApplicationJSON,
+		xhttp.HeaderContentType: xhttp.ContentTypeJSON,
 	}
 	req := &personVerifyReq{
 		Image:        validPic,

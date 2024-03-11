@@ -15,7 +15,7 @@ var extToMimeType = map[string]string{
 	".3ds":                      "image/x-3ds",
 	".3g2":                      "video/3gpp2",
 	".3gp":                      "video/3gpp",
-	".3gpp":                     "audio/3gpp",
+	".3gpp":                     "video/3gpp",
 	".3mf":                      "model/3mf",
 	".7z":                       "application/x-7z-compressed",
 	".aab":                      "application/x-authorware-bin",
@@ -826,7 +826,7 @@ var extToMimeType = map[string]string{
 	".rsd":                      "application/rsd+xml",
 	".rsheet":                   "application/urc-ressheet+xml",
 	".rss":                      "application/rss+xml",
-	".rtf":                      "text/rtf",
+	".rtf":                      "application/rtf",
 	".rtx":                      "text/richtext",
 	".run":                      "application/x-makeself",
 	".rusd":                     "application/route-usd+xml",
@@ -1169,7 +1169,7 @@ var extToMimeType = map[string]string{
 	".xltx":                     "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
 	".xlw":                      "application/vnd.ms-excel",
 	".xm":                       "audio/xm",
-	".xml":                      "text/xml",
+	".xml":                      "application/xml",
 	".xns":                      "application/xcap-ns+xml",
 	".xo":                       "application/vnd.olpc-sugar",
 	".xop":                      "application/xop+xml",
@@ -1222,7 +1222,7 @@ func TypeByExtension(filePath string) string {
 		typ = removeCharsetInMimeType(typ)
 	}
 	if typ == "" {
-		typ = ApplicationStream
+		typ = ContentTypeStream
 	}
 
 	return typ

@@ -21,7 +21,7 @@ type Checker struct {
 // NewChecker 新建数据库检查器
 func NewChecker(t xdb.Type, db *gorm.DB) *Checker {
 	if db == nil {
-		panic(errors.New("nil db is invalid"))
+		panic(errors.New("dbchecker: nil db is invalid"))
 	}
 
 	return &Checker{t: t, db: db}

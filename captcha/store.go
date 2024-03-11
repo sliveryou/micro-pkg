@@ -1,6 +1,8 @@
 package captcha
 
 import (
+	"errors"
+
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"github.com/sliveryou/micro-pkg/xkv"
@@ -15,6 +17,10 @@ type Store struct {
 
 // NewStore 新建验证码存储器
 func NewStore(kvStore *xkv.Store, keyPrefix string, expiration int) *Store {
+	if kvStore == nil {
+		panic(errors.New("captcha: illegal store config"))
+	}
+
 	return &Store{kvStore: kvStore, keyPrefix: keyPrefix, expiration: expiration}
 }
 

@@ -24,7 +24,7 @@ func TestNewChecker(t *testing.T) {
 	checker := NewChecker(c.Type, db)
 	assert.NotNil(t, checker)
 
-	assert.PanicsWithError(t, "nil db is invalid", func() {
+	assert.PanicsWithError(t, "dbchecker: nil db is invalid", func() {
 		NewChecker(c.Type, nil)
 	})
 }

@@ -54,8 +54,8 @@ func WriteHeader(w http.ResponseWriter, err ...error) {
 	}
 
 	e, _ := errcode.FromError(ee)
-	w.Header().Set(HeaderGWErrorCode, convert.ToString(e.Code))
-	w.Header().Set(HeaderGWErrorMessage, url.QueryEscape(e.Msg))
+	w.Header().Set(HeaderCaErrorCode, convert.ToString(e.Code))
+	w.Header().Set(HeaderCaErrorMessage, url.QueryEscape(e.Msg))
 }
 
 // OkJsonCtx 成功 json 响应返回

@@ -23,7 +23,7 @@ type Checker struct {
 // NewChecker 新建键值集群检查器
 func NewChecker(kc kv.KvConf, opts ...redis.Option) *Checker {
 	if len(kc) == 0 || cache.TotalWeights(kc) <= 0 {
-		panic(errors.New("there are no cache nodes"))
+		panic(errors.New("kvchecker: there are no cache nodes"))
 	}
 
 	c := &Checker{nodes: make([]*redis.Redis, 0, len(kc))}

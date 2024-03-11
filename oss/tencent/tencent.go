@@ -105,7 +105,6 @@ func (c *COS) PutObject(key string, reader io.Reader) (string, error) {
 		ObjectPutHeaderOptions: &cos.ObjectPutHeaderOptions{
 			ContentType:   xhttp.TypeByExtension(key),
 			ContentLength: contentLength,
-			Listener:      &cos.DefaultProgressListener{},
 		},
 	})
 	if err != nil {

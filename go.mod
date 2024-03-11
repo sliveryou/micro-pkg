@@ -6,9 +6,9 @@ require (
 	dario.cat/mergo v1.0.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/alicebob/miniredis/v2 v2.31.1
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.688
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.690
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
-	github.com/casbin/casbin/v2 v2.82.0
+	github.com/casbin/casbin/v2 v2.84.0
 	github.com/glebarez/sqlite v1.10.0
 	github.com/go-stack/stack v1.8.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
@@ -20,7 +20,7 @@ require (
 	github.com/philchia/agollo/v4 v4.1.5
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.4.0
-	github.com/sliveryou/aliyun-api-gateway-sign v1.0.4
+	github.com/sliveryou/aliyun-api-gateway-sign v1.0.5
 	github.com/sliveryou/go-tool/v2 v2.0.3
 	github.com/sliveryou/submail-go-sdk v1.0.5
 	github.com/spaolacci/murmur3 v1.1.0
@@ -36,7 +36,7 @@ require (
 	google.golang.org/grpc v1.62.0
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/mysql v1.5.4
-	gorm.io/driver/postgres v1.5.6
+	gorm.io/driver/postgres v1.5.7
 	gorm.io/driver/sqlserver v1.5.3
 	gorm.io/gen v0.3.25
 	gorm.io/gorm v1.25.7

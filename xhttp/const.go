@@ -24,34 +24,42 @@ const (
 
 	// HeaderAccept 请求头：Accept
 	HeaderAccept = "Accept"
+	// HeaderAcceptLanguage 请求头：Accept-Language
+	HeaderAcceptLanguage = "Accept-Language"
 	// HeaderContentType 请求头：Content-Type
 	HeaderContentType = "Content-Type"
+	// HeaderContentDisposition 请求头：Content-Disposition
+	HeaderContentDisposition = "Content-Disposition"
 	// HeaderDate 请求头：Date
 	HeaderDate = "Date"
+	// HeaderLocation 请求头：Location
+	HeaderLocation = "Location"
 	// HeaderUserAgent 请求头：User-Agent
 	HeaderUserAgent = "User-Agent"
 	// HeaderAuthorization 请求头：Authorization
 	HeaderAuthorization = "Authorization"
-	// HeaderLocation 请求头：Location
-	HeaderLocation = "Location"
-	// HeaderContentDisposition 请求头：Content-Disposition
-	HeaderContentDisposition = "Content-Disposition"
 
-	// HeaderGWErrorCode 自定义网关请求头：X-GW-Error-Code
-	HeaderGWErrorCode = "X-GW-Error-Code"
-	// HeaderGWErrorMessage 自定义网关请求头：X-GW-Error-Message
-	HeaderGWErrorMessage = "X-GW-Error-Message"
+	// HeaderCaErrorCode 自定义网关请求头：X-Ca-Error-Code
+	HeaderCaErrorCode = "X-Ca-Error-Code"
+	// HeaderCaErrorMessage 自定义网关请求头：X-Ca-Error-Message
+	HeaderCaErrorMessage = "X-Ca-Error-Message"
 
-	// ApplicationForm 应用类型：x-www-form-urlencoded
-	ApplicationForm = "application/x-www-form-urlencoded"
-	// ApplicationStream 应用类型：octet-stream
-	ApplicationStream = "application/octet-stream"
-	// ApplicationJSON 应用类型：json
-	ApplicationJSON = "application/json"
-	// ApplicationXML 应用类型：xml
-	ApplicationXML = "application/xml"
-	// ApplicationText 应用类型：text
-	ApplicationText = "application/text"
-	// ApplicationZip 应用类型：zip
-	ApplicationZip = "application/zip"
+	// ContentTypeForm 内容类型：x-www-form-urlencoded
+	ContentTypeForm = "application/x-www-form-urlencoded"
+	// ContentTypeMultipartForm 内容类型：multipart/form-data
+	ContentTypeMultipartForm = "multipart/form-data"
+	// ContentTypeMultipartFormWithBoundary 内容类型：multipart/form-data; boundary=
+	ContentTypeMultipartFormWithBoundary = "multipart/form-data; boundary="
+	// ContentTypeText 内容类型：text
+	ContentTypeText = "text/plain"
+	// ContentTypeJSON 内容类型：json
+	ContentTypeJSON = "application/json"
+	// ContentTypeXML 内容类型：xml
+	ContentTypeXML = "application/xml"
+	// ContentTypePDF 内容类型：pdf
+	ContentTypePDF = "application/pdf"
+	// ContentTypeZip 内容类型：zip
+	ContentTypeZip = "application/zip"
+	// ContentTypeStream 内容类型：octet-stream
+	ContentTypeStream = "application/octet-stream"
 )

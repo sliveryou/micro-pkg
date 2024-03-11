@@ -1,6 +1,8 @@
 package limit
 
 import (
+	stderrors "errors"
+
 	"github.com/pkg/errors"
 
 	"github.com/sliveryou/micro-pkg/xkv"
@@ -53,9 +55,9 @@ const (
 
 var (
 	// ErrUnknownCode 未知状态码错误
-	ErrUnknownCode = errors.New("unknown code")
+	ErrUnknownCode = stderrors.New("unknown code")
 	// ErrUnexpectedType 意外类型错误
-	ErrUnexpectedType = errors.New("unexpected type")
+	ErrUnexpectedType = stderrors.New("unexpected type")
 )
 
 // option 限流器配置
