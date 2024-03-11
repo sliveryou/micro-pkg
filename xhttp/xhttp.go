@@ -241,21 +241,34 @@ func isLoopback(f net.Flags) bool {
 	return f&net.FlagLoopback == net.FlagLoopback
 }
 
-// CopyHTTPRequest 复制请求体
-func CopyHTTPRequest(r *http.Request) (*http.Request, error) {
-	rClone := r.Clone(context.Background())
-	// 克隆请求体
-	if r.Body != nil {
-		body, err := io.ReadAll(r.Body)
+// CopyRequest 复制请求
+func CopyRequest(r *http.Request) (*http.Request, error) {
+	clone := r.Clone(context.Background())
+	if r.Body == nil {
+		clone.Body = nil
+	} else if r.Body == http.NoBody {
+		clone.Body = http.NoBody
+	} else if r.GetBody != nil {
+		body, err := r.GetBody()
 		if err != nil {
-			return nil, errors.WithMessage(err, "read all request body err")
+			return nil, errors.WithMessage(err, "request get body err")
 		}
 
-		r.Body = io.NopCloser(bytes.NewReader(body))
-		rClone.Body = io.NopCloser(bytes.NewReader(body))
+		clone.Body = body
+	} else {
+		var buf bytes.Buffer
+		if _, err := buf.ReadFrom(r.Body); err != nil {
+			return nil, errors.WithMessage(err, "read from request body err")
+		}
+		if err := r.Body.Close(); err != nil {
+			return nil, errors.WithMessage(err, "request body close err")
+		}
+
+		r.Body = io.NopCloser(&buf)
+		clone.Body = io.NopCloser(bytes.NewBuffer(buf.Bytes()))
 	}
 
-	return rClone, nil
+	return clone, nil
 }
 
 func formatStr(s string, halfShowLen int) string {

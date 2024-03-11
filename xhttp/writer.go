@@ -18,16 +18,19 @@ import (
 // LoggedResponseWriter 日志记录响应写入器
 type LoggedResponseWriter struct {
 	W    http.ResponseWriter
-	R    *http.Request
 	Code int
 }
 
 // NewLoggedResponseWriter 新建日志记录响应写入器
-func NewLoggedResponseWriter(w http.ResponseWriter, r *http.Request) *LoggedResponseWriter {
-	return &LoggedResponseWriter{
-		W:    w,
-		R:    r,
-		Code: http.StatusOK,
+func NewLoggedResponseWriter(w http.ResponseWriter) *LoggedResponseWriter {
+	switch writer := w.(type) {
+	case *LoggedResponseWriter:
+		return writer
+	default:
+		return &LoggedResponseWriter{
+			W:    writer,
+			Code: http.StatusOK,
+		}
 	}
 }
 
@@ -65,42 +68,42 @@ func (w *LoggedResponseWriter) WriteHeader(code int) {
 
 // DetailLoggedResponseWriter 详细日志记录响应写入器
 type DetailLoggedResponseWriter struct {
-	Writer *LoggedResponseWriter
-	Buf    *bytes.Buffer
+	W   *LoggedResponseWriter
+	Buf *bytes.Buffer
 }
 
 // NewDetailLoggedResponseWriter 新建详细日志记录响应写入器
-func NewDetailLoggedResponseWriter(w http.ResponseWriter, r *http.Request) *DetailLoggedResponseWriter {
+func NewDetailLoggedResponseWriter(w http.ResponseWriter) *DetailLoggedResponseWriter {
 	return &DetailLoggedResponseWriter{
-		Writer: NewLoggedResponseWriter(w, r),
-		Buf:    &bytes.Buffer{},
+		W:   NewLoggedResponseWriter(w),
+		Buf: &bytes.Buffer{},
 	}
 }
 
 // Flush 实现 Flush 方法
 func (w *DetailLoggedResponseWriter) Flush() {
-	w.Writer.Flush()
+	w.W.Flush()
 }
 
 // Header 实现 Header 方法
 func (w *DetailLoggedResponseWriter) Header() http.Header {
-	return w.Writer.Header()
+	return w.W.Header()
 }
 
 // Hijack 实现 Hijack 方法
 func (w *DetailLoggedResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	return w.Writer.Hijack()
+	return w.W.Hijack()
 }
 
 // Write 实现 Write 方法
 func (w *DetailLoggedResponseWriter) Write(bs []byte) (int, error) {
 	w.Buf.Write(bs)
-	return w.Writer.Write(bs)
+	return w.W.Write(bs)
 }
 
 // WriteHeader 实现 WriteHeader 方法
 func (w *DetailLoggedResponseWriter) WriteHeader(code int) {
-	w.Writer.WriteHeader(code)
+	w.W.WriteHeader(code)
 }
 
 var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")

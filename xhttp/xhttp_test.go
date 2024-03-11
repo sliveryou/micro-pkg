@@ -201,7 +201,7 @@ func TestGetInternalIP(t *testing.T) {
 	t.Log(iip)
 }
 
-func TestCopyHTTPRequest(t *testing.T) {
+func TestCopyRequest(t *testing.T) {
 	r := httptest.NewRequest(http.MethodPost, "http://test.com/api/chunk/upload", strings.NewReader(`
     { 
 		"current_data": "abcdefgh",
@@ -273,7 +273,7 @@ func TestErrorCtx2(t *testing.T) {
 
 func testHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	rc, err := CopyHTTPRequest(r)
+	rc, err := CopyRequest(r)
 	if err != nil {
 		ErrorCtx(ctx, w, err)
 		return

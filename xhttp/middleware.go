@@ -229,7 +229,7 @@ func NewRLogMiddleware() *RLogMiddleware {
 func (m *RLogMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var dup io.ReadCloser
-		writer := NewDetailLoggedResponseWriter(w, r)
+		writer := NewDetailLoggedResponseWriter(w)
 		r.Body, dup = iox.DupReadCloser(r.Body)
 
 		next(writer, r)
@@ -242,55 +242,32 @@ func (m *RLogMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 // logDetails 请求响应日志详情打印
 func logDetails(writer *DetailLoggedResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
+	code := writer.W.Code
+	logger := logx.WithContext(r.Context())
+
 	buf.WriteString(fmt.Sprintf("%d - %s\n=> %s",
-		writer.Writer.Code, httpx.GetRemoteAddr(r), dumpRequest(r)))
+		code, httpx.GetRemoteAddr(r), dumpRequest(r)))
 
 	respBuf := writer.Buf.Bytes()
 	if len(respBuf) > 0 {
 		buf.WriteString(fmt.Sprintf("<= %s", respBuf))
 	}
 
-	logx.WithContext(r.Context()).Info(buf.String())
+	if code < http.StatusInternalServerError {
+		logger.Info(buf.String())
+	} else {
+		logger.Error(buf.String())
+	}
 }
 
 // dumpRequest 格式化请求样式
-func dumpRequest(req *http.Request) string {
-	var dup io.ReadCloser
-	req.Body, dup = iox.DupReadCloser(req.Body)
-
-	var b bytes.Buffer
-	var err error
-
-	reqURI := req.RequestURI
-	if reqURI == "" {
-		reqURI = req.URL.RequestURI()
-	}
-
-	fmt.Fprintf(&b, "%s %s HTTP/%d.%d\n", req.Method,
-		reqURI, req.ProtoMajor, req.ProtoMinor)
-
-	chunked := len(req.TransferEncoding) > 0 && req.TransferEncoding[0] == "chunked"
-	if req.Body != nil {
-		var n int64
-		var dest io.Writer = &b
-		if chunked {
-			dest = httputil.NewChunkedWriter(dest)
-		}
-		n, err = io.Copy(dest, req.Body)
-		if closer, ok := dest.(io.Closer); ok && chunked {
-			closer.Close()
-		}
-		if n > 0 {
-			io.WriteString(&b, "\n")
-		}
-	}
-
-	req.Body = dup
+func dumpRequest(r *http.Request) string {
+	reqContent, err := httputil.DumpRequest(r, true)
 	if err != nil {
 		return err.Error()
 	}
 
-	return b.String()
+	return string(reqContent)
 }
 
 // -------------------- IgnoreRLogMiddleware -------------------- //
