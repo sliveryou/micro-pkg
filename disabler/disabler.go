@@ -1,14 +1,9 @@
 package disabler
 
 import (
-	"context"
-
 	casbin "github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	"github.com/pkg/errors"
-	"google.golang.org/grpc"
-
-	"github.com/sliveryou/micro-pkg/errcode"
 )
 
 const (
@@ -27,9 +22,6 @@ e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 m = keyMatch3(r.obj, p.obj) && (r.act == p.act || p.act == "*")
 `
 )
-
-// ErrRPCSupport 暂不支持该 RPC 错误
-var ErrRPCSupport = errcode.NewCommon("暂不支持该 RPC")
 
 // Config 功能禁用器相关配置
 type Config struct {
@@ -99,22 +91,4 @@ func newEnforcer(routes []string) (*casbin.Enforcer, error) {
 	}
 
 	return e, nil
-}
-
-// DisableInterceptor 功能禁用服务端一元拦截器
-func (fd *FuncDisabler) DisableInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-	if !fd.AllowRPC(info.FullMethod) {
-		return nil, ErrRPCSupport
-	}
-
-	return handler(ctx, req)
-}
-
-// DisableStreamInterceptor 功能禁用服务端流拦截器
-func (fd *FuncDisabler) DisableStreamInterceptor(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-	if !fd.AllowRPC(info.FullMethod) {
-		return ErrRPCSupport
-	}
-
-	return handler(srv, ss)
 }

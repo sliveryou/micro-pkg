@@ -75,12 +75,12 @@ func MustNewJWT(c Config) *JWT {
 	return j
 }
 
-// GenToken 根据给定 token 结构体 生成 JWT token
+// GenToken 根据给定 token 结构体生成 JWT token
 //
-// 注意：token 必须为结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
+// 注意：token 必须为结构体或结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
 func (j *JWT) GenToken(token any, expiration ...time.Duration) (string, error) {
-	if err := CheckTokenType(token); err != nil {
-		return "", err
+	if !IsStruct(token) && !IsStructPointer(token) {
+		return "", errUnsupportedType
 	}
 
 	payloads := make(map[string]any)
@@ -126,8 +126,8 @@ func (j *JWT) GenTokenWithPayloads(payloads map[string]any, expiration ...time.D
 //
 // 注意：token 必须为结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
 func (j *JWT) ParseToken(tokenString string, token any) error {
-	if err := CheckTokenType(token); err != nil {
-		return err
+	if !IsStructPointer(token) {
+		return errUnsupportedType
 	}
 
 	payloads, err := j.ParseTokenPayloads(tokenString)
@@ -142,8 +142,8 @@ func (j *JWT) ParseToken(tokenString string, token any) error {
 //
 // 注意：token 必须为结构体指针类型，名称以 json tag 对应的名称与 payloads 进行映射
 func (j *JWT) ParseTokenFromRequest(r *http.Request, token any) error {
-	if err := CheckTokenType(token); err != nil {
-		return err
+	if !IsStructPointer(token) {
+		return errUnsupportedType
 	}
 
 	payloads, err := j.ParseTokenPayloadsFromRequest(r)
@@ -205,15 +205,6 @@ func (j *JWT) keyFunc() jwt.Keyfunc {
 	}
 }
 
-// CheckTokenType 校验 token 类型
-func CheckTokenType(token any) error {
-	if !isStructPointer(token) {
-		return errUnsupportedType
-	}
-
-	return nil
-}
-
 // extractPayloads 提取 token 里包含的 payloads
 func extractPayloads(token *jwt.Token) (map[string]any, error) {
 	if token == nil || !token.Valid {
@@ -265,8 +256,8 @@ func trimBearerPrefix(tok string) string {
 	return tok
 }
 
-// isStructPointer 判断是否为结构体指针
-func isStructPointer(obj any) bool {
+// IsStructPointer 判断是否为结构体指针
+func IsStructPointer(obj any) bool {
 	if obj == nil {
 		return false
 	}
@@ -280,9 +271,15 @@ func isStructPointer(obj any) bool {
 	if !val.CanAddr() {
 		return false
 	}
-	if val.Kind() != reflect.Struct {
+
+	return val.Kind() == reflect.Struct
+}
+
+// IsStruct 判断是否为结构体
+func IsStruct(obj any) bool {
+	if obj == nil {
 		return false
 	}
 
-	return true
+	return reflect.ValueOf(obj).Kind() == reflect.Struct
 }

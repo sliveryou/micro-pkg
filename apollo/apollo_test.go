@@ -15,7 +15,7 @@ import (
 	"github.com/sliveryou/micro-pkg/apollo/internal/mockserver"
 )
 
-var addr = ":8080"
+var addr = ":18080"
 
 func TestMain(m *testing.M) {
 	setup()
@@ -40,7 +40,7 @@ func getApollo() (*Apollo, error) {
 		Cluster:         "default",
 		NameSpaceNames:  []string{"application", "client.json", "service.yaml"},
 		CacheDir:        "../testdata",
-		MetaAddr:        "localhost:8080",
+		MetaAddr:        "localhost" + addr,
 		AccessKeySecret: "",
 	}
 

@@ -118,18 +118,18 @@ type DepartmentPage struct {
 	UnableDelete   bool  `json:"unable_delete"`   // 不能删除
 }
 
-// GetDepartmentReq 查询部门请求
-type GetDepartmentReq struct {
+// GetDepartmentRequest 查询部门请求
+type GetDepartmentRequest struct {
 	Id int64 `path:"id" validate:"required" label:"部门ID"` // 部门ID
 }
 
-// GetDepartmentResp 查询部门响应
-type GetDepartmentResp struct {
+// GetDepartmentResponse 查询部门响应
+type GetDepartmentResponse struct {
 	Department
 }
 
-// GetDepartmentPagesReq 查询部门分页请求
-type GetDepartmentPagesReq struct {
+// GetDepartmentPagesRequest 查询部门分页请求
+type GetDepartmentPagesRequest struct {
 	Type     *int32 `form:"type,optional" validate:"omitempty,oneof=0 1 2" label:"部门类型"` // 部门类型（0-内部 1-外部 2-特殊）
 	Name     string `form:"name,optional"`                               // 部门名称
 	Search   string `form:"search,optional"`                             // 搜索 
@@ -137,33 +137,33 @@ type GetDepartmentPagesReq struct {
 	PageSize int64  `form:"page_size" validate:"required" label:"每条页数"` // 每条页数
 }
 
-// GetDepartmentPagesResp 查询部门分页响应
-type GetDepartmentPagesResp struct {
+// GetDepartmentPagesResponse 查询部门分页响应
+type GetDepartmentPagesResponse struct {
 	Count     int64             `json:"count"`      // 总数
 	PageCount int64             `json:"page_count"` // 页数
 	Results   []*DepartmentPage `json:"results"`    // 结果
 }
 
-// CreateDepartmentReq 创建部门请求
-type CreateDepartmentReq struct {
+// CreateDepartmentRequest 创建部门请求
+type CreateDepartmentRequest struct {
 	Name        string `json:"name" validate:"required" label:"部门名称"` // 部门名称
 	Description string `json:"description,optional"`                  // 部门描述
 }
 
-// CreateDepartmentResp 创建部门响应
-type CreateDepartmentResp struct {
+// CreateDepartmentResponse 创建部门响应
+type CreateDepartmentResponse struct {
 	Department
 }
 
-// UpdateDepartmentReq 更新部门请求
-type UpdateDepartmentReq struct {
+// UpdateDepartmentRequest 更新部门请求
+type UpdateDepartmentRequest struct {
 	Id          int64   `path:"id" validate:"required" label:"部门ID" swaggerignore:"true"` // 部门ID
 	Name        string  `json:"name" validate:"required" label:"部门名称"`                    // 部门名称
 	Description *string `json:"description,optional"`                                     // 部门描述
 }
 
-// UpdateDepartmentResp 更新部门响应
-type UpdateDepartmentResp struct {
+// UpdateDepartmentResponse 更新部门响应
+type UpdateDepartmentResponse struct {
 	Department
 }
 ```

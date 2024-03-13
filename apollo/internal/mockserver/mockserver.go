@@ -118,6 +118,11 @@ func Run(addr ...string) error {
 	return server.server.ListenAndServe()
 }
 
+// Close mock server
+func Close() error {
+	return server.server.Shutdown(context.TODO())
+}
+
 func initServer(addr ...string) {
 	server = &mockServer{
 		notifications: map[string]int{},
@@ -127,13 +132,8 @@ func initServer(addr ...string) {
 	mux.Handle("/notifications/", http.HandlerFunc(server.NotificationHandler))
 	mux.Handle("/configs/", http.HandlerFunc(server.ConfigHandler))
 	server.server.Handler = mux
-	server.server.Addr = ":8080"
+	server.server.Addr = ":18080"
 	if len(addr) > 0 {
 		server.server.Addr = addr[0]
 	}
-}
-
-// Close mock server
-func Close() error {
-	return server.server.Shutdown(context.TODO())
 }

@@ -65,23 +65,23 @@ func MustNewBankCard4C(c Config) *BankCard4C {
 	return b
 }
 
-// AuthenticateReq 银行卡四要素认证请求
-type AuthenticateReq struct {
+// AuthenticateRequest 银行卡四要素认证请求
+type AuthenticateRequest struct {
 	Name     string `validate:"required" label:"姓名"`                 // 姓名
 	IDCard   string `validate:"required,idcard" label:"身份证号"`        // 身份证号
 	BankCard string `validate:"required,bankcard" label:"银行卡卡号"`     // 银行卡卡号
 	Mobile   string `validate:"required,len=11,number" label:"电话号码"` // 电话号码
 }
 
-// AuthenticateResp 银行卡四要素认证响应
-type AuthenticateResp struct {
+// AuthenticateResponse 银行卡四要素认证响应
+type AuthenticateResponse struct {
 	OrderNo string // 订单号
 }
 
 // Authenticate 银行卡四要素认证
-func (b *BankCard4C) Authenticate(ctx context.Context, req *AuthenticateReq) (*AuthenticateResp, error) {
+func (b *BankCard4C) Authenticate(ctx context.Context, req *AuthenticateRequest) (*AuthenticateResponse, error) {
 	if b.c.IsMock {
-		return &AuthenticateResp{}, nil
+		return &AuthenticateResponse{}, nil
 	}
 
 	// 校验请求参数
@@ -116,7 +116,7 @@ func (b *BankCard4C) Authenticate(ctx context.Context, req *AuthenticateReq) (*A
 
 	if resp.Code == codeSuccess && resp.Data.Result != nil {
 		if *resp.Data.Result == resultConsistent {
-			return &AuthenticateResp{OrderNo: resp.Data.OrderNo}, nil
+			return &AuthenticateResponse{OrderNo: resp.Data.OrderNo}, nil
 		}
 		return nil, errcode.NewCommon(resp.Data.Desc)
 	} else if resp.Code == codeParamErr {

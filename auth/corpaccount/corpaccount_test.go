@@ -20,7 +20,7 @@ func TestCorpAccount_Authenticate(t *testing.T) {
 	ca, err := NewCorpAccount(c)
 	require.NoError(t, err)
 
-	req := &AuthenticateReq{
+	req := &AuthenticateRequest{
 		AcctName: "杭州测试有限公司",
 		BankName: "建设银行",
 		CardNo:   "33050161963500000428",

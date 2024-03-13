@@ -94,22 +94,22 @@ func MustNewFace(c Config) *Face {
 	return f
 }
 
-// AuthenticateReq 人脸识别认证请求
-type AuthenticateReq struct {
+// AuthenticateRequest 人脸识别认证请求
+type AuthenticateRequest struct {
 	Name        string `validate:"required" label:"姓名"`          // 姓名
 	IDCard      string `validate:"required,idcard" label:"身份证号"` // 身份证号
 	VideoBase64 string `validate:"required,base64" label:"视频数据"` // base64 编码的视频数据（建议视频大小控制在 10MB/1min 以内）
 }
 
-// AuthenticateResp 人脸识别认证响应
-type AuthenticateResp struct {
+// AuthenticateResponse 人脸识别认证响应
+type AuthenticateResponse struct {
 	LogID int64 // 日志ID
 }
 
 // Authenticate 人脸识别认证
-func (f *Face) Authenticate(ctx context.Context, req *AuthenticateReq) (*AuthenticateResp, error) {
+func (f *Face) Authenticate(ctx context.Context, req *AuthenticateRequest) (*AuthenticateResponse, error) {
 	if f.c.IsMock {
-		return &AuthenticateResp{}, nil
+		return &AuthenticateResponse{}, nil
 	}
 
 	s := strings.SplitN(req.VideoBase64, ",", 2)
@@ -142,7 +142,7 @@ func (f *Face) Authenticate(ctx context.Context, req *AuthenticateReq) (*Authent
 		return nil, errors.WithMessage(err, "person verify err")
 	}
 
-	return &AuthenticateResp{LogID: logID}, nil
+	return &AuthenticateResponse{LogID: logID}, nil
 }
 
 // getAccessToken 获取鉴权认证 token

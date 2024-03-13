@@ -157,15 +157,15 @@ func (c *Client) Call(ctx context.Context, method, url string, header map[string
 	return nil
 }
 
-// ChainReq 区块链 HTTP 调用请求
-type ChainReq struct {
+// ChainRequest 区块链 HTTP 调用请求
+type ChainRequest struct {
 	ID     int    `json:"id"`
 	Method string `json:"method"`
 	Params any    `json:"params"`
 }
 
-// ChainResp 区块链 HTTP 调用响应
-type ChainResp struct {
+// ChainResponse 区块链 HTTP 调用响应
+type ChainResponse struct {
 	ID     int             `json:"id"`
 	Result json.RawMessage `json:"result"`
 	Error  string          `json:"error"`
@@ -173,7 +173,7 @@ type ChainResp struct {
 
 // CallChain 区块链 HTTP 调用
 func (c *Client) CallChain(ctx context.Context, method, url string, header map[string]string, params, resp any) error {
-	cReq := &ChainReq{Method: method, Params: params}
+	cReq := &ChainRequest{Method: method, Params: params}
 	data, err := json.Marshal(cReq)
 	if err != nil {
 		return errors.WithMessage(err, "json marshal chain request err")
@@ -184,7 +184,7 @@ func (c *Client) CallChain(ctx context.Context, method, url string, header map[s
 		return errors.WithMessage(err, "get request err")
 	}
 
-	cResp := ChainResp{}
+	cResp := ChainResponse{}
 	_, err = c.CallWithRequest(req, &cResp)
 	if err != nil {
 		return errors.WithMessage(err, "call with request err")

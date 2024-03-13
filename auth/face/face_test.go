@@ -86,7 +86,7 @@ func TestFace_Authenticate(t *testing.T) {
 	require.NoError(t, err)
 	ctx := context.Background()
 
-	resp, err := f.Authenticate(ctx, &AuthenticateReq{
+	resp, err := f.Authenticate(ctx, &AuthenticateRequest{
 		Name:        "测试",
 		IDCard:      "330333199001053317",
 		VideoBase64: "data:video/mp4;base64,VmlkZW9CYXNlNjQ=",

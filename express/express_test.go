@@ -37,7 +37,7 @@ func TestExpress100_GetExpress(t *testing.T) {
 			AppID:     "appID",
 			SecretKey: "secretKey",
 		}
-		req = &types.GetExpressReq{
+		req = &types.GetExpressRequest{
 			ExpNo:  "YT12345678910",
 			CoCode: "yuantong",
 			TelNo:  "",
@@ -67,7 +67,7 @@ func TestExpressBird_GetExpress(t *testing.T) {
 			SecretKey:   "secretKey",
 			RequestType: "1002",
 		}
-		req = &types.GetExpressReq{
+		req = &types.GetExpressRequest{
 			ExpNo:  "YT12345678910",
 			CoCode: "YTO",
 			TelNo:  "",

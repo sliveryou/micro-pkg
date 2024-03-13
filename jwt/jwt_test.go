@@ -36,6 +36,27 @@ func TestJWT_GenToken(t *testing.T) {
 	assert.InEpsilon(t, 123.123, ui.Score, 0.0001)
 }
 
+func TestJWT_GenToken2(t *testing.T) {
+	c := Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", Expiration: 72 * time.Hour}
+	j, err := NewJWT(c)
+	require.NoError(t, err)
+	assert.NotNil(t, j)
+
+	tokenStr, err := j.GenToken(*getToken())
+	require.NoError(t, err)
+	assert.NotEmpty(t, tokenStr)
+
+	ui := &_UserInfo{}
+	err = j.ParseToken(tokenStr, ui)
+	require.NoError(t, err)
+	assert.Equal(t, int64(100000), ui.UserID)
+	assert.Equal(t, "test_user", ui.UserName)
+	assert.Equal(t, []int64{100000, 100001, 100002}, ui.RoleIDs)
+	assert.Equal(t, "ADMIN", ui.Group)
+	assert.True(t, ui.IsAdmin)
+	assert.InEpsilon(t, 123.123, ui.Score, 0.0001)
+}
+
 func TestJWT_GenTokenWithPayloads(t *testing.T) {
 	c := Config{Issuer: "test-issuer", SecretKey: "", Expiration: 72 * time.Hour}
 	_, err := NewJWT(c)
@@ -187,7 +208,7 @@ func TestJWT_ParseTokenPayloadsFromRequest(t *testing.T) {
 	assert.InEpsilon(t, 123.123, uip.Score, 0.0001)
 }
 
-func Test_isStructPointer(t *testing.T) {
+func TestIsStructPointer(t *testing.T) {
 	cases := []struct {
 		in     any
 		expect bool
@@ -204,7 +225,29 @@ func Test_isStructPointer(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		out := isStructPointer(c.in)
+		out := IsStructPointer(c.in)
+		assert.Equal(t, c.expect, out)
+	}
+}
+
+func TestIsStruct(t *testing.T) {
+	cases := []struct {
+		in     any
+		expect bool
+	}{
+		{in: nil, expect: false},
+		{in: struct{}{}, expect: true},
+		{in: &struct{}{}, expect: false},
+		{in: struct{ a int64 }{}, expect: true},
+		{in: struct{ a int64 }{a: 100}, expect: true},
+		{in: 0, expect: false},
+		{in: 1.23, expect: false},
+		{in: "test", expect: false},
+		{in: []int64{1, 2, 3}, expect: false},
+	}
+
+	for _, c := range cases {
+		out := IsStruct(c.in)
 		assert.Equal(t, c.expect, out)
 	}
 }

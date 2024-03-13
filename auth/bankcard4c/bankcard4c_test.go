@@ -20,7 +20,7 @@ func TestBankCard4C_Authenticate(t *testing.T) {
 	b, err := NewBankCard4C(c)
 	require.NoError(t, err)
 
-	req := &AuthenticateReq{
+	req := &AuthenticateRequest{
 		BankCard: "1234567891234567890",
 		IDCard:   "330333199001053317",
 		Mobile:   "12345678910",

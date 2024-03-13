@@ -14,7 +14,7 @@ import (
 var (
 	appID     = "appID"
 	secretKey = "secretKey"
-	req       = &types.GetExpressReq{
+	req       = &types.GetExpressRequest{
 		ExpNo:  "YT12345678910",
 		CoCode: "yuantong",
 		TelNo:  "",

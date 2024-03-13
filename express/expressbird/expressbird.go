@@ -76,7 +76,7 @@ func (e *ExpressBird) Cloud() string {
 // 即时查询接口：https://www.kdniao.com/api-track requestType=1002，支持三家：申通、圆通和百世
 // 即时查询（增值版）接口：https://www.kdniao.com/api-monitor requestType=8001
 // 快递查询接口：https://www.kdniao.com/api-trackexpress requestType=8002
-func (e *ExpressBird) GetExpress(ctx context.Context, req *types.GetExpressReq) (*types.GetExpressResp, error) {
+func (e *ExpressBird) GetExpress(ctx context.Context, req *types.GetExpressRequest) (*types.GetExpressResponse, error) {
 	// 校验请求参数
 	if req.ExpNo == "" || (req.CoCode == shipperCodeSF && req.TelNo == "") {
 		return nil, errcode.ErrInvalidParams
@@ -130,7 +130,7 @@ func (e *ExpressBird) GetExpress(ctx context.Context, req *types.GetExpressReq) 
 		return nil, errors.New(resp.Reason)
 	}
 
-	var result types.GetExpressResp
+	var result types.GetExpressResponse
 	for _, t := range resp.Traces {
 		result.Traces = append(result.Traces, &types.Trace{
 			Time: t.AcceptTime,

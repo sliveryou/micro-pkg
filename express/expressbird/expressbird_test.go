@@ -15,7 +15,7 @@ var (
 	appID       = "appID"
 	secretKey   = "secretKey"
 	requestType = "1002"
-	req         = &types.GetExpressReq{
+	req         = &types.GetExpressRequest{
 		ExpNo:  "YT12345678910",
 		CoCode: "YTO",
 		TelNo:  "",

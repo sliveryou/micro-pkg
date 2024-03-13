@@ -15,7 +15,7 @@ type Express interface {
 	// Cloud 获取云服务商名称
 	Cloud() string
 	// GetExpress 获取快递物流信息
-	GetExpress(ctx context.Context, req *types.GetExpressReq) (*types.GetExpressResp, error)
+	GetExpress(ctx context.Context, req *types.GetExpressRequest) (*types.GetExpressResponse, error)
 }
 
 // Config 快递查询客户端相关配置
@@ -68,6 +68,6 @@ func (e *defaultExpress) Cloud() string {
 }
 
 // GetExpress 获取快递物流信息
-func (e *defaultExpress) GetExpress(ctx context.Context, req *types.GetExpressReq) (*types.GetExpressResp, error) {
+func (e *defaultExpress) GetExpress(ctx context.Context, req *types.GetExpressRequest) (*types.GetExpressResponse, error) {
 	return e.client.GetExpress(ctx, req)
 }

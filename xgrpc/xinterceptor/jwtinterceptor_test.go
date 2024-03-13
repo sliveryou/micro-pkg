@@ -1,4 +1,4 @@
-package jwt
+package xinterceptor
 
 import (
 	"context"
@@ -11,83 +11,22 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+
+	"github.com/sliveryou/micro-pkg/jwt"
 )
 
-func TestWithCtx(t *testing.T) {
-	token := getToken()
-	ctx := WithCtx(context.Background(), token)
-	tok := ctx.Value(TokenKey)
-	assert.NotNil(t, tok)
-
-	tokenString, ok := tok.(string)
-	assert.True(t, ok)
-
-	newToken := &_UserInfo{}
-	err := json.Unmarshal([]byte(tokenString), newToken)
-	require.NoError(t, err)
-	assert.Equal(t, *token, *newToken)
-}
-
-func TestReadCtx(t *testing.T) {
-	err := ReadCtx(context.Background(), &struct{}{})
-	require.EqualError(t, err, "no token present in context")
-
-	token := getToken()
-	ctx := WithCtx(context.Background(), token)
-	newToken := &_UserInfo{}
-	err = ReadCtx(ctx, newToken)
-	require.NoError(t, err)
-	assert.Equal(t, *token, *newToken)
-}
-
-func TestFromMD(t *testing.T) {
-	token := getToken()
-	tokenBytes, err := json.Marshal(token)
-	require.NoError(t, err)
-
-	md := metadata.Pairs(string(TokenKey), string(tokenBytes))
-	t.Log(md)
-
-	tokenString, ok := FromMD(md)
-	assert.True(t, ok)
-	assert.Equal(t, string(tokenBytes), tokenString)
-	t.Log(tokenString)
-}
-
-func TestWrapAndUnwrapContext(t *testing.T) {
-	token := getToken()
-	tokenBytes, err := json.Marshal(token)
-	require.NoError(t, err)
-
-	pairs := []string{string(TokenKey), string(tokenBytes)}
-	ctx := metadata.AppendToOutgoingContext(context.Background(), pairs...)
-	md, ok := metadata.FromOutgoingContext(ctx)
-	assert.True(t, ok)
-	t.Log(md)
-
-	mdToken, ok := FromMD(md)
-	assert.True(t, ok)
-	t.Log(mdToken)
-
-	ctx = context.WithValue(ctx, TokenKey, mdToken)
-	newToken := &_UserInfo{}
-	err = ReadCtx(ctx, newToken)
-	require.NoError(t, err)
-	assert.Equal(t, *token, *newToken)
-}
-
-func TestTokenInterceptor(t *testing.T) {
+func TestJWTInterceptor(t *testing.T) {
 	token := getToken()
 	tokenBytes, err := json.Marshal(token)
 	require.NoError(t, err)
 
 	ctx := metadata.NewIncomingContext(context.Background(), metadata.New(map[string]string{
-		string(TokenKey): string(tokenBytes),
+		string(jwt.TokenKey): string(tokenBytes),
 	}))
 
-	interceptor := TokenInterceptor
+	interceptor := JWTInterceptor
 	_, err = interceptor(ctx, nil, &grpc.UnaryServerInfo{FullMethod: "/"}, func(ctx context.Context, req any) (any, error) {
-		tok := ctx.Value(TokenKey)
+		tok := ctx.Value(jwt.TokenKey)
 		assert.NotNil(t, tok)
 
 		tokenString, ok := tok.(string)
@@ -103,19 +42,19 @@ func TestTokenInterceptor(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestTokenStreamInterceptor(t *testing.T) {
+func TestJWTStreamInterceptor(t *testing.T) {
 	token := getToken()
 	tokenBytes, err := json.Marshal(token)
 	require.NoError(t, err)
 
 	ctx := metadata.NewIncomingContext(context.Background(), metadata.New(map[string]string{
-		string(TokenKey): string(tokenBytes),
+		string(jwt.TokenKey): string(tokenBytes),
 	}))
 
-	interceptor := TokenStreamInterceptor
+	interceptor := JWTStreamInterceptor
 	stream := mockedStream{ctx: ctx}
 	err = interceptor(nil, stream, nil, func(_ any, ss grpc.ServerStream) error {
-		tok := ss.Context().Value(TokenKey)
+		tok := ss.Context().Value(jwt.TokenKey)
 		assert.NotNil(t, tok)
 
 		tokenString, ok := tok.(string)
@@ -131,22 +70,22 @@ func TestTokenStreamInterceptor(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestTokenClientInterceptor(t *testing.T) {
+func TestJWTClientInterceptor(t *testing.T) {
 	token := getToken()
-	ctx := WithCtx(context.Background(), token)
+	ctx := jwt.WithCtx(context.Background(), token)
 
 	var run int32
 	var wg sync.WaitGroup
 	wg.Add(1)
 	cc := new(grpc.ClientConn)
-	err := TokenClientInterceptor(ctx, "/foo", nil, nil, cc,
+	err := JWTClientInterceptor(ctx, "/foo", nil, nil, cc,
 		func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
 			defer wg.Done()
 			atomic.AddInt32(&run, 1)
 
 			md, ok := metadata.FromOutgoingContext(ctx)
 			assert.True(t, ok)
-			mdToken, ok := FromMD(md)
+			mdToken, ok := jwt.FromMD(md)
 			assert.True(t, ok)
 
 			newToken := &_UserInfo{}
@@ -161,22 +100,22 @@ func TestTokenClientInterceptor(t *testing.T) {
 	assert.Equal(t, int32(1), atomic.LoadInt32(&run))
 }
 
-func TestTokenStreamClientInterceptor(t *testing.T) {
+func TestJWTStreamClientInterceptor(t *testing.T) {
 	token := getToken()
-	ctx := WithCtx(context.Background(), token)
+	ctx := jwt.WithCtx(context.Background(), token)
 
 	var run int32
 	var wg sync.WaitGroup
 	wg.Add(1)
 	cc := new(grpc.ClientConn)
-	_, err := TokenStreamClientInterceptor(ctx, nil, cc, "/foo",
+	_, err := JWTStreamClientInterceptor(ctx, nil, cc, "/foo",
 		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 			defer wg.Done()
 			atomic.AddInt32(&run, 1)
 
 			md, ok := metadata.FromOutgoingContext(ctx)
 			assert.True(t, ok)
-			mdToken, ok := FromMD(md)
+			mdToken, ok := jwt.FromMD(md)
 			assert.True(t, ok)
 
 			newToken := &_UserInfo{}
@@ -216,4 +155,24 @@ func (m mockedStream) SendMsg(v any) error {
 
 func (m mockedStream) RecvMsg(v any) error {
 	return nil
+}
+
+func getToken() *_UserInfo {
+	return &_UserInfo{
+		UserID:   100000,
+		UserName: "test_user",
+		RoleIDs:  []int64{100000, 100001, 100002},
+		Group:    "ADMIN",
+		IsAdmin:  true,
+		Score:    123.123,
+	}
+}
+
+type _UserInfo struct {
+	UserID   int64   `json:"user_id"`
+	UserName string  `json:"user_name"`
+	RoleIDs  []int64 `json:"role_ids"`
+	Group    string  `json:"group"`
+	IsAdmin  bool    `json:"is_admin"`
+	Score    float64 `json:"score"`
 }

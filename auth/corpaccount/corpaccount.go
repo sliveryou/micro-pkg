@@ -70,24 +70,24 @@ func MustNewCorpAccount(c Config) *CorpAccount {
 	return b
 }
 
-// AuthenticateReq 企业银行卡账户认证请求
-type AuthenticateReq struct {
+// AuthenticateRequest 企业银行卡账户认证请求
+type AuthenticateRequest struct {
 	CardNo   string `validate:"required,corpaccount" label:"企业账号"` // 企业账号
 	AcctName string `validate:"required" label:"企业名称"`             // 企业名称
 	BankName string `validate:"required" label:"开户行名称"`            // 开户行名称（要和银行列表里名称完全一致：http://lundroid.com/basedata/3.xlsx?spm=5176.product-detail.detail.7.5d11386fyiwyaW&file=3.xlsx）
 }
 
-// AuthenticateResp 企业银行卡账户认证响应
-type AuthenticateResp struct {
+// AuthenticateResponse 企业银行卡账户认证响应
+type AuthenticateResponse struct {
 	RequestNo int64  // 请求编号
 	TransAmt  int    // 打款随机金额，单位（分）
 	Abstract  string // 打款摘要
 }
 
 // Authenticate 企业银行卡账户认证
-func (c *CorpAccount) Authenticate(ctx context.Context, req *AuthenticateReq) (*AuthenticateResp, error) {
+func (c *CorpAccount) Authenticate(ctx context.Context, req *AuthenticateRequest) (*AuthenticateResponse, error) {
 	if c.c.IsMock {
-		return &AuthenticateResp{TransAmt: MockTransAmt}, nil
+		return &AuthenticateResponse{TransAmt: MockTransAmt}, nil
 	}
 
 	// 校验请求参数
@@ -121,7 +121,7 @@ func (c *CorpAccount) Authenticate(ctx context.Context, req *AuthenticateReq) (*
 
 	if resp.Code != nil {
 		if code := *resp.Code; code == codeSuccess {
-			return &AuthenticateResp{
+			return &AuthenticateResponse{
 				RequestNo: resp.RequestNo,
 				TransAmt:  convert.ToInt(resp.TransAmt),
 				Abstract:  resp.Abstract,

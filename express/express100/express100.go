@@ -62,7 +62,7 @@ func (e *Express100) Cloud() string {
 
 // GetExpress 利用快递100实时快递查询接口获取快递物流信息
 // https://api.kuaidi100.com/document/5f0ffb5ebc8da837cbd8aefc
-func (e *Express100) GetExpress(ctx context.Context, req *types.GetExpressReq) (*types.GetExpressResp, error) {
+func (e *Express100) GetExpress(ctx context.Context, req *types.GetExpressRequest) (*types.GetExpressResponse, error) {
 	// 校验请求参数
 	if req.ExpNo == "" || ((req.CoCode == comSF || req.CoCode == comSFKY) && req.TelNo == "") {
 		return nil, errcode.ErrInvalidParams
@@ -112,7 +112,7 @@ func (e *Express100) GetExpress(ctx context.Context, req *types.GetExpressReq) (
 		return nil, errors.New(resp.Message)
 	}
 
-	var result types.GetExpressResp
+	var result types.GetExpressResponse
 	for _, d := range resp.Data {
 		result.Traces = append(result.Traces, &types.Trace{
 			Time: d.Time,

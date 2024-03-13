@@ -219,14 +219,14 @@ func (c *client) GetNamespace(ctx context.Context, opts ...APIOption) (resp *Nam
 
 // CreateNamespace 创建命名空间信息（appId 必填）
 // https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#327-%E5%88%9B%E5%BB%BAnamespace
-func (c *client) CreateNamespace(ctx context.Context, r *CreateNamespaceReq, opts ...APIOption) (resp *CreateNamespaceResp, err error) {
+func (c *client) CreateNamespace(ctx context.Context, r *CreateNamespaceRequest, opts ...APIOption) (resp *CreateNamespaceResponse, err error) {
 	o := c.config.getAPIOption(opts...)
 	if r.AppID == "" {
 		r.AppID = o.appID
 	}
 	url := fmt.Sprintf("%s/openapi/v1/apps/%s/appnamespaces",
 		c.config.PortalAddress, o.appID)
-	resp = &CreateNamespaceResp{}
+	resp = &CreateNamespaceResponse{}
 	err = c.do(ctx, http.MethodPost, url, r, resp)
 	return
 }
@@ -244,7 +244,7 @@ func (c *client) GetNamespaceLock(ctx context.Context, opts ...APIOption) (resp 
 
 // AddItem 添加配置信息（env、appId、cluster 和 namespace 必填）
 // https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3210-%E6%96%B0%E5%A2%9E%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
-func (c *client) AddItem(ctx context.Context, r *AddItemReq, opts ...APIOption) (resp *Item, err error) {
+func (c *client) AddItem(ctx context.Context, r *AddItemRequest, opts ...APIOption) (resp *Item, err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/items",
 		c.config.PortalAddress, o.env, o.appID, o.cluster, o.namespace)
@@ -255,7 +255,7 @@ func (c *client) AddItem(ctx context.Context, r *AddItemReq, opts ...APIOption) 
 
 // UpdateItem 更新配置信息（env、appId、cluster 和 namespace 必填）
 // https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3211-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
-func (c *client) UpdateItem(ctx context.Context, r *UpdateItemReq, opts ...APIOption) (err error) {
+func (c *client) UpdateItem(ctx context.Context, r *UpdateItemRequest, opts ...APIOption) (err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/items/%s",
 		c.config.PortalAddress, o.env, o.appID, o.cluster, o.namespace, r.Key)
@@ -265,7 +265,7 @@ func (c *client) UpdateItem(ctx context.Context, r *UpdateItemReq, opts ...APIOp
 
 // CreateOrUpdateItem 创建或者更新配置信息（env、appId、cluster 和 namespace 必填）
 // https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3211-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
-func (c *client) CreateOrUpdateItem(ctx context.Context, r *UpdateItemReq, opts ...APIOption) (err error) {
+func (c *client) CreateOrUpdateItem(ctx context.Context, r *UpdateItemRequest, opts ...APIOption) (err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/items/%s?createIfNotExists=true",
 		c.config.PortalAddress, o.env, o.appID, o.cluster, o.namespace, r.Key)
@@ -275,7 +275,7 @@ func (c *client) CreateOrUpdateItem(ctx context.Context, r *UpdateItemReq, opts 
 
 // DeleteItem 删除配置信息（env、appId、cluster 和 namespace 必填）
 // https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3212-%E5%88%A0%E9%99%A4%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
-func (c *client) DeleteItem(ctx context.Context, r *DeleteItemReq, opts ...APIOption) (err error) {
+func (c *client) DeleteItem(ctx context.Context, r *DeleteItemRequest, opts ...APIOption) (err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/items/%s?operator=%s",
 		c.config.PortalAddress, o.env, o.appID, o.cluster, o.namespace, r.Key, r.Operator)
@@ -285,7 +285,7 @@ func (c *client) DeleteItem(ctx context.Context, r *DeleteItemReq, opts ...APIOp
 
 // PublishRelease 发布版本配置信息（env、appId、cluster 和 namespace 必填）
 // https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#3213-%E5%8F%91%E5%B8%83%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3
-func (c *client) PublishRelease(ctx context.Context, r *PublishReleaseReq, opts ...APIOption) (resp *Release, err error) {
+func (c *client) PublishRelease(ctx context.Context, r *PublishReleaseRequest, opts ...APIOption) (resp *Release, err error) {
 	o := c.config.getAPIOption(opts...)
 	url := fmt.Sprintf("%s/openapi/v1/envs/%s/apps/%s/clusters/%s/namespaces/%s/releases",
 		c.config.PortalAddress, o.env, o.appID, o.cluster, o.namespace)
