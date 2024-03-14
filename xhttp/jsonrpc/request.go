@@ -13,7 +13,7 @@ type RPCRequest struct {
 	ID         int            `json:"id"`
 	Method     string         `json:"method"`
 	Params     any            `json:"params,omitempty"`
-	Extensions map[string]any `json:"-"`
+	Extensions map[string]any `json:"-"` // 规范定义之外的拓展字段
 }
 
 // NewRPCRequest 新建通用 JSON-RPC 请求体

@@ -16,9 +16,14 @@ type RPCError struct {
 	Data    any    `json:"data,omitempty"`
 }
 
+// String 实现 String 方法
+func (e *RPCError) String() string {
+	return e.Message
+}
+
 // Error 实现 Error 方法
 func (e *RPCError) Error() string {
-	return fmt.Sprintf("%d: %s", e.Code, e.Message)
+	return fmt.Sprintf("code: %d, msg: %s", e.Code, e.Message)
 }
 
 // RPCResponses 通用 JSON-RPC 响应体列表
@@ -62,16 +67,14 @@ type RPCResponse struct {
 	ID         int            `json:"id"`
 	Result     any            `json:"result,omitempty"`
 	Error      any            `json:"error,omitempty"`
-	Extensions map[string]any `json:"-"`
+	Extensions map[string]any `json:"-"` // 规范定义之外的拓展字段
 }
 
 // GetRPCError 获取通用 JSON-RPC 错误
 func (resp *RPCResponse) GetRPCError() *RPCError {
-	if resp.Error == nil {
-		return nil
-	}
-
 	switch e := resp.Error.(type) {
+	case nil:
+		return nil
 	case string:
 		return &RPCError{Message: e}
 	case map[string]any:

@@ -1,7 +1,6 @@
 package xhttp
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"io"
@@ -19,12 +18,9 @@ type Config struct {
 	DialKeepAlive         time.Duration // 拨号保持连接时间
 	MaxIdleConns          int           // 最大空闲连接数
 	MaxIdleConnsPerHost   int           // 每个主机最大空闲连接数
-	MaxConnsPerHost       int           // 每个主机最大连接数
 	IdleConnTimeout       time.Duration // 空闲连接超时时间
-	ResponseHeaderTimeout time.Duration // 读取响应头超时时间
-	ExpectContinueTimeout time.Duration // 期望继续超时时间
 	TLSHandshakeTimeout   time.Duration // TLS 握手超时时间
-	ForceAttemptHTTP2     bool          // 允许尝试启用 HTTP/2
+	ExpectContinueTimeout time.Duration // 期望继续超时时间
 }
 
 // GetDefaultConfig 获取默认 HTTP 客户端相关配置
@@ -35,12 +31,9 @@ func GetDefaultConfig() Config {
 		DialKeepAlive:         30 * time.Second,
 		MaxIdleConns:          100,
 		MaxIdleConnsPerHost:   100,
-		MaxConnsPerHost:       100,
-		IdleConnTimeout:       60 * time.Second,
-		ResponseHeaderTimeout: 10 * time.Second,
-		ExpectContinueTimeout: 5 * time.Second,
+		IdleConnTimeout:       90 * time.Second,
 		TLSHandshakeTimeout:   10 * time.Second,
-		ForceAttemptHTTP2:     true,
+		ExpectContinueTimeout: 2 * time.Second,
 	}
 }
 
@@ -58,21 +51,16 @@ func NewHTTPClient(config ...Config) *http.Client {
 			KeepAlive: c.DialKeepAlive,
 		}).DialContext,
 		MaxIdleConns:          c.MaxIdleConns,
-		MaxIdleConnsPerHost:   c.MaxIdleConnsPerHost,
-		MaxConnsPerHost:       c.MaxConnsPerHost,
 		IdleConnTimeout:       c.IdleConnTimeout,
-		ResponseHeaderTimeout: c.ResponseHeaderTimeout,
-		ExpectContinueTimeout: c.ExpectContinueTimeout,
+		MaxIdleConnsPerHost:   c.MaxIdleConnsPerHost,
 		TLSHandshakeTimeout:   c.TLSHandshakeTimeout,
-		ForceAttemptHTTP2:     c.ForceAttemptHTTP2,
+		ExpectContinueTimeout: c.ExpectContinueTimeout,
 	}
 
-	client := &http.Client{
-		Timeout:   c.HTTPTimeout,
+	return &http.Client{
 		Transport: tr,
+		Timeout:   c.HTTPTimeout,
 	}
-
-	return client
 }
 
 // Client HTTP 拓展客户端结构详情
@@ -103,7 +91,11 @@ func (c *Client) GetRequest(ctx context.Context, method, url string, header map[
 	}
 
 	for k, v := range header {
-		req.Header.Add(k, v)
+		if k == HeaderHost && v != "" {
+			req.Host = v
+		} else {
+			req.Header.Set(k, v)
+		}
 	}
 
 	return req, nil
@@ -125,7 +117,7 @@ func (c *Client) GetResponse(req *http.Request) (*http.Response, []byte, error) 
 	return response, body, nil
 }
 
-// CallWithRequest 利用 HTTP 请求进行 HTTP 调用
+// CallWithRequest 利用 HTTP 请求进行 HTTP 调用，并将 json 响应内容反序列化至 resp 中
 func (c *Client) CallWithRequest(req *http.Request, resp any) (*http.Response, error) {
 	response, body, err := c.GetResponse(req)
 	if err != nil {
@@ -142,62 +134,12 @@ func (c *Client) CallWithRequest(req *http.Request, resp any) (*http.Response, e
 	return response, nil
 }
 
-// Call HTTP 调用
-func (c *Client) Call(ctx context.Context, method, url string, header map[string]string, data io.Reader, resp any) error {
+// Call HTTP 调用，并将 json 响应内容反序列化至 resp 中
+func (c *Client) Call(ctx context.Context, method, url string, header map[string]string, data io.Reader, resp any) (*http.Response, error) {
 	req, err := c.GetRequest(ctx, method, url, header, data)
 	if err != nil {
-		return errors.WithMessage(err, "get request err")
+		return nil, errors.WithMessage(err, "get request err")
 	}
 
-	_, err = c.CallWithRequest(req, resp)
-	if err != nil {
-		return errors.WithMessage(err, "call with request err")
-	}
-
-	return nil
-}
-
-// ChainRequest 区块链 HTTP 调用请求
-type ChainRequest struct {
-	ID     int    `json:"id"`
-	Method string `json:"method"`
-	Params any    `json:"params"`
-}
-
-// ChainResponse 区块链 HTTP 调用响应
-type ChainResponse struct {
-	ID     int             `json:"id"`
-	Result json.RawMessage `json:"result"`
-	Error  string          `json:"error"`
-}
-
-// CallChain 区块链 HTTP 调用
-func (c *Client) CallChain(ctx context.Context, method, url string, header map[string]string, params, resp any) error {
-	cReq := &ChainRequest{Method: method, Params: params}
-	data, err := json.Marshal(cReq)
-	if err != nil {
-		return errors.WithMessage(err, "json marshal chain request err")
-	}
-
-	req, err := c.GetRequest(ctx, http.MethodPost, url, header, bytes.NewBuffer(data))
-	if err != nil {
-		return errors.WithMessage(err, "get request err")
-	}
-
-	cResp := ChainResponse{}
-	_, err = c.CallWithRequest(req, &cResp)
-	if err != nil {
-		return errors.WithMessage(err, "call with request err")
-	}
-
-	if cResp.Error != "" {
-		return errors.Errorf("chain return err: %v", cResp.Error)
-	}
-
-	err = json.Unmarshal(cResp.Result, resp)
-	if err != nil {
-		return errors.WithMessage(err, "json unmarshal chain result err")
-	}
-
-	return nil
+	return c.CallWithRequest(req, resp)
 }

@@ -99,7 +99,7 @@ func (e *Express100) GetExpress(ctx context.Context, req *types.GetExpressReques
 	values.Set("param", paramJSON)
 
 	var resp queryResp
-	err = e.client.Call(ctx, http.MethodPost, rawURL, header, strings.NewReader(values.Encode()), &resp)
+	_, err = e.client.Call(ctx, http.MethodPost, rawURL, header, strings.NewReader(values.Encode()), &resp)
 	if err != nil {
 		return nil, errors.WithMessage(err, "client call err")
 	}

@@ -157,7 +157,7 @@ func (f *Face) getAccessToken(ctx context.Context) (string, error) {
 		values.Set("client_secret", f.c.SecretKey)
 		rawURL += "?" + values.Encode()
 
-		err := f.client.Call(ctx, http.MethodGet, rawURL, nil, nil, &resp)
+		_, err := f.client.Call(ctx, http.MethodGet, rawURL, nil, nil, &resp)
 		if err != nil {
 			return "", errors.WithMessage(err, "client call err")
 		}
@@ -189,7 +189,7 @@ func (f *Face) videoVerify(ctx context.Context, accessToken, videoBase64 string)
 	}
 	data := "video_base64=" + videoBase64
 
-	err := f.client.Call(ctx, http.MethodPost, rawURL, header, strings.NewReader(data), &resp)
+	_, err := f.client.Call(ctx, http.MethodPost, rawURL, header, strings.NewReader(data), &resp)
 	if err != nil {
 		return "", errors.WithMessage(err, "client call err")
 	}
@@ -243,7 +243,7 @@ func (f *Face) personVerify(ctx context.Context, accessToken, validPic, name, id
 		return 0, errors.WithMessage(err, "json marshal request err")
 	}
 
-	err = f.client.Call(ctx, http.MethodPost, rawURL, header, bytes.NewReader(b), &resp)
+	_, err = f.client.Call(ctx, http.MethodPost, rawURL, header, bytes.NewReader(b), &resp)
 	if err != nil {
 		return 0, errors.WithMessage(err, "client call err")
 	}

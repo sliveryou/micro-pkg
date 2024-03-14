@@ -23,7 +23,7 @@ type RPCClient interface {
 	CallFor(ctx context.Context, out any, method string, params ...any) error
 	// CallRawFor 基于所给请求体进行 JSON-RPC 调用并将响应结果反序列化到所给类型对象中
 	CallRawFor(ctx context.Context, out any, request *RPCRequest) error
-	// CallBatch 进行 JSON-RPC 批量调用
+	// CallBatch 进行 JSON-RPC 批量调用（会自动设置 JSONRPC 与 ID 字段，ID 将从 1 开始递增）
 	CallBatch(ctx context.Context, reqs RPCRequests) (RPCResponses, error)
 	// CallBatchRaw 基于所给请求体进行 JSON-RPC 批量调用
 	CallBatchRaw(ctx context.Context, reqs RPCRequests) (RPCResponses, error)

@@ -32,6 +32,8 @@ const (
 	HeaderContentDisposition = "Content-Disposition"
 	// HeaderDate 请求头：Date
 	HeaderDate = "Date"
+	// HeaderHost 请求头：Host
+	HeaderHost = "Host"
 	// HeaderLocation 请求头：Location
 	HeaderLocation = "Location"
 	// HeaderUserAgent 请求头：User-Agent

@@ -48,6 +48,7 @@ func TestHeaders(t *testing.T) {
 		HeaderContentType,
 		HeaderContentDisposition,
 		HeaderDate,
+		HeaderHost,
 		HeaderLocation,
 		HeaderUserAgent,
 		HeaderAuthorization,

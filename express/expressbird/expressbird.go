@@ -120,7 +120,7 @@ func (e *ExpressBird) GetExpress(ctx context.Context, req *types.GetExpressReque
 	values.Set("DataType", dataTypeJSON)
 
 	var resp queryResp
-	err = e.client.Call(ctx, http.MethodPost, rawURL, header, strings.NewReader(values.Encode()), &resp)
+	_, err = e.client.Call(ctx, http.MethodPost, rawURL, header, strings.NewReader(values.Encode()), &resp)
 	if err != nil {
 		return nil, errors.WithMessage(err, "client call err")
 	}

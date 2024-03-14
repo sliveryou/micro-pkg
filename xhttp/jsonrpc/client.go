@@ -49,15 +49,15 @@ func (c *rpcClient) CallRawFor(ctx context.Context, out any, request *RPCRequest
 	return rpcResp.ReadToObject(out)
 }
 
-// CallBatch 进行 JSON-RPC 批量调用
+// CallBatch 进行 JSON-RPC 批量调用（会自动设置 JSONRPC 与 ID 字段，ID 将从 1 开始递增）
 func (c *rpcClient) CallBatch(ctx context.Context, reqs RPCRequests) (RPCResponses, error) {
 	if len(reqs) == 0 {
 		return nil, errors.New("empty request list")
 	}
 
 	for i, req := range reqs {
-		req.ID = i + 1
 		req.JSONRPC = RPCVersion
+		req.ID = i + 1
 	}
 
 	return c.doBatchCall(ctx, reqs)
@@ -88,7 +88,11 @@ func (c *rpcClient) newRequest(ctx context.Context, req any) (*http.Request, err
 	request.Header.Set(xhttp.HeaderContentType, xhttp.ContentTypeJSON)
 
 	for k, v := range c.customHeaders {
-		request.Header.Set(k, v)
+		if k == xhttp.HeaderHost && v != "" {
+			request.Host = v
+		} else {
+			request.Header.Set(k, v)
+		}
 	}
 
 	return request, nil

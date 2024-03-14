@@ -6,6 +6,7 @@
 - [RESTful Web API 设计](https://docs.microsoft.com/zh-cn/azure/architecture/best-practices/api-design)
 - [GRPC Health Checking Protocol](https://github.com/grpc/grpc/blob/master/doc/health-checking.md)
 - [Health Endpoint Monitoring Pattern](https://learn.microsoft.com/zh-cn/azure/architecture/patterns/health-endpoint-monitoring)
+- [Don’t use Go’s default HTTP client (in production)](https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779)
 - [Go 编程：错误的诞生与死亡：包装、检查与处理](https://mp.weixin.qq.com/s/zsh__VPbuXkCx4iMOmfceA)
 - [微服务环境下 Go 的错误处理体系设计](https://alphagao.com/2020/08/12/error-handling-with-micro-service-on-go/)
 - [微服务错误处理的一些思考](https://studygolang.com/articles/27628?fr=sidebar)

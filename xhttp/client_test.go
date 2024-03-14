@@ -32,6 +32,11 @@ func TestUrlValuesSet(t *testing.T) {
 	assert.Equal(t, "bankcard=bankcard2&idcard=idcard&mobile=mobile&name=name", values.Encode())
 }
 
+func TestGetDefaultConfig(t *testing.T) {
+	c := GetDefaultConfig()
+	t.Log(c)
+}
+
 func TestClient(t *testing.T) {
 	type args struct {
 		method string
