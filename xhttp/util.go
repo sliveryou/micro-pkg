@@ -1222,7 +1222,7 @@ func TypeByExtension(filePath string) string {
 		typ = removeCharsetInMimeType(typ)
 	}
 	if typ == "" {
-		typ = ContentTypeStream
+		typ = MIMEOctetStream
 	}
 
 	return typ
@@ -1285,10 +1285,10 @@ func GetReaderLen(reader io.Reader) (int64, error) {
 // ParseEndpoint 解析节点地址
 func ParseEndpoint(endpoint string) (parsedEndpoint string, useSSL bool) {
 	switch {
-	case strings.HasPrefix(endpoint, "http://"):
-		parsedEndpoint = endpoint[len("http://"):]
-	case strings.HasPrefix(endpoint, "https://"):
-		parsedEndpoint, useSSL = endpoint[len("https://"):], true
+	case strings.HasPrefix(endpoint, SchemeHTTPPrefix):
+		parsedEndpoint = endpoint[len(SchemeHTTPPrefix):]
+	case strings.HasPrefix(endpoint, SchemeHTTPSPrefix):
+		parsedEndpoint, useSSL = endpoint[len(SchemeHTTPSPrefix):], true
 	default:
 		parsedEndpoint = endpoint
 	}
@@ -1301,4 +1301,18 @@ func ParseEndpoint(endpoint string) (parsedEndpoint string, useSSL bool) {
 	}
 
 	return
+}
+
+// WithHTTPScheme 添加 HTTP 协议前缀
+func WithHTTPScheme(url string) string {
+	if url == "" {
+		return ""
+	}
+
+	if strings.HasPrefix(url, SchemeHTTPPrefix) ||
+		strings.HasPrefix(url, SchemeHTTPSPrefix) {
+		return url
+	}
+
+	return SchemeHTTPPrefix + url
 }

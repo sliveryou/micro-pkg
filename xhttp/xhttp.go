@@ -185,15 +185,15 @@ func GetQueryArray(r *http.Request, key string) ([]string, bool) {
 
 // GetClientIP 获取客户端的IP
 func GetClientIP(r *http.Request) string {
-	if ip := strings.TrimSpace(strings.Split(r.Header.Get("X-Forwarded-For"), ",")[0]); ip != "" {
+	if ip := strings.TrimSpace(strings.Split(r.Header.Get(HeaderXForwardedFor), ",")[0]); ip != "" {
 		return ip
 	}
 
-	if ip := strings.TrimSpace(r.Header.Get("X-Real-Ip")); ip != "" {
+	if ip := strings.TrimSpace(r.Header.Get(HeaderXRealIP)); ip != "" {
 		return ip
 	}
 
-	if addr := strings.TrimSpace(r.Header.Get("X-Appengine-Remote-Addr")); addr != "" {
+	if addr := strings.TrimSpace(r.Header.Get(HeaderXAppEngineRemoteAddr)); addr != "" {
 		return addr
 	}
 

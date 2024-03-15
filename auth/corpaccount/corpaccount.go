@@ -53,7 +53,7 @@ func NewCorpAccount(c Config) (*CorpAccount, error) {
 		}
 	}
 
-	cc := xhttp.GetDefaultConfig()
+	cc := xhttp.DefaultConfig()
 	cc.HTTPTimeout = 60 * time.Second
 	cc.TLSHandshakeTimeout = 15 * time.Second
 

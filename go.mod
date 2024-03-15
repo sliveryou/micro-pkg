@@ -5,11 +5,11 @@ go 1.20
 require (
 	dario.cat/mergo v1.0.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2
-	github.com/alicebob/miniredis/v2 v2.31.1
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.690
+	github.com/alicebob/miniredis/v2 v2.32.1
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.695
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
-	github.com/casbin/casbin/v2 v2.84.0
-	github.com/glebarez/sqlite v1.10.0
+	github.com/casbin/casbin/v2 v2.84.1
+	github.com/glebarez/sqlite v1.11.0
 	github.com/go-stack/stack v1.8.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/h2non/filetype v1.1.3
@@ -118,7 +118,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/xuri/efp v0.0.0-20231025114914-d1ff6096ae53 // indirect
 	github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 // indirect
-	github.com/yuin/gopher-lua v1.1.0 // indirect
+	github.com/yuin/gopher-lua v1.1.1 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.12 // indirect
 	go.opentelemetry.io/otel v1.19.0 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.17.0 // indirect

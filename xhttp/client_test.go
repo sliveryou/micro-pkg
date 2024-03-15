@@ -33,7 +33,7 @@ func TestUrlValuesSet(t *testing.T) {
 }
 
 func TestGetDefaultConfig(t *testing.T) {
-	c := GetDefaultConfig()
+	c := DefaultConfig()
 	t.Log(c)
 }
 

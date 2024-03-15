@@ -23,7 +23,7 @@ func TestNewLogMiddleware(t *testing.T) {
 		io.Copy(&buf, req.Body)
 		t.Log(buf.String())
 
-		w.Header().Set(xhttp.HeaderContentType, xhttp.ContentTypeJSON)
+		w.Header().Set(xhttp.HeaderContentType, xhttp.MIMEApplicationJSON)
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"code":200,"msg":"ok"}`))
 	})

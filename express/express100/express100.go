@@ -73,7 +73,7 @@ func (e *Express100) GetExpress(ctx context.Context, req *types.GetExpressReques
 
 	// 构建请求头
 	header := map[string]string{
-		xhttp.HeaderContentType: xhttp.ContentTypeForm,
+		xhttp.HeaderContentType: xhttp.MIMEForm,
 	}
 
 	// 构建请求参数

@@ -82,7 +82,7 @@ func TestParseMineType(t *testing.T) {
 			} else if strings.HasPrefix(mt, "audio") {
 				secondPriority = 2
 			} else if strings.HasPrefix(mt, "application") {
-				if mt == ContentTypeStream {
+				if mt == MIMEOctetStream {
 					priority = -1
 					secondPriority = -1
 				} else {
@@ -208,6 +208,26 @@ func TestParseEndpoint(t *testing.T) {
 		assert.False(t, strings.HasPrefix(pe, "http"))
 		assert.Equal(t, c.isUseSSL, useSSL)
 		fmt.Println(pe)
+	}
+}
+
+func TestWithHTTPScheme(t *testing.T) {
+	cases := []struct {
+		url    string
+		expect string
+	}{
+		{url: "test.com/api", expect: "http://test.com/api"},
+		{url: "test.com/api/", expect: "http://test.com/api/"},
+		{url: "test.cn", expect: "http://test.cn"},
+		{url: "https://test.com", expect: "https://test.com"},
+		{url: "http://test.com", expect: "http://test.com"},
+		{url: "", expect: ""},
+		{url: "test", expect: "http://test"},
+	}
+
+	for _, c := range cases {
+		got := WithHTTPScheme(c.url)
+		assert.Equal(t, c.expect, got)
 	}
 }
 

@@ -157,7 +157,7 @@ func (w *MultipartWriter) CreatePart(header textproto.MIMEHeader) (io.Writer, er
 // CreateFormFile is a convenience wrapper around CreatePart. It creates
 // a new form-data header with the provided field name and file name.
 func (w *MultipartWriter) CreateFormFile(fieldName, fileName string, contentType ...string) (io.Writer, error) {
-	ct := ContentTypeStream
+	ct := MIMEOctetStream
 	if len(contentType) > 0 {
 		ct = contentType[0]
 	}

@@ -46,7 +46,7 @@ func NewRPCClient(endpoint string, opts ...RPCOption) RPCClient {
 		panic(errors.New("jsonrpc: empty endpoint is invalid"))
 	}
 
-	c := &rpcClient{endpoint: addHTTPPrefix(endpoint)}
+	c := &rpcClient{endpoint: xhttp.WithHTTPScheme(endpoint)}
 
 	for _, opt := range opts {
 		opt(c)

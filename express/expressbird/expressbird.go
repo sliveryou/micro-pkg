@@ -87,7 +87,7 @@ func (e *ExpressBird) GetExpress(ctx context.Context, req *types.GetExpressReque
 
 	// 构建请求头
 	header := map[string]string{
-		xhttp.HeaderContentType: xhttp.ContentTypeForm,
+		xhttp.HeaderContentType: xhttp.MIMEForm,
 	}
 
 	// 构建请求参数

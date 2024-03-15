@@ -78,7 +78,7 @@ func NewFace(c Config) (*Face, error) {
 		return nil, errors.WithMessage(err, "face: new cache err")
 	}
 
-	cc := xhttp.GetDefaultConfig()
+	cc := xhttp.DefaultConfig()
 	cc.HTTPTimeout = 30 * time.Second
 
 	return &Face{c: c, client: xhttp.NewClient(cc), cache: cache}, nil
@@ -185,7 +185,7 @@ func (f *Face) videoVerify(ctx context.Context, accessToken, videoBase64 string)
 
 	rawURL := VideoVerifyURL + "?access_token=" + accessToken
 	header := map[string]string{
-		xhttp.HeaderContentType: xhttp.ContentTypeForm,
+		xhttp.HeaderContentType: xhttp.MIMEForm,
 	}
 	data := "video_base64=" + videoBase64
 
@@ -229,7 +229,7 @@ func (f *Face) personVerify(ctx context.Context, accessToken, validPic, name, id
 
 	rawURL := fmt.Sprintf("%s?access_token=%s", PersonVerifyURL, accessToken)
 	header := map[string]string{
-		xhttp.HeaderContentType: xhttp.ContentTypeJSON,
+		xhttp.HeaderContentType: xhttp.MIMEApplicationJSON,
 	}
 	req := &personVerifyReq{
 		Image:        validPic,

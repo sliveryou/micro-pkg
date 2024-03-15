@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"reflect"
-	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -71,13 +70,4 @@ func unmarshal(data []byte, v any) error {
 	d.UseNumber()
 
 	return d.Decode(v)
-}
-
-// addHTTPPrefix 为端节点添加 http 协议前缀
-func addHTTPPrefix(endpoint string) string {
-	if strings.HasPrefix(endpoint, "http://") || strings.HasPrefix(endpoint, "https://") {
-		return endpoint
-	}
-
-	return "http://" + endpoint
 }

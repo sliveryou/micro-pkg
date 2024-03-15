@@ -2,66 +2,74 @@ package xhttp
 
 import "net/http"
 
+// HTTP 方法
 const (
-	// MethodGet 请求方法：GET
-	MethodGet = http.MethodGet
-	// MethodHead 请求方法：HEAD
-	MethodHead = http.MethodHead
-	// MethodPost 请求方法：POST
-	MethodPost = http.MethodPost
-	// MethodPut 请求方法：PUT
-	MethodPut = http.MethodPut
-	// MethodPatch 请求方法：PATCH
-	MethodPatch = http.MethodPatch
-	// MethodDelete 请求方法：DELETE
-	MethodDelete = http.MethodDelete
-	// MethodConnect 请求方法：CONNECT
+	MethodGet     = http.MethodGet
+	MethodHead    = http.MethodHead
+	MethodPost    = http.MethodPost
+	MethodPut     = http.MethodPut
+	MethodPatch   = http.MethodPatch
+	MethodDelete  = http.MethodDelete
 	MethodConnect = http.MethodConnect
-	// MethodOptions 请求方法：OPTIONS
 	MethodOptions = http.MethodOptions
-	// MethodTrace 请求方法：TRACE
-	MethodTrace = http.MethodTrace
+	MethodTrace   = http.MethodTrace
+)
 
-	// HeaderAccept 请求头：Accept
-	HeaderAccept = "Accept"
-	// HeaderAcceptLanguage 请求头：Accept-Language
-	HeaderAcceptLanguage = "Accept-Language"
-	// HeaderContentType 请求头：Content-Type
-	HeaderContentType = "Content-Type"
-	// HeaderContentDisposition 请求头：Content-Disposition
-	HeaderContentDisposition = "Content-Disposition"
-	// HeaderDate 请求头：Date
-	HeaderDate = "Date"
-	// HeaderHost 请求头：Host
-	HeaderHost = "Host"
-	// HeaderLocation 请求头：Location
-	HeaderLocation = "Location"
-	// HeaderUserAgent 请求头：User-Agent
-	HeaderUserAgent = "User-Agent"
-	// HeaderAuthorization 请求头：Authorization
-	HeaderAuthorization = "Authorization"
+// 协议前缀
+const (
+	SchemeHTTPPrefix  = "http://"
+	SchemeHTTPSPrefix = "https://"
+)
 
-	// HeaderCaErrorCode 自定义网关请求头：X-Ca-Error-Code
-	HeaderCaErrorCode = "X-Ca-Error-Code"
-	// HeaderCaErrorMessage 自定义网关请求头：X-Ca-Error-Message
+// HTTP 头部
+const (
+	HeaderAccept               = "Accept"
+	HeaderAcceptEncoding       = "Accept-Encoding"
+	HeaderAcceptLanguage       = "Accept-Language"
+	HeaderAccessToken          = "Access-Token"
+	HeaderAllow                = "Allow"
+	HeaderAuthorization        = "Authorization"
+	HeaderContentDisposition   = "Content-Disposition"
+	HeaderContentEncoding      = "Content-Encoding"
+	HeaderContentLength        = "Content-Length"
+	HeaderContentType          = "Content-Type"
+	HeaderDate                 = "Date"
+	HeaderHost                 = "Host"
+	HeaderLocation             = "Location"
+	HeaderOrigin               = "Origin"
+	HeaderRange                = "Range"
+	HeaderToken                = "Token"
+	HeaderUserAgent            = "User-Agent"
+	HeaderVary                 = "Vary"
+	HeaderXAppEngineRemoteAddr = "X-Appengine-Remote-Addr"
+	HeaderXCSRFToken           = "X-Csrf-Token"
+	HeaderXForwardedFor        = "X-Forwarded-For"
+	HeaderXHealthSecret        = "X-Health-Secret"
+	HeaderXRealIP              = "X-Real-Ip"
+	HeaderXRequestedWith       = "X-Requested-With"
+
+	HeaderAccessControlAllowCredentials = "Access-Control-Allow-Credentials"
+	HeaderAccessControlAllowHeaders     = "Access-Control-Allow-Headers"
+	HeaderAccessControlAllowMethods     = "Access-Control-Allow-Methods"
+	HeaderAccessControlAllowOrigin      = "Access-Control-Allow-Origin"
+	HeaderAccessControlExposeHeaders    = "Access-Control-Expose-Headers"
+	HeaderAccessControlMaxAge           = "Access-Control-Max-Age"
+	HeaderAccessControlRequestHeaders   = "Access-Control-Request-Headers"
+	HeaderAccessControlRequestMethod    = "Access-Control-Request-Method"
+
+	HeaderCaErrorCode    = "X-Ca-Error-Code"
 	HeaderCaErrorMessage = "X-Ca-Error-Message"
+)
 
-	// ContentTypeForm 内容类型：x-www-form-urlencoded
-	ContentTypeForm = "application/x-www-form-urlencoded"
-	// ContentTypeMultipartForm 内容类型：multipart/form-data
-	ContentTypeMultipartForm = "multipart/form-data"
-	// ContentTypeMultipartFormWithBoundary 内容类型：multipart/form-data; boundary=
-	ContentTypeMultipartFormWithBoundary = "multipart/form-data; boundary="
-	// ContentTypeText 内容类型：text
-	ContentTypeText = "text/plain"
-	// ContentTypeJSON 内容类型：json
-	ContentTypeJSON = "application/json"
-	// ContentTypeXML 内容类型：xml
-	ContentTypeXML = "application/xml"
-	// ContentTypePDF 内容类型：pdf
-	ContentTypePDF = "application/pdf"
-	// ContentTypeZip 内容类型：zip
-	ContentTypeZip = "application/zip"
-	// ContentTypeStream 内容类型：octet-stream
-	ContentTypeStream = "application/octet-stream"
+// MIME 类型
+const (
+	MIMEForm                      = "application/x-www-form-urlencoded"
+	MIMEMultipartForm             = "multipart/form-data"
+	MIMEMultipartFormWithBoundary = MIMEMultipartForm + "; boundary="
+	MIMETextPlain                 = "text/plain"
+	MIMEApplicationJSON           = "application/json"
+	MIMEApplicationXML            = "application/xml"
+	MIMEApplicationPDF            = "application/pdf"
+	MIMEApplicationZip            = "application/zip"
+	MIMEOctetStream               = "application/octet-stream"
 )

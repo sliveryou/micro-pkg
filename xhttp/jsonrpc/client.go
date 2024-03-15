@@ -84,8 +84,8 @@ func (c *rpcClient) NewHTTPRequest(ctx context.Context, req any) (*http.Request,
 		return nil, errors.WithMessage(err, "new http request err")
 	}
 
-	httpReq.Header.Set(xhttp.HeaderAccept, xhttp.ContentTypeJSON)
-	httpReq.Header.Set(xhttp.HeaderContentType, xhttp.ContentTypeJSON)
+	httpReq.Header.Set(xhttp.HeaderAccept, xhttp.MIMEApplicationJSON)
+	httpReq.Header.Set(xhttp.HeaderContentType, xhttp.MIMEApplicationJSON)
 
 	for k, v := range c.customHeaders {
 		if k == xhttp.HeaderHost && v != "" {

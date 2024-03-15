@@ -23,9 +23,6 @@ const (
 	DefaultEnv = "DEV"
 	// DefaultCluster 默认集群
 	DefaultCluster = "default"
-
-	httpPrefix  = "http://"
-	httpsPrefix = "https://"
 )
 
 var (
@@ -328,16 +325,7 @@ func parseError(status int) error {
 
 // NormalizeURL 规范化 url 格式
 func NormalizeURL(url string) string {
-	if url == "" {
-		return ""
-	}
-
-	if !strings.HasPrefix(url, httpPrefix) &&
-		!strings.HasPrefix(url, httpsPrefix) {
-		url = httpPrefix + url
-	}
-
-	return strings.TrimSuffix(url, "/")
+	return strings.TrimSuffix(xhttp.WithHTTPScheme(url), "/")
 }
 
 // NormalizeNamespace 规范化命名空间格式

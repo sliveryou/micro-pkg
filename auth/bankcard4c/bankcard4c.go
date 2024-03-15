@@ -49,7 +49,7 @@ func NewBankCard4C(c Config) (*BankCard4C, error) {
 		}
 	}
 
-	cc := xhttp.GetDefaultConfig()
+	cc := xhttp.DefaultConfig()
 	cc.TLSHandshakeTimeout = 15 * time.Second
 
 	return &BankCard4C{c: c, client: xhttp.NewClient(cc)}, nil

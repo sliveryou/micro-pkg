@@ -37,12 +37,12 @@ func TestNewMultipartWriter(t *testing.T) {
 	}
 	ct, err := writer.WriteFile("file", fileName, fileReader)
 	require.NoError(t, err)
-	require.Equal(t, ContentTypeText, ct)
+	require.Equal(t, MIMETextPlain, ct)
 
 	contentType := writer.FormDataContentType()
 	err = writer.Close()
 	require.NoError(t, err)
-	require.Contains(t, contentType, ContentTypeMultipartFormWithBoundary)
+	require.Contains(t, contentType, MIMEMultipartFormWithBoundary)
 
 	fmt.Println(contentType)
 	fmt.Println(ct)
@@ -60,12 +60,12 @@ func TestMultipartWriter_WriteFile(t *testing.T) {
 
 	ct, err := writer.WriteFile("file", fileName, fileReader)
 	require.NoError(t, err)
-	require.Equal(t, ContentTypePDF, ct)
+	require.Equal(t, MIMEApplicationPDF, ct)
 
 	contentType := writer.FormDataContentType()
 	err = writer.Close()
 	require.NoError(t, err)
-	require.Contains(t, contentType, ContentTypeMultipartFormWithBoundary)
+	require.Contains(t, contentType, MIMEMultipartFormWithBoundary)
 
 	fmt.Println(contentType)
 	fmt.Println(ct)

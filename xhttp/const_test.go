@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 	"testing"
 
@@ -44,14 +45,37 @@ func TestCollectConstants(t *testing.T) {
 func TestHeaders(t *testing.T) {
 	headers := []string{
 		HeaderAccept,
+		HeaderAcceptEncoding,
 		HeaderAcceptLanguage,
-		HeaderContentType,
+		HeaderAccessToken,
+		HeaderAllow,
+		HeaderAuthorization,
 		HeaderContentDisposition,
+		HeaderContentEncoding,
+		HeaderContentLength,
+		HeaderContentType,
 		HeaderDate,
 		HeaderHost,
 		HeaderLocation,
+		HeaderOrigin,
+		HeaderRange,
+		HeaderToken,
 		HeaderUserAgent,
-		HeaderAuthorization,
+		HeaderVary,
+		HeaderXAppEngineRemoteAddr,
+		HeaderXCSRFToken,
+		HeaderXForwardedFor,
+		HeaderXHealthSecret,
+		HeaderXRealIP,
+		HeaderXRequestedWith,
+		HeaderAccessControlAllowCredentials,
+		HeaderAccessControlAllowHeaders,
+		HeaderAccessControlAllowMethods,
+		HeaderAccessControlAllowOrigin,
+		HeaderAccessControlExposeHeaders,
+		HeaderAccessControlMaxAge,
+		HeaderAccessControlRequestHeaders,
+		HeaderAccessControlRequestMethod,
 		HeaderCaErrorCode,
 		HeaderCaErrorMessage,
 	}
@@ -59,6 +83,11 @@ func TestHeaders(t *testing.T) {
 	for _, header := range headers {
 		chk := http.CanonicalHeaderKey(header)
 		assert.Equal(t, chk, header)
+	}
+
+	sort.Strings(headers)
+	for _, header := range headers {
+		fmt.Println(header)
 	}
 }
 

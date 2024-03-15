@@ -23,8 +23,8 @@ type Config struct {
 	ExpectContinueTimeout time.Duration // 期望继续超时时间
 }
 
-// GetDefaultConfig 获取默认 HTTP 客户端相关配置
-func GetDefaultConfig() Config {
+// DefaultConfig 获取默认 HTTP 客户端相关配置
+func DefaultConfig() Config {
 	return Config{
 		HTTPTimeout:           20 * time.Second,
 		DialTimeout:           15 * time.Second,
@@ -37,9 +37,9 @@ func GetDefaultConfig() Config {
 	}
 }
 
-// NewHTTPClient 新建 HTTP 客户端，不传递配置时，使用默认配置
+// NewHTTPClient 新建 HTTP 客户端（不传递配置时，将使用默认配置 DefaultConfig）
 func NewHTTPClient(config ...Config) *http.Client {
-	c := GetDefaultConfig()
+	c := DefaultConfig()
 	if len(config) > 0 {
 		c = config[0]
 	}
