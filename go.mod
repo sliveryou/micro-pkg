@@ -9,7 +9,7 @@ require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.62.690
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/casbin/casbin/v2 v2.84.0
-	github.com/glebarez/sqlite v1.10.0
+	github.com/glebarez/sqlite v1.11.0
 	github.com/go-stack/stack v1.8.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/h2non/filetype v1.1.3
