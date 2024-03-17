@@ -171,7 +171,7 @@ func TestRpcClient_CallBatch(t *testing.T) {
 
 	resp1 := resps.GetByID(1)
 	assert.NotNil(t, resp1)
-	var result1 _Object
+	var result1 object
 	err = resp1.ReadToObject(&result1)
 	require.NoError(t, err)
 	assert.Equal(t, string(b1), result1.RawRequest)
@@ -206,7 +206,7 @@ func TestRpcClient_CallBatchRaw(t *testing.T) {
 	assert.NotNil(t, respMap)
 	resp1 := respMap[100]
 	assert.NotNil(t, resp1)
-	var result1 _Object
+	var result1 object
 	err = resp1.ReadToObject(&result1)
 	require.NoError(t, err)
 	assert.Equal(t, string(b1), result1.RawRequest)

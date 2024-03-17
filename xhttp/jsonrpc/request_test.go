@@ -33,7 +33,7 @@ func TestNewRPCRequestWithID(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, `{"jsonrpc":"2.0","id":100,"method":"test.get","params":{"1":1,"a":"a","ok":true}}`, string(body))
 
-	req = NewRPCRequestWithID(666, method, []_Person{{Name: "sliveryou", Age: 18, Country: "China"}}).
+	req = NewRPCRequestWithID(666, method, []person{{Name: "sliveryou", Age: 18, Country: "China"}}).
 		WithExtensions(map[string]any{"ext": "ext", "auth": "auth"})
 	assert.NotNil(t, req)
 	body, err = json.Marshal(req)
@@ -61,7 +61,7 @@ func TestRPCRequest_MarshalJSON(t *testing.T) {
 
 func TestRPCRequest_UnmarshalJSON(t *testing.T) {
 	method := "test.get"
-	req := NewRPCRequestWithID(666, method, []_Person{{Name: "sliveryou", Age: 18, Country: "China"}}).
+	req := NewRPCRequestWithID(666, method, []person{{Name: "sliveryou", Age: 18, Country: "China"}}).
 		WithExtensions(map[string]any{"ext": "ext", "auth": "auth"})
 	assert.NotNil(t, req)
 	body, err := json.Marshal(req)

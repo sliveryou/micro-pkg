@@ -2,6 +2,12 @@ package xhttp
 
 import "net/http"
 
+// 协议前缀
+const (
+	SchemeHTTPPrefix  = "http://"
+	SchemeHTTPSPrefix = "https://"
+)
+
 // HTTP 方法
 const (
 	MethodGet     = http.MethodGet
@@ -15,12 +21,6 @@ const (
 	MethodTrace   = http.MethodTrace
 )
 
-// 协议前缀
-const (
-	SchemeHTTPPrefix  = "http://"
-	SchemeHTTPSPrefix = "https://"
-)
-
 // HTTP 头部
 const (
 	HeaderAccept               = "Accept"
@@ -29,6 +29,7 @@ const (
 	HeaderAccessToken          = "Access-Token"
 	HeaderAllow                = "Allow"
 	HeaderAuthorization        = "Authorization"
+	HeaderCacheControl         = "Cache-Control"
 	HeaderContentDisposition   = "Content-Disposition"
 	HeaderContentEncoding      = "Content-Encoding"
 	HeaderContentLength        = "Content-Length"
@@ -38,6 +39,7 @@ const (
 	HeaderLocation             = "Location"
 	HeaderOrigin               = "Origin"
 	HeaderRange                = "Range"
+	HeaderReferer              = "Referer"
 	HeaderToken                = "Token"
 	HeaderUserAgent            = "User-Agent"
 	HeaderVary                 = "Vary"

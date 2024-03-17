@@ -80,10 +80,10 @@ func TestRPCResponse_ReadToObject(t *testing.T) {
 	assert.Equal(t, "auth", resp.Extensions["auth"])
 	assert.Equal(t, "ext", resp.Extensions["ext"])
 
-	var result _Person
+	var result person
 	err = resp.ReadToObject(&result)
 	require.NoError(t, err)
-	assert.Equal(t, _Person{Name: "sliveryou", Age: 18, Country: "China"}, result)
+	assert.Equal(t, person{Name: "sliveryou", Age: 18, Country: "China"}, result)
 	assert.Len(t, resp.Extensions, 2)
 }
 
@@ -91,7 +91,7 @@ func TestRPCResponse_MarshalJSON(t *testing.T) {
 	resp := &RPCResponse{
 		JSONRPC:    RPCVersion,
 		ID:         2,
-		Result:     _Person{Name: "sliveryou", Age: 18, Country: "China"},
+		Result:     person{Name: "sliveryou", Age: 18, Country: "China"},
 		Extensions: map[string]any{"auth": "auth", "user": "sliveryou"},
 	}
 	body, err := json.Marshal(resp)

@@ -10,13 +10,13 @@ import (
 )
 
 func TestParams(t *testing.T) {
-	ps := Params(_Person{})
+	ps := Params(person{})
 	assert.Equal(t, reflect.Struct, reflect.TypeOf(ps).Kind())
 
 	ps = Params(map[string]any{"a": "b"})
 	assert.Equal(t, reflect.Map, reflect.TypeOf(ps).Kind())
 
-	ps = Params(_Person{}, &_Person{})
+	ps = Params(person{}, &person{})
 	assert.Equal(t, reflect.Slice, reflect.TypeOf(ps).Kind())
 
 	ps = Params(1)

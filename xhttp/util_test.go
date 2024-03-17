@@ -172,7 +172,7 @@ func TestGetReaderLen(t *testing.T) {
 		{reader: strings.NewReader("test reader"), expectLen: 11, expectErr: false},
 		{reader: io.LimitReader(strings.NewReader("test reader"), 20), expectLen: 20, expectErr: false},
 		{reader: io.NewSectionReader(strings.NewReader("test reader"), 0, 20), expectLen: 20, expectErr: false},
-		{reader: &_mockReader{}, expectLen: 0, expectErr: true},
+		{reader: &mockReader{}, expectLen: 0, expectErr: true},
 	}
 
 	for _, c := range cases {
@@ -231,8 +231,8 @@ func TestWithHTTPScheme(t *testing.T) {
 	}
 }
 
-type _mockReader struct{}
+type mockReader struct{}
 
-func (m *_mockReader) Read(p []byte) (n int, err error) {
+func (m *mockReader) Read(p []byte) (n int, err error) {
 	return 0, io.EOF
 }

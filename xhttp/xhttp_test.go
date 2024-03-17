@@ -38,7 +38,7 @@ func TestParse(t *testing.T) {
 	require.NoError(t, err)
 	r.Header.Set(HeaderContentType, MIMEApplicationJSON)
 
-	req := &_UploadFileChunkReq{}
+	req := &uploadFileChunkReq{}
 	err = Parse(r, req)
 	require.NoError(t, err)
 	assert.Equal(t, "abcdefgh", req.CurrentData)
@@ -55,7 +55,7 @@ func TestParseForm(t *testing.T) {
 		"http://test.com/api/test?file_type=txt&file_hashes=a&file_hashes=b&file_seqs=1&file_seqs=2", nil)
 	require.NoError(t, err)
 
-	req1 := _GetFilesReq{}
+	req1 := getFilesReq{}
 	err = ParseForm(r, &req1)
 	require.NoError(t, err)
 	assert.Equal(t, "txt", req1.FileType)
@@ -67,7 +67,7 @@ func TestParseForm(t *testing.T) {
 	require.NoError(t, err)
 	r.Header.Set(HeaderContentType, MIMEForm)
 
-	req2 := _GetFilesReq{}
+	req2 := getFilesReq{}
 	err = ParseForm(r, &req2)
 	require.NoError(t, err)
 	assert.Equal(t, "txt", req2.FileType)
@@ -89,7 +89,7 @@ func TestParseJsonBody(t *testing.T) {
 	require.NoError(t, err)
 	r.Header.Set(HeaderContentType, MIMEApplicationJSON)
 
-	req := &_UploadFileChunkReq{}
+	req := &uploadFileChunkReq{}
 	err = ParseJsonBody(r, req)
 	require.NoError(t, err)
 	assert.Equal(t, "abcdefgh", req.CurrentData)
@@ -136,12 +136,12 @@ func TestFromFile(t *testing.T) {
 }
 
 func testFileHandler(w http.ResponseWriter, r *http.Request) {
-	type _UploadFileReq struct {
+	type uploadFileReq struct {
 		FileType string `form:"file_type" validate:"required" label:"文件类型"` // 文件类型
 	}
 
 	ctx := r.Context()
-	var req _UploadFileReq
+	var req uploadFileReq
 	if err := Parse(r, &req); err != nil {
 		ErrorCtx(ctx, w, err)
 		return
@@ -279,13 +279,13 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req1 _UploadFileChunkReq
+	var req1 uploadFileChunkReq
 	if err := Parse(r, &req1); err != nil {
 		ErrorCtx(ctx, w, err)
 		return
 	}
 
-	var req2 _UploadFileChunkReq
+	var req2 uploadFileChunkReq
 	if err := Parse(rc, &req2); err != nil {
 		ErrorCtx(ctx, w, err)
 		return
@@ -298,13 +298,13 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-type _GetFilesReq struct {
+type getFilesReq struct {
 	FileType   string   `form:"file_type" validate:"required" label:"文件类型"`                       // 文件类型
 	FileHashes []string `form:"file_hashes" validate:"required,dive,required" label:"文件 hash 列表"` // 文件 hash 列表
 	FileSeqs   []int64  `form:"file_seqs" validate:"required,dive,required" label:"文件序号列表"`       // 文件序号列表
 }
 
-type _UploadFileChunkReq struct {
+type uploadFileChunkReq struct {
 	CurrentData string `json:"current_data" validate:"required" label:"当前块数据"`                  // 当前块数据（须 base64 编码）
 	CurrentSeq  int32  `json:"current_seq" validate:"required" label:"当前块序号"`                   // 当前块序号（从 1 开始）
 	CurrentSize int32  `json:"current_size" validate:"required" label:"当前块大小"`                  // 当前块大小

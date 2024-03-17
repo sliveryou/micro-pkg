@@ -25,7 +25,7 @@ func TestJWT_GenToken(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
 
-	ui := &_UserInfo{}
+	ui := &userInfo{}
 	err = j.ParseToken(tokenStr, ui)
 	require.NoError(t, err)
 	assert.Equal(t, int64(100000), ui.UserID)
@@ -46,7 +46,7 @@ func TestJWT_GenToken2(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenStr)
 
-	ui := &_UserInfo{}
+	ui := &userInfo{}
 	err = j.ParseToken(tokenStr, ui)
 	require.NoError(t, err)
 	assert.Equal(t, int64(100000), ui.UserID)
@@ -79,7 +79,7 @@ func TestJWT_GenTokenWithPayloads(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotEmpty(t, payloads)
 
-	ui := &_UserInfo{}
+	ui := &userInfo{}
 	err = j.ParseToken(tokenStr, ui)
 	require.NoError(t, err)
 	assert.Equal(t, int64(100000), ui.UserID)
@@ -99,7 +99,7 @@ func TestJWT_ParseToken(t *testing.T) {
 	tok, err := genTestToken("test-issuer", "ABCDEFGH", jwt.SigningMethodHS256, getTokenMap(), 72*time.Hour)
 	require.NoError(t, err)
 
-	uip := &_UserInfo{}
+	uip := &userInfo{}
 	err = j.ParseToken(tok, uip)
 	require.NoError(t, err)
 	assert.Equal(t, int64(100000), uip.UserID)
@@ -109,7 +109,7 @@ func TestJWT_ParseToken(t *testing.T) {
 	assert.True(t, uip.IsAdmin)
 	assert.InEpsilon(t, 123.123, uip.Score, 0.0001)
 
-	ui := _UserInfo{}
+	ui := userInfo{}
 	err = j.ParseToken(tok, ui)
 	require.EqualError(t, err, "unsupported token type")
 
@@ -193,7 +193,7 @@ func TestJWT_ParseTokenPayloadsFromRequest(t *testing.T) {
 	assert.NotEmpty(t, tokenStr)
 
 	req := httptest.NewRequest(http.MethodGet, "http://localhost", http.NoBody)
-	uip := &_UserInfo{}
+	uip := &userInfo{}
 	err = j.ParseTokenFromRequest(req, uip)
 	require.EqualError(t, err, "parse from request err: no token present in request")
 
@@ -277,8 +277,8 @@ func genTestToken(issuer, secretKey string, method jwt.SigningMethod, payloads m
 	return ts, nil
 }
 
-func getToken() *_UserInfo {
-	return &_UserInfo{
+func getToken() *userInfo {
+	return &userInfo{
 		UserID:   100000,
 		UserName: "test_user",
 		RoleIDs:  []int64{100000, 100001, 100002},
@@ -299,7 +299,7 @@ func getTokenMap() map[string]any {
 	}
 }
 
-type _UserInfo struct {
+type userInfo struct {
 	UserID   int64   `json:"user_id"`
 	UserName string  `json:"user_name"`
 	RoleIDs  []int64 `json:"role_ids"`

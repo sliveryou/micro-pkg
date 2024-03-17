@@ -19,13 +19,13 @@ func TestNewRPCClient(t *testing.T) {
 	assert.Equal(t, 100, dc.defaultRequestID)
 }
 
-type _Person struct {
+type person struct {
 	Name    string `json:"name"`
 	Age     int    `json:"age"`
 	Country string `json:"country"`
 }
 
-type _Object struct {
+type object struct {
 	Name       string `json:"name"`
 	Age        int    `json:"age"`
 	Country    string `json:"country"`

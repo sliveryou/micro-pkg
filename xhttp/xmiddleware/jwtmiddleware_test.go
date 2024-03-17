@@ -18,7 +18,7 @@ import (
 func getJWTMiddleware() *JWTMiddleware {
 	j := jwt.MustNewJWT(jwt.Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", Expiration: 72 * time.Hour})
 	errTokenVerify := errcode.New(401, "token校验失败", http.StatusUnauthorized)
-	m := MustNewJWTMiddleware(j, &_UserInfo{}, errTokenVerify)
+	m := MustNewJWTMiddleware(j, &userInfo{}, errTokenVerify)
 	return m
 }
 
@@ -35,7 +35,7 @@ func TestNewJWTMiddleware_Success(t *testing.T) {
 		t.Log("JWTMiddleware Handle request")
 
 		ctx := r.Context()
-		token := &_UserInfo{}
+		token := &userInfo{}
 		err := jwt.ReadCtx(ctx, token)
 		require.NoError(t, err)
 
@@ -67,8 +67,8 @@ func TestNewJWTMiddleware_Fail(t *testing.T) {
 	assert.Equal(t, "{\"code\":401,\"msg\":\"token校验失败\"}", string(d))
 }
 
-func getToken() *_UserInfo {
-	return &_UserInfo{
+func getToken() *userInfo {
+	return &userInfo{
 		UserID:   100000,
 		UserName: "test_user",
 		RoleIDs:  []int64{100000, 100001, 100002},
@@ -78,7 +78,7 @@ func getToken() *_UserInfo {
 	}
 }
 
-type _UserInfo struct {
+type userInfo struct {
 	UserID   int64   `json:"user_id"`
 	UserName string  `json:"user_name"`
 	RoleIDs  []int64 `json:"role_ids"`

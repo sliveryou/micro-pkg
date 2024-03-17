@@ -19,7 +19,7 @@ func TestWithCtx(t *testing.T) {
 	tokenString, ok := tok.(string)
 	assert.True(t, ok)
 
-	newToken := &_UserInfo{}
+	newToken := &userInfo{}
 	err := json.Unmarshal([]byte(tokenString), newToken)
 	require.NoError(t, err)
 	assert.Equal(t, *token, *newToken)
@@ -31,7 +31,7 @@ func TestReadCtx(t *testing.T) {
 
 	token := getToken()
 	ctx := WithCtx(context.Background(), token)
-	newToken := &_UserInfo{}
+	newToken := &userInfo{}
 	err = ReadCtx(ctx, newToken)
 	require.NoError(t, err)
 	assert.Equal(t, *token, *newToken)
@@ -67,7 +67,7 @@ func TestWrapAndUnwrapContext(t *testing.T) {
 	t.Log(mdToken)
 
 	ctx = context.WithValue(ctx, TokenKey, mdToken)
-	newToken := &_UserInfo{}
+	newToken := &userInfo{}
 	err = ReadCtx(ctx, newToken)
 	require.NoError(t, err)
 	assert.Equal(t, *token, *newToken)

@@ -32,7 +32,7 @@ func TestJWTInterceptor(t *testing.T) {
 		tokenString, ok := tok.(string)
 		assert.True(t, ok)
 
-		newToken := &_UserInfo{}
+		newToken := &userInfo{}
 		err := json.Unmarshal([]byte(tokenString), newToken)
 		require.NoError(t, err)
 		assert.Equal(t, *token, *newToken)
@@ -60,7 +60,7 @@ func TestJWTStreamInterceptor(t *testing.T) {
 		tokenString, ok := tok.(string)
 		assert.True(t, ok)
 
-		newToken := &_UserInfo{}
+		newToken := &userInfo{}
 		err := json.Unmarshal([]byte(tokenString), newToken)
 		require.NoError(t, err)
 		assert.Equal(t, *token, *newToken)
@@ -88,7 +88,7 @@ func TestJWTClientInterceptor(t *testing.T) {
 			mdToken, ok := jwt.FromMD(md)
 			assert.True(t, ok)
 
-			newToken := &_UserInfo{}
+			newToken := &userInfo{}
 			err := json.Unmarshal([]byte(mdToken), newToken)
 			require.NoError(t, err)
 			assert.Equal(t, *token, *newToken)
@@ -118,7 +118,7 @@ func TestJWTStreamClientInterceptor(t *testing.T) {
 			mdToken, ok := jwt.FromMD(md)
 			assert.True(t, ok)
 
-			newToken := &_UserInfo{}
+			newToken := &userInfo{}
 			err := json.Unmarshal([]byte(mdToken), newToken)
 			require.NoError(t, err)
 			assert.Equal(t, *token, *newToken)
@@ -157,8 +157,8 @@ func (m mockedStream) RecvMsg(v any) error {
 	return nil
 }
 
-func getToken() *_UserInfo {
-	return &_UserInfo{
+func getToken() *userInfo {
+	return &userInfo{
 		UserID:   100000,
 		UserName: "test_user",
 		RoleIDs:  []int64{100000, 100001, 100002},
@@ -168,7 +168,7 @@ func getToken() *_UserInfo {
 	}
 }
 
-type _UserInfo struct {
+type userInfo struct {
 	UserID   int64   `json:"user_id"`
 	UserName string  `json:"user_name"`
 	RoleIDs  []int64 `json:"role_ids"`
