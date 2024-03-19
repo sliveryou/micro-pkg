@@ -1,46 +1,50 @@
 package xreq
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/sliveryou/micro-pkg/xhttp"
 )
 
 func TestClient_Do(t *testing.T) {
-	_, err := NewClient(http.DefaultClient).Do("unknown method")
+	_, err := NewClient().Do("unknown method")
 	require.EqualError(t, err, `new http request err: net/http: invalid method "unknown method"`)
 }
 
 func TestClientDoMethods(t *testing.T) {
 	type testCase struct {
-		clientDo func(options ...Option) (*http.Response, error)
+		clientDo func(options ...Option) (*Response, error)
 	}
 
-	client := http.DefaultClient
+	client := DefaultHTTPClient
 	methods := map[string]testCase{
 		http.MethodGet: {
-			clientDo: NewClient(client).Get,
+			clientDo: NewClientWithHTTPClient(client).Get,
 		},
 		http.MethodHead: {
-			clientDo: NewClient(client).Head,
+			clientDo: NewClientWithHTTPClient(client).Head,
 		},
 		http.MethodPost: {
-			clientDo: NewClient(client).Post,
+			clientDo: NewClientWithHTTPClient(client).Post,
 		},
 		http.MethodPut: {
-			clientDo: NewClient(client).Put,
+			clientDo: NewClientWithHTTPClient(client).Put,
 		},
 		http.MethodPatch: {
-			clientDo: NewClient(client).Patch,
+			clientDo: NewClientWithHTTPClient(client).Patch,
 		},
 		http.MethodDelete: {
-			clientDo: NewClient(client).Delete,
+			clientDo: NewClientWithHTTPClient(client).Delete,
 		},
 		http.MethodOptions: {
-			clientDo: NewClient(client).Options,
+			clientDo: NewClientWithHTTPClient(client).Options,
 		},
 	}
 
@@ -55,5 +59,66 @@ func TestClientDoMethods(t *testing.T) {
 		})
 
 		server.Close()
+	}
+}
+
+func TestClient(t *testing.T) {
+	type args struct {
+		method string
+		url    string
+		header map[string]string
+		body   io.Reader
+	}
+	cases := []struct {
+		title string
+		args  args
+	}{
+		{
+			title: "do get ip",
+			args: args{
+				method: "GET",
+				url:    "https://www.httpbin.org/ip",
+				header: map[string]string{
+					xhttp.HeaderAcceptLanguage: "zh-CN,zh;q=0.9,en;q=0.8",
+					xhttp.HeaderUserAgent:      "Go-HTTP-Request",
+				},
+				body: nil,
+			},
+		},
+		{
+			title: "do get method",
+			args: args{
+				method: "GET",
+				url:    "https://www.httpbin.org/get",
+				header: map[string]string{
+					xhttp.HeaderAcceptLanguage: "zh-CN,zh;q=0.9,en;q=0.8",
+					xhttp.HeaderUserAgent:      "Go-HTTP-Request",
+				},
+				body: nil,
+			},
+		},
+		{
+			title: "do post method",
+			args: args{
+				method: "POST",
+				url:    "https://www.httpbin.org/post",
+				header: map[string]string{
+					xhttp.HeaderAcceptLanguage: "zh-CN,zh;q=0.9,en;q=0.8",
+					xhttp.HeaderUserAgent:      "Go-HTTP-Request",
+				},
+				body: strings.NewReader("a=b&c=d"),
+			},
+		},
+	}
+
+	client := NewClient()
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			resp, err := client.Do(c.args.method,
+				URL(c.args.url), HeaderMap(c.args.header), BodyReader(c.args.body))
+			if err == nil {
+				t.Log(resp.String())
+			}
+		})
 	}
 }

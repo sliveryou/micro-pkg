@@ -1,10 +1,8 @@
 package face
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -16,7 +14,7 @@ import (
 	"github.com/sliveryou/go-tool/v2/validator"
 
 	"github.com/sliveryou/micro-pkg/errcode"
-	"github.com/sliveryou/micro-pkg/xhttp"
+	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
 
 // 百度云人脸识别认证 API：
@@ -60,7 +58,7 @@ type Config struct {
 // Face 人脸识别认证器结构详情
 type Face struct {
 	c      Config
-	client *xhttp.Client
+	client *xreq.Client
 	cache  *collection.Cache
 }
 
@@ -78,10 +76,10 @@ func NewFace(c Config) (*Face, error) {
 		return nil, errors.WithMessage(err, "face: new cache err")
 	}
 
-	cc := xhttp.DefaultConfig()
+	cc := xreq.DefaultConfig()
 	cc.HTTPTimeout = 30 * time.Second
 
-	return &Face{c: c, client: xhttp.NewClient(cc), cache: cache}, nil
+	return &Face{c: c, client: xreq.NewClientWithConfig(cc), cache: cache}, nil
 }
 
 // MustNewFace 新建人脸识别认证器
@@ -149,15 +147,14 @@ func (f *Face) Authenticate(ctx context.Context, req *AuthenticateRequest) (*Aut
 func (f *Face) getAccessToken(ctx context.Context) (string, error) {
 	item, err := f.cache.Take(cacheKey, func() (any, error) {
 		var resp getAccessTokenResp
-
-		rawURL := AccessTokenURL
-		values := make(url.Values)
-		values.Set("grant_type", defaultGrantType)
-		values.Set("client_id", f.c.APIKey)
-		values.Set("client_secret", f.c.SecretKey)
-		rawURL += "?" + values.Encode()
-
-		_, err := f.client.Call(ctx, http.MethodGet, rawURL, nil, nil, &resp)
+		_, err := f.client.Call(http.MethodGet, &resp, xreq.Context(ctx),
+			xreq.URL(AccessTokenURL),
+			xreq.QueryMap(map[string]any{
+				"grant_type":    defaultGrantType,
+				"client_id":     f.c.APIKey,
+				"client_secret": f.c.SecretKey,
+			}),
+		)
 		if err != nil {
 			return "", errors.WithMessage(err, "client call err")
 		}
@@ -182,14 +179,13 @@ func (f *Face) getAccessToken(ctx context.Context) (string, error) {
 // videoVerify 视频活体检测
 func (f *Face) videoVerify(ctx context.Context, accessToken, videoBase64 string) (string, error) {
 	var resp videoVerifyResp
-
-	rawURL := VideoVerifyURL + "?access_token=" + accessToken
-	header := map[string]string{
-		xhttp.HeaderContentType: xhttp.MIMEForm,
-	}
-	data := "video_base64=" + videoBase64
-
-	_, err := f.client.Call(ctx, http.MethodPost, rawURL, header, strings.NewReader(data), &resp)
+	_, err := f.client.Call(http.MethodPost, &resp, xreq.Context(ctx),
+		xreq.URL(VideoVerifyURL),
+		xreq.Query("access_token", accessToken),
+		xreq.BodyForm(url.Values{
+			"video_base64": []string{videoBase64},
+		}),
+	)
 	if err != nil {
 		return "", errors.WithMessage(err, "client call err")
 	}
@@ -226,24 +222,16 @@ func (f *Face) videoVerify(ctx context.Context, accessToken, videoBase64 string)
 // personVerify 人脸实名认证
 func (f *Face) personVerify(ctx context.Context, accessToken, validPic, name, idCard string) (int64, error) {
 	var resp personVerifyResp
-
-	rawURL := fmt.Sprintf("%s?access_token=%s", PersonVerifyURL, accessToken)
-	header := map[string]string{
-		xhttp.HeaderContentType: xhttp.MIMEApplicationJSON,
-	}
-	req := &personVerifyReq{
-		Image:        validPic,
-		ImageType:    defaultImageType,
-		IDCardNumber: idCard,
-		Name:         name,
-	}
-
-	b, err := json.Marshal(req)
-	if err != nil {
-		return 0, errors.WithMessage(err, "json marshal request err")
-	}
-
-	_, err = f.client.Call(ctx, http.MethodPost, rawURL, header, bytes.NewReader(b), &resp)
+	_, err := f.client.Call(http.MethodPost, &resp, xreq.Context(ctx),
+		xreq.URL(PersonVerifyURL),
+		xreq.Query("access_token", accessToken),
+		xreq.BodyJSON(personVerifyReq{
+			Image:        validPic,
+			ImageType:    defaultImageType,
+			IDCardNumber: idCard,
+			Name:         name,
+		}),
+	)
 	if err != nil {
 		return 0, errors.WithMessage(err, "client call err")
 	}

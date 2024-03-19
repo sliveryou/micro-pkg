@@ -46,7 +46,7 @@ func ExampleOptionFunc() {
 	}))
 	defer server.Close()
 
-	client := xreq.NewClient(server.Client(),
+	client := xreq.NewClientWithHTTPClient(server.Client(),
 		xreq.URL(server.URL),
 		xreq.OptionFunc(func(request *http.Request) (*http.Request, error) {
 			return xreq.BearerAuth(token).Apply(request)
@@ -60,6 +60,17 @@ func ExampleOptionFunc() {
 	// Output:
 	// Bearer custom.token.1
 	// Bearer custom.token.2
+}
+
+func ExampleMethod() {
+	request, _ := xreq.New("", "https://www.test.com/api", xreq.Method(http.MethodPost))
+
+	fmt.Println(request.Method)
+	fmt.Println(request.URL)
+
+	// Output:
+	// POST
+	// https://www.test.com/api
 }
 
 func ExampleRawURL() {
@@ -211,6 +222,39 @@ func ExampleAddQueries() {
 	// Output: page=10&page=20&page=30&page_size=50
 }
 
+func ExampleQueryMap() {
+	request, _ := xreq.NewGet("https://www.test.com/api",
+		xreq.QueryMap(map[string]any{
+			"page":      10,
+			"page_size": 50,
+		}),
+		xreq.QueryMap(map[string]any{
+			"page":      20,
+			"page_size": 50,
+		}),
+	)
+
+	fmt.Println(request.URL.Query().Encode())
+
+	// Output: page=20&page_size=50
+}
+
+func ExampleAddQueryMap() {
+	request, _ := xreq.NewGet("https://www.test.com/api",
+		xreq.AddQueryMap(map[string]any{
+			"page":      10,
+			"page_size": 50,
+		}),
+		xreq.AddQueryMap(map[string]any{
+			"page": 20,
+		}),
+	)
+
+	fmt.Println(request.URL.Query().Encode())
+
+	// Output: page=10&page=20&page_size=50
+}
+
 func ExampleHeader() {
 	request, _ := xreq.NewGet("https://www.test.com/api",
 		xreq.Header("key", "value1"),
@@ -237,6 +281,19 @@ func ExampleHeaders() {
 	fmt.Println(request.Header)
 
 	// Output: map[A:[2, 3] B:[2, 3] C:[4]]
+}
+
+func ExampleHeaderMap() {
+	request, _ := xreq.NewGet("https://www.test.com/api",
+		xreq.HeaderMap(map[string]string{
+			"a": "1",
+			"b": "2",
+		}),
+	)
+
+	fmt.Println(request.Header)
+
+	// Output: map[A:[1] B:[2]]
 }
 
 func ExampleAccept() {
@@ -442,6 +499,25 @@ func ExampleBodyForm() {
 		xreq.BodyForm(url.Values{
 			"page":      {"10"},
 			"page_size": {"50"},
+		}),
+	)
+
+	body, _ := io.ReadAll(request.Body)
+	fmt.Println(string(body))
+	fmt.Println(request.ContentLength)
+	fmt.Println(request.Header.Get("Content-Type"))
+
+	// Output:
+	// page=10&page_size=50
+	// 20
+	// application/x-www-form-urlencoded
+}
+
+func ExampleBodyFormMap() {
+	request, _ := xreq.NewPost("https://www.test.com/api",
+		xreq.BodyFormMap(map[string]any{
+			"page":      10,
+			"page_size": 50,
 		}),
 	)
 

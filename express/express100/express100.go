@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -15,7 +14,7 @@ import (
 	"github.com/sliveryou/micro-pkg/errcode"
 	"github.com/sliveryou/micro-pkg/express/types"
 	"github.com/sliveryou/micro-pkg/xhash"
-	"github.com/sliveryou/micro-pkg/xhttp"
+	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
 
 const (
@@ -39,7 +38,7 @@ const (
 type Express100 struct {
 	appID     string // 应用ID（为快递100中分配的 CustomerID）
 	secretKey string // 应用密钥
-	client    *xhttp.Client
+	client    *xreq.Client
 }
 
 // NewExpress100 新建快递100客户端对象
@@ -51,7 +50,7 @@ func NewExpress100(appID, secretKey string) (*Express100, error) {
 	return &Express100{
 		appID:     appID,
 		secretKey: secretKey,
-		client:    xhttp.NewClient(),
+		client:    xreq.NewClient(),
 	}, nil
 }
 
@@ -66,14 +65,6 @@ func (e *Express100) GetExpress(ctx context.Context, req *types.GetExpressReques
 	// 校验请求参数
 	if req.ExpNo == "" || ((req.CoCode == comSF || req.CoCode == comSFKY) && req.TelNo == "") {
 		return nil, errcode.ErrInvalidParams
-	}
-
-	// 构建请求接口地址
-	rawURL := URL + "/poll/query.do"
-
-	// 构建请求头
-	header := map[string]string{
-		xhttp.HeaderContentType: xhttp.MIMEForm,
 	}
 
 	// 构建请求参数
@@ -92,14 +83,15 @@ func (e *Express100) GetExpress(ctx context.Context, req *types.GetExpressReques
 		return nil, errors.WithMessage(err, "calculate hash err")
 	}
 
-	// 构建签名参数
-	values := make(url.Values)
-	values.Set("customer", e.appID)
-	values.Set("sign", strings.ToUpper(sign))
-	values.Set("param", paramJSON)
-
 	var resp queryResp
-	_, err = e.client.Call(ctx, http.MethodPost, rawURL, header, strings.NewReader(values.Encode()), &resp)
+	_, err = e.client.Call(http.MethodPost, &resp, xreq.Context(ctx),
+		xreq.URL(URL+"/poll/query.do"),
+		xreq.BodyFormMap(map[string]any{
+			"customer": e.appID,
+			"sign":     strings.ToUpper(sign),
+			"param":    paramJSON,
+		}),
+	)
 	if err != nil {
 		return nil, errors.WithMessage(err, "client call err")
 	}

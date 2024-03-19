@@ -2,8 +2,6 @@ package corpaccount
 
 import (
 	"context"
-	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/pkg/errors"
@@ -14,7 +12,7 @@ import (
 	"github.com/sliveryou/go-tool/v2/validator"
 
 	"github.com/sliveryou/micro-pkg/errcode"
-	"github.com/sliveryou/micro-pkg/xhttp"
+	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
 
 // 阿里云企业银行卡账户认证 API：https://market.aliyun.com/products/57000002/cmapi027344.html
@@ -42,7 +40,7 @@ type Config struct {
 // CorpAccount 企业银行卡账户认证器结构详情
 type CorpAccount struct {
 	c      Config
-	client *xhttp.Client
+	client *xreq.Client
 }
 
 // NewCorpAccount 新建企业银行卡账户认证器
@@ -53,11 +51,11 @@ func NewCorpAccount(c Config) (*CorpAccount, error) {
 		}
 	}
 
-	cc := xhttp.DefaultConfig()
+	cc := xreq.DefaultConfig()
 	cc.HTTPTimeout = 60 * time.Second
 	cc.TLSHandshakeTimeout = 15 * time.Second
 
-	return &CorpAccount{c: c, client: xhttp.NewClient(cc)}, nil
+	return &CorpAccount{c: c, client: xreq.NewClientWithConfig(cc)}, nil
 }
 
 // MustNewCorpAccount 新建企业银行卡账户认证器
@@ -95,14 +93,13 @@ func (c *CorpAccount) Authenticate(ctx context.Context, req *AuthenticateRequest
 		return nil, errcode.New(errcode.CodeInvalidParams, err.Error())
 	}
 
-	rawURL := URL
-	values := make(url.Values)
-	values.Set("cardno", req.CardNo)
-	values.Set("acctName", req.AcctName)
-	values.Set("bankName", req.BankName)
-	rawURL += "?" + values.Encode()
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
+	request, err := xreq.NewGet(URL, xreq.Context(ctx),
+		xreq.QueryMap(map[string]any{
+			"cardno":   req.CardNo,
+			"acctName": req.AcctName,
+			"bankName": req.BankName,
+		}),
+	)
 	if err != nil {
 		return nil, errors.WithMessage(err, "new http request err")
 	}
@@ -133,7 +130,7 @@ func (c *CorpAccount) Authenticate(ctx context.Context, req *AuthenticateRequest
 
 	// 获取错误消息
 	messages := sliceg.Compact([]string{
-		resp.Desc, response.Header.Get("X-Ca-Error-Message"), MsgFailure,
+		resp.Desc, response.Header().Get("X-Ca-Error-Message"), MsgFailure,
 	})
 
 	return nil, errors.New(messages[0])

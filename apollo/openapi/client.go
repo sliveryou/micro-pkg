@@ -129,6 +129,7 @@ func (c *client) newRequest(ctx context.Context, method, url string, body io.Rea
 		return nil, errors.WithMessagef(err, "new http request err, method: %s, url: %s", method, url)
 	}
 
+	// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#241-%E8%B0%83%E7%94%A8http-rest%E6%8E%A5%E5%8F%A3
 	req.Header.Set(xhttp.HeaderAuthorization, c.config.Token)
 	req.Header.Set(xhttp.HeaderContentType, ApplicationJSONCharsetUTF8)
 

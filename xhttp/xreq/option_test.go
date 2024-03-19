@@ -92,21 +92,22 @@ func TestParseURL(t *testing.T) {
 	assert.Empty(t, u.RawFragment)
 }
 
-func Test_nopCloser_getReaderLen(t *testing.T) {
+func Test_nopCloser_Size(t *testing.T) {
 	cases := []struct {
-		reader    io.Reader
-		expectLen int64
+		reader     io.Reader
+		expectSize int64
 	}{
-		{reader: bytes.NewBufferString("test reader"), expectLen: 11},
-		{reader: bytes.NewReader([]byte("test reader")), expectLen: 11},
-		{reader: strings.NewReader("test reader"), expectLen: 11},
-		{reader: io.LimitReader(strings.NewReader("test reader"), 20), expectLen: 20},
-		{reader: io.NewSectionReader(strings.NewReader("test reader"), 0, 20), expectLen: 20},
+		{reader: bytes.NewBufferString("test reader"), expectSize: 11},
+		{reader: bytes.NewReader([]byte("test reader")), expectSize: 11},
+		{reader: strings.NewReader("test reader"), expectSize: 11},
+		{reader: io.LimitReader(strings.NewReader("test reader"), 20), expectSize: 20},
+		{reader: io.NewSectionReader(strings.NewReader("test reader"), 0, 20), expectSize: 20},
+		{reader: nil, expectSize: 0},
 	}
 
 	for _, c := range cases {
-		got := rc(c.reader).getReaderLen()
-		require.Equal(t, c.expectLen, got)
+		got := rc(c.reader).Size()
+		require.Equal(t, c.expectSize, got)
 	}
 }
 

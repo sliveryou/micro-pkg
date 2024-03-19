@@ -6,8 +6,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"net/http"
-	"net/url"
-	"strings"
 
 	"github.com/pkg/errors"
 
@@ -16,7 +14,7 @@ import (
 	"github.com/sliveryou/micro-pkg/errcode"
 	"github.com/sliveryou/micro-pkg/express/types"
 	"github.com/sliveryou/micro-pkg/xhash"
-	"github.com/sliveryou/micro-pkg/xhttp"
+	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
 
 const (
@@ -47,7 +45,7 @@ type ExpressBird struct {
 	appID       string // 应用ID（为快递鸟中分配的 EBusinessID）
 	secretKey   string // 应用密钥
 	requestType string // 请求指令类型（枚举 1002、8001 和 8002）
-	client      *xhttp.Client
+	client      *xreq.Client
 }
 
 // NewExpressBird 新建快递鸟客户端对象
@@ -63,7 +61,7 @@ func NewExpressBird(appID, secretKey, requestType string) (*ExpressBird, error) 
 		appID:       appID,
 		secretKey:   secretKey,
 		requestType: requestType,
-		client:      xhttp.NewClient(),
+		client:      xreq.NewClient(),
 	}, nil
 }
 
@@ -82,25 +80,18 @@ func (e *ExpressBird) GetExpress(ctx context.Context, req *types.GetExpressReque
 		return nil, errcode.ErrInvalidParams
 	}
 
-	// 构建请求接口地址
-	rawURL := URL + "/Ebusiness/EbusinessOrderHandle.aspx"
-
-	// 构建请求头
-	header := map[string]string{
-		xhttp.HeaderContentType: xhttp.MIMEForm,
-	}
-
 	// 构建请求参数
 	var customerName string
 	if phoneLength := len(req.TelNo); req.CoCode == shipperCodeSF && phoneLength >= 4 {
 		// 处理顺丰快递查询需要的手机号信息
 		customerName = req.TelNo[phoneLength-4:]
 	}
-	param := make(map[string]string)
-	param["ShipperCode"] = req.CoCode    // 快递公司编码
-	param["LogisticCode"] = req.ExpNo    // 物流单号
-	param["CustomerName"] = customerName // ShipperCode 为 JD，必填，对应京东的青龙配送编码，也叫商家编码；ShipperCode 为 SF，且快递单号非快递鸟渠道返回时，必填，对应收件人/寄件人手机号后四位
-	param["Sort"] = sortDesc             // 轨迹排序（0-升序 1-降序）
+	param := map[string]string{
+		"ShipperCode":  req.CoCode,   // 快递公司编码
+		"LogisticCode": req.ExpNo,    // 物流单号
+		"CustomerName": customerName, // ShipperCode 为 JD，必填，对应京东的青龙配送编码，也叫商家编码；ShipperCode 为 SF，且快递单号非快递鸟渠道返回时，必填，对应收件人/寄件人手机号后四位
+		"Sort":         sortDesc,     // 轨迹排序（0-升序 1-降序）
+	}
 	paramBytes, err := json.Marshal(param)
 	if err != nil {
 		return nil, errors.WithMessage(err, "json marshal param err")
@@ -111,16 +102,17 @@ func (e *ExpressBird) GetExpress(ctx context.Context, req *types.GetExpressReque
 		return nil, errors.WithMessage(err, "calculate hash err")
 	}
 
-	// 构建签名参数
-	values := make(url.Values)
-	values.Set("RequestData", paramJSON)
-	values.Set("EBusinessID", e.appID)
-	values.Set("RequestType", e.requestType)
-	values.Set("DataSign", base64.StdEncoding.EncodeToString([]byte(sign)))
-	values.Set("DataType", dataTypeJSON)
-
 	var resp queryResp
-	_, err = e.client.Call(ctx, http.MethodPost, rawURL, header, strings.NewReader(values.Encode()), &resp)
+	_, err = e.client.Call(http.MethodPost, &resp, xreq.Context(ctx),
+		xreq.URL(URL+"/Ebusiness/EbusinessOrderHandle.aspx"),
+		xreq.BodyFormMap(map[string]any{
+			"RequestData": paramJSON,
+			"EBusinessID": e.appID,
+			"RequestType": e.requestType,
+			"DataSign":    base64.StdEncoding.EncodeToString([]byte(sign)),
+			"DataType":    dataTypeJSON,
+		}),
+	)
 	if err != nil {
 		return nil, errors.WithMessage(err, "client call err")
 	}

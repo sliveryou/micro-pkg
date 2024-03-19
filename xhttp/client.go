@@ -1,14 +1,9 @@
 package xhttp
 
 import (
-	"context"
-	"encoding/json"
-	"io"
 	"net"
 	"net/http"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // Config HTTP 客户端相关配置
@@ -61,85 +56,4 @@ func NewHTTPClient(config ...Config) *http.Client {
 		Transport: tr,
 		Timeout:   c.HTTPTimeout,
 	}
-}
-
-// Client HTTP 拓展客户端结构详情
-type Client struct {
-	*http.Client
-}
-
-// NewClient 新建 HTTP 拓展客户端
-func NewClient(config ...Config) *Client {
-	return &Client{Client: NewHTTPClient(config...)}
-}
-
-// NewClientWithHTTPClient 使用 HTTP 客户端新建 HTTP 拓展客户端
-func NewClientWithHTTPClient(client *http.Client) *Client {
-	if client == nil {
-		panic(errors.New("nil client is invalid"))
-	}
-
-	return &Client{Client: client}
-}
-
-// GetRequest 获取 HTTP 请求
-func (c *Client) GetRequest(ctx context.Context, method, url string, header map[string]string, data io.Reader) (*http.Request, error) {
-	req, err := http.NewRequestWithContext(ctx, method, url, data)
-	if err != nil {
-		return nil, errors.WithMessagef(err, "new http request err, method: %s, url: %s, header: %v",
-			method, url, header)
-	}
-
-	for k, v := range header {
-		if k == HeaderHost && v != "" {
-			req.Host = v
-		} else {
-			req.Header.Set(k, v)
-		}
-	}
-
-	return req, nil
-}
-
-// GetResponse 获取 HTTP 响应及其响应体内容
-func (c *Client) GetResponse(req *http.Request) (*http.Response, []byte, error) {
-	response, err := c.Do(req)
-	if err != nil {
-		return nil, nil, errors.WithMessage(err, "http client do request err")
-	}
-	defer response.Body.Close()
-
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, nil, errors.WithMessage(err, "read all response body err")
-	}
-
-	return response, body, nil
-}
-
-// CallWithRequest 利用 HTTP 请求进行 HTTP 调用，并将 json 响应内容反序列化至 resp 中
-func (c *Client) CallWithRequest(req *http.Request, resp any) (*http.Response, error) {
-	response, body, err := c.GetResponse(req)
-	if err != nil {
-		return nil, errors.WithMessage(err, "get response err")
-	}
-
-	if len(body) > 0 {
-		err = json.Unmarshal(body, resp)
-		if err != nil {
-			return nil, errors.WithMessage(err, "json unmarshal response body err")
-		}
-	}
-
-	return response, nil
-}
-
-// Call HTTP 调用，并将 json 响应内容反序列化至 resp 中
-func (c *Client) Call(ctx context.Context, method, url string, header map[string]string, data io.Reader, resp any) (*http.Response, error) {
-	req, err := c.GetRequest(ctx, method, url, header, data)
-	if err != nil {
-		return nil, errors.WithMessage(err, "get request err")
-	}
-
-	return c.CallWithRequest(req, resp)
 }

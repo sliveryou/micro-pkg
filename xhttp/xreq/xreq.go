@@ -57,41 +57,41 @@ func NewOptions(url string, options ...Option) (*http.Request, error) {
 // -------------------- 发起 HTTP 请求 -------------------- //
 
 // Do 通过 DefaultClient 发起 HTTP 请求
-func Do(method, url string, options ...Option) (*http.Response, error) {
+func Do(method, url string, options ...Option) (*Response, error) {
 	return DefaultClient.Do(method, OptionCollection{URL(url)}.With(options...)...)
 }
 
 // Get 通过 DefaultClient 发起 HTTP GET 请求
-func Get(url string, options ...Option) (*http.Response, error) {
+func Get(url string, options ...Option) (*Response, error) {
 	return Do(http.MethodGet, url, options...)
 }
 
 // Post 通过 DefaultClient 发起 HTTP POST 请求
-func Post(url string, options ...Option) (*http.Response, error) {
+func Post(url string, options ...Option) (*Response, error) {
 	return Do(http.MethodPost, url, options...)
 }
 
 // Put 通过 DefaultClient 发起 HTTP PUT 请求
-func Put(url string, options ...Option) (*http.Response, error) {
+func Put(url string, options ...Option) (*Response, error) {
 	return Do(http.MethodPut, url, options...)
 }
 
 // Patch 通过 DefaultClient 发起 HTTP PATCH 请求
-func Patch(url string, options ...Option) (*http.Response, error) {
+func Patch(url string, options ...Option) (*Response, error) {
 	return Do(http.MethodPatch, url, options...)
 }
 
 // Delete 通过 DefaultClient 发起 HTTP DELETE 请求
-func Delete(url string, options ...Option) (*http.Response, error) {
+func Delete(url string, options ...Option) (*Response, error) {
 	return Do(http.MethodDelete, url, options...)
 }
 
 // Head 通过 DefaultClient 发起 HTTP HEAD 请求
-func Head(url string, options ...Option) (*http.Response, error) {
+func Head(url string, options ...Option) (*Response, error) {
 	return Do(http.MethodHead, url, options...)
 }
 
 // Options 通过 DefaultClient 发起 HTTP OPTIONS 请求
-func Options(url string, options ...Option) (*http.Response, error) {
+func Options(url string, options ...Option) (*Response, error) {
 	return Do(http.MethodOptions, url, options...)
 }

@@ -2,8 +2,6 @@ package bankcard4c
 
 import (
 	"context"
-	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/pkg/errors"
@@ -13,7 +11,7 @@ import (
 	"github.com/sliveryou/go-tool/v2/validator"
 
 	"github.com/sliveryou/micro-pkg/errcode"
-	"github.com/sliveryou/micro-pkg/xhttp"
+	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
 
 // 阿里云银行卡四要素认证 API：https://market.aliyun.com/products/57000002/cmapi033467.html
@@ -38,7 +36,7 @@ type Config struct {
 // BankCard4C 银行卡四要素认证器结构详情
 type BankCard4C struct {
 	c      Config
-	client *xhttp.Client
+	client *xreq.Client
 }
 
 // NewBankCard4C 新建银行卡四要素认证器
@@ -49,10 +47,10 @@ func NewBankCard4C(c Config) (*BankCard4C, error) {
 		}
 	}
 
-	cc := xhttp.DefaultConfig()
+	cc := xreq.DefaultConfig()
 	cc.TLSHandshakeTimeout = 15 * time.Second
 
-	return &BankCard4C{c: c, client: xhttp.NewClient(cc)}, nil
+	return &BankCard4C{c: c, client: xreq.NewClientWithConfig(cc)}, nil
 }
 
 // MustNewBankCard4C 新建银行卡四要素认证器
@@ -89,15 +87,14 @@ func (b *BankCard4C) Authenticate(ctx context.Context, req *AuthenticateRequest)
 		return nil, errcode.New(errcode.CodeInvalidParams, err.Error())
 	}
 
-	rawURL := URL
-	values := make(url.Values)
-	values.Set("name", req.Name)
-	values.Set("idcard", req.IDCard)
-	values.Set("bankcard", req.BankCard)
-	values.Set("mobile", req.Mobile)
-	rawURL += "?" + values.Encode()
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
+	request, err := xreq.NewGet(URL, xreq.Context(ctx),
+		xreq.QueryMap(map[string]any{
+			"name":     req.Name,
+			"idcard":   req.IDCard,
+			"bankcard": req.BankCard,
+			"mobile":   req.Mobile,
+		}),
+	)
 	if err != nil {
 		return nil, errors.WithMessage(err, "new http request err")
 	}
@@ -125,7 +122,7 @@ func (b *BankCard4C) Authenticate(ctx context.Context, req *AuthenticateRequest)
 
 	// 获取错误消息
 	messages := sliceg.Compact([]string{
-		resp.Data.Desc, resp.Msg, response.Header.Get("X-Ca-Error-Message"), MsgFailure,
+		resp.Data.Desc, resp.Msg, response.Header().Get("X-Ca-Error-Message"), MsgFailure,
 	})
 
 	return nil, errors.New(messages[0])

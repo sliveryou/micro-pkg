@@ -50,7 +50,7 @@ func TestNewMethods(t *testing.T) {
 			req, err := tc.new(server.URL)
 			require.NoError(t, err)
 
-			_, err = http.DefaultClient.Do(req)
+			_, err = DefaultHTTPClient.Do(req)
 			require.NoError(t, err)
 		})
 
@@ -60,7 +60,7 @@ func TestNewMethods(t *testing.T) {
 
 func TestDoMethods(t *testing.T) {
 	type testCase struct {
-		do func(url string, options ...Option) (*http.Response, error)
+		do func(url string, options ...Option) (*Response, error)
 	}
 
 	methods := map[string]testCase{

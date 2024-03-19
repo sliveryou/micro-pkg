@@ -52,7 +52,7 @@ func (oc OptionCollection) Apply(request *http.Request) (*http.Request, error) {
 
 // With 添加可选参数列表
 func (oc OptionCollection) With(withOptions ...Option) OptionCollection {
-	return append(oc, withOptions...)
+	return copyAndAppend(oc, withOptions...)
 }
 
 // OptionFunc 可选参数生成函数
@@ -69,6 +69,15 @@ func Apply(request *http.Request, options ...Option) (*http.Request, error) {
 }
 
 // -------------------- 预定义可选参数 -------------------- //
+
+// Method 将 method 应用于 http 请求中
+func Method(method string) Option {
+	return OptionFunc(func(request *http.Request) (*http.Request, error) {
+		request.Method = method
+
+		return request, nil
+	})
+}
 
 // RawURL 将 *url.URL 应用于 http 请求中
 func RawURL(url *stdurl.URL) Option {
@@ -180,7 +189,6 @@ func AddQuery(key string, value any) Option {
 func Queries(queries stdurl.Values) Option {
 	return OptionFunc(func(request *http.Request) (*http.Request, error) {
 		q := request.URL.Query()
-
 		for key, values := range queries {
 			q[key] = values
 		}
@@ -195,9 +203,36 @@ func Queries(queries stdurl.Values) Option {
 func AddQueries(queries stdurl.Values) Option {
 	return OptionFunc(func(request *http.Request) (*http.Request, error) {
 		q := request.URL.Query()
-
 		for key, values := range queries {
 			q[key] = append(q[key], values...)
+		}
+
+		request.URL.RawQuery = q.Encode()
+
+		return request, nil
+	})
+}
+
+// QueryMap 将 map[string]any 应用于 http 请求的 url query 中
+func QueryMap(queryMap map[string]any) Option {
+	return OptionFunc(func(request *http.Request) (*http.Request, error) {
+		q := request.URL.Query()
+		for key, value := range queryMap {
+			q.Set(key, convert.ToString(value))
+		}
+
+		request.URL.RawQuery = q.Encode()
+
+		return request, nil
+	})
+}
+
+// AddQueryMap 将 map[string]any 添加到 http 请求的 url query 中
+func AddQueryMap(queryMap map[string]any) Option {
+	return OptionFunc(func(request *http.Request) (*http.Request, error) {
+		q := request.URL.Query()
+		for key, value := range queryMap {
+			q.Add(key, convert.ToString(value))
 		}
 
 		request.URL.RawQuery = q.Encode()
@@ -220,6 +255,17 @@ func Headers(headers http.Header) Option {
 	return OptionFunc(func(request *http.Request) (*http.Request, error) {
 		for key, values := range headers {
 			request.Header.Set(key, strings.Join(values, ", "))
+		}
+
+		return request, nil
+	})
+}
+
+// HeaderMap 将 map[string]string 应用于 http 请求的 header 中
+func HeaderMap(headerMap map[string]string) Option {
+	return OptionFunc(func(request *http.Request) (*http.Request, error) {
+		for key, value := range headerMap {
+			request.Header.Set(key, value)
 		}
 
 		return request, nil
@@ -313,7 +359,7 @@ func Body(body io.ReadCloser) Option {
 	return OptionFunc(func(request *http.Request) (*http.Request, error) {
 		request.Body = body
 		if nc, ok := body.(nopCloser); ok && request.ContentLength == 0 {
-			request.ContentLength = nc.getReaderLen()
+			request.ContentLength = nc.Size()
 		}
 
 		return request, nil
@@ -322,7 +368,12 @@ func Body(body io.ReadCloser) Option {
 
 // BodyReader 将 io.Reader 应用于 http 请求的 body 中
 func BodyReader(body io.Reader) Option {
-	return Body(rc(body))
+	readCloser, ok := body.(io.ReadCloser)
+	if !ok && body != nil {
+		readCloser = rc(body)
+	}
+
+	return Body(readCloser)
 }
 
 // BodyBytes 将 []byte 应用于 http 请求的 body 中
@@ -355,6 +406,18 @@ func BodyForm(body stdurl.Values) Option {
 			ContentType(xhttp.MIMEForm),
 			BodyString(body.Encode()),
 		)
+	})
+}
+
+// BodyFormMap 将 map[string]any 应用于 http 请求的 body 中，并设置 "Content-Type" 头部为 "application/x-www-form-urlencoded"
+func BodyFormMap(formMap map[string]any) Option {
+	return OptionFunc(func(request *http.Request) (*http.Request, error) {
+		body := make(stdurl.Values)
+		for key, value := range formMap {
+			body.Set(key, convert.ToString(value))
+		}
+
+		return Apply(request, BodyForm(body))
 	})
 }
 
@@ -417,7 +480,7 @@ func rc(r io.Reader) nopCloser {
 
 func (nopCloser) Close() error { return nil }
 
-func (nc nopCloser) getReaderLen() int64 {
+func (nc nopCloser) Size() int64 {
 	l, _ := xhttp.GetReaderLen(nc.Reader)
 
 	return l
@@ -440,4 +503,11 @@ func getOptionName(o Option) string {
 	}
 
 	return t.Name()
+}
+
+func copyAndAppend[T any](olds []T, withs ...T) []T {
+	news := make([]T, len(olds), len(olds)+len(withs))
+	copy(news, olds)
+
+	return append(news, withs...)
 }
