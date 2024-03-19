@@ -20,6 +20,7 @@ type Response struct {
 	body        []byte
 	size        int64
 	receivedAt  time.Time
+	client      *Client
 }
 
 // IsSuccess 判断响应状态码是否为成功状态（code >= 200 and <= 299）
@@ -32,14 +33,14 @@ func (r *Response) IsError() bool {
 	return r.StatusCode() > 399
 }
 
-// JSONUnmarshal 将 JSON 形式的响应体内容使用 JSONUnmarshaler 反序列化到指定对象中
+// JSONUnmarshal 将 JSON 形式的响应体内容使用 Client.JSONUnmarshal 反序列化到指定对象中
 func (r *Response) JSONUnmarshal(v any) error {
-	return JSONUnmarshaler(r.Bytes(), v)
+	return r.client.JSONUnmarshal(r.Bytes(), v)
 }
 
-// XMLUnmarshal 将 XML 形式的响应体内容使用 XMLUnmarshaler 反序列化到指定对象中
+// XMLUnmarshal 将 XML 形式的响应体内容使用 Client.XMLUnmarshal 反序列化到指定对象中
 func (r *Response) XMLUnmarshal(v any) error {
-	return XMLUnmarshaler(r.Bytes(), v)
+	return r.client.XMLUnmarshal(r.Bytes(), v)
 }
 
 // Unmarshal 根据响应头部 "Content-Type" 的值将响应体内容使用特定 Unmarshaler

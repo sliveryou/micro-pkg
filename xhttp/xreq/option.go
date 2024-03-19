@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"net/http"
@@ -22,6 +24,13 @@ import (
 )
 
 // -------------------- 可选参数接口 -------------------- //
+
+type (
+	// Marshaler 序列化函数
+	Marshaler = func(v any) ([]byte, error)
+	// Unmarshaler 反序列化函数
+	Unmarshaler = func(data []byte, v any) error
+)
 
 // Option http 请求可选参数应用器接口
 type Option interface {
@@ -421,10 +430,15 @@ func BodyFormMap(formMap map[string]any) Option {
 	})
 }
 
-// BodyJSON 使用 JSONMarshaler 将 obj 序列化为 json 格式应用于 http 请求的 body 中，并设置 "Content-Type" 头部为 "application/json"
-func BodyJSON(obj any) Option {
+// BodyJSON 使用 Marshaler 将 obj 序列化为 json 格式应用于 http 请求的 body 中，并设置 "Content-Type" 头部为 "application/json"
+func BodyJSON(obj any, marshaler ...Marshaler) Option {
 	return OptionFunc(func(request *http.Request) (*http.Request, error) {
-		body, err := JSONMarshaler(obj)
+		jsonMarshal := json.Marshal
+		if len(marshaler) > 0 && marshaler[0] != nil {
+			jsonMarshal = marshaler[0]
+		}
+
+		body, err := jsonMarshal(obj)
 		if err != nil {
 			return nil, errors.WithMessagef(err, "json marshal obj: %v err", obj)
 		}
@@ -436,10 +450,15 @@ func BodyJSON(obj any) Option {
 	})
 }
 
-// BodyXML 使用 XMLMarshaler 将 obj 序列化为 xml 格式应用于 http 请求的 body 中，并设置 "Content-Type" 头部为 "application/xml"
-func BodyXML(obj any) Option {
+// BodyXML 使用 Marshaler 将 obj 序列化为 xml 格式应用于 http 请求的 body 中，并设置 "Content-Type" 头部为 "application/xml"
+func BodyXML(obj any, marshaler ...Marshaler) Option {
 	return OptionFunc(func(request *http.Request) (*http.Request, error) {
-		body, err := XMLMarshaler(obj)
+		xmlMarshal := xml.Marshal
+		if len(marshaler) > 0 && marshaler[0] != nil {
+			xmlMarshal = marshaler[0]
+		}
+
+		body, err := xmlMarshal(obj)
 		if err != nil {
 			return nil, errors.WithMessagef(err, "xml marshal obj: %v err", obj)
 		}

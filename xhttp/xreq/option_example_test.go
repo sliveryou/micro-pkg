@@ -3,6 +3,8 @@ package xreq_test
 import (
 	"bytes"
 	"context"
+	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"net/http"
@@ -542,15 +544,44 @@ func ExampleBodyJSON() {
 	fmt.Println(request.ContentLength)
 	fmt.Println(request.Header.Get("Content-Type"))
 
+	request, _ = xreq.NewPost("https://www.test.com/api",
+		xreq.BodyJSON(map[string]string{"name": "SliverYou", "language": "go"},
+			func(v any) ([]byte, error) {
+				return json.MarshalIndent(v, "", "\t")
+			},
+		),
+	)
+
+	body, _ = io.ReadAll(request.Body)
+	fmt.Println(string(body) == "{\n\t\"language\": \"go\",\n\t\"name\": \"SliverYou\"\n}")
+	fmt.Println(request.ContentLength)
+	fmt.Println(request.Header.Get("Content-Type"))
+
 	// Output:
 	// {"language":"go","name":"SliverYou"}
 	// 36
 	// application/json
+	// true
+	// 43
+	// application/json
 }
 
 func ExampleBodyXML() {
+	type Data struct {
+		XMLName xml.Name `xml:"Response"`
+		Code    uint32   `xml:"Code"`
+		Message string   `xml:"Message"`
+		Data    any      `xml:"Data"`
+	}
+
+	data := Data{
+		Code:    0,
+		Message: "ok",
+		Data:    "success",
+	}
+
 	request, _ := xreq.NewPost("https://www.test.com/api",
-		xreq.BodyXML("SliverYou"),
+		xreq.BodyXML(data),
 	)
 
 	body, _ := io.ReadAll(request.Body)
@@ -558,9 +589,23 @@ func ExampleBodyXML() {
 	fmt.Println(request.ContentLength)
 	fmt.Println(request.Header.Get("Content-Type"))
 
+	request, _ = xreq.NewPost("https://www.test.com/api",
+		xreq.BodyXML(data, func(v any) ([]byte, error) {
+			return xml.MarshalIndent(v, "", "  ")
+		}),
+	)
+
+	body, _ = io.ReadAll(request.Body)
+	fmt.Println(string(body) == "<Response>\n  <Code>0</Code>\n  <Message>ok</Message>\n  <Data>success</Data>\n</Response>")
+	fmt.Println(request.ContentLength)
+	fmt.Println(request.Header.Get("Content-Type"))
+
 	// Output:
-	// <string>SliverYou</string>
-	// 26
+	// <Response><Code>0</Code><Message>ok</Message><Data>success</Data></Response>
+	// 76
+	// application/xml
+	// true
+	// 86
 	// application/xml
 }
 

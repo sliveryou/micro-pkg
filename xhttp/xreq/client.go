@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"compress/gzip"
 	"crypto/tls"
+	"encoding/json"
+	"encoding/xml"
 	"io"
 	"net/http"
 	"net/url"
@@ -33,26 +35,24 @@ type Config = xhttp.Config
 // Client HTTP 拓展客户端结构详情
 type Client struct {
 	OptionCollection
-	httpClient *http.Client
+	JSONUnmarshal Unmarshaler
+	XMLUnmarshal  Unmarshaler
+	httpClient    *http.Client
 }
 
 // NewClient 新建 HTTP 拓展客户端
 func NewClient(options ...Option) *Client {
-	return &Client{OptionCollection: options, httpClient: NewHTTPClient()}
+	return createClient(nil, options...)
 }
 
 // NewClientWithConfig 使用配置新建 HTTP 拓展客户端
 func NewClientWithConfig(config Config, options ...Option) *Client {
-	return &Client{OptionCollection: options, httpClient: NewHTTPClient(config)}
+	return createClient(NewHTTPClient(config), options...)
 }
 
 // NewClientWithHTTPClient 使用 HTTP 客户端新建 HTTP 拓展客户端
 func NewClientWithHTTPClient(hc *http.Client, options ...Option) *Client {
-	if hc == nil {
-		hc = NewHTTPClient()
-	}
-
-	return &Client{OptionCollection: options, httpClient: hc}
+	return createClient(hc, options...)
 }
 
 // Do 发起 HTTP 请求
@@ -193,10 +193,24 @@ func (c *Client) SetTimeout(timeout time.Duration) *Client {
 	return c
 }
 
+// SetJSONUnmarshaler 设置 json 反序列化器
+func (c *Client) SetJSONUnmarshaler(unmarshaler Unmarshaler) *Client {
+	c.JSONUnmarshal = unmarshaler
+
+	return c
+}
+
+// SetXMLUnmarshaler 设置 xml 反序列化器
+func (c *Client) SetXMLUnmarshaler(unmarshaler Unmarshaler) *Client {
+	c.XMLUnmarshal = unmarshaler
+
+	return c
+}
+
 // roundTrip 请求响应往返
 func (c *Client) roundTrip(request *http.Request) (*Response, error) {
 	resp, err := c.httpClient.Do(request)
-	response := &Response{RawResponse: resp}
+	response := &Response{RawResponse: resp, client: c}
 	if err != nil {
 		response.setReceivedAt()
 		return response, errors.WithMessagef(err, "do http request err")
@@ -227,4 +241,18 @@ func (c *Client) roundTrip(request *http.Request) (*Response, error) {
 	response.setReceivedAt()
 
 	return response, nil
+}
+
+// createClient 创建 HTTP 拓展客户端
+func createClient(hc *http.Client, options ...Option) *Client {
+	if hc == nil {
+		hc = NewHTTPClient()
+	}
+
+	return &Client{
+		OptionCollection: options,
+		JSONUnmarshal:    json.Unmarshal,
+		XMLUnmarshal:     xml.Unmarshal,
+		httpClient:       hc,
+	}
 }
