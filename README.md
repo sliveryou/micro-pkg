@@ -12,12 +12,13 @@ go 微服务常用公共包
 ## 简介
 
 - **apollo** 阿波罗配置中心 go 客户端
+- **appsign** 服务端应用签名校验包，签名规则参考：[使用摘要签名认证方式调用 api](https://help.aliyun.com/zh/api-gateway/user-guide/use-digest-authentication-to-call-an-api)，客户端签名 go sdk：[aliyun-api-gateway-sign](https://github.com/sliveryou/aliyun-api-gateway-sign)
 - **auth** 身份认证包，包含阿里云银行卡四要素认证、阿里云企业银行卡账户认证和百度云人脸识别认证
 - **balancer** grpc 平衡器，包含了一致性 hash 平衡器
 - **captcha** base64 编码的图形验证码包，使用 redis 缓存验证码答案
-- **disabler** 功能禁用器，可以判断给定 API 或 RPC 能否放行
+- **disabler** 功能禁用器，可以判断给定 api 或 rpc 能否放行
 - **enforcer** 基于 casbin 实现的接口决策规则执行器
-- **errcode** 通用业务错误码包，记录了业务状态码、业务消息和 HTTP 状态码，并实现了 `GRPCStatus() *status.Status` 接口，可在 grpc 调用中流转
+- **errcode** 通用业务错误码包，记录了业务状态码、业务消息和 http 状态码，并实现了 `GRPCStatus() *status.Status` 接口，可在 grpc 调用中流转
 - **excel** 常用 excel 操作包，包含获取所有行数据、流式读取行数据和流式写入行数据等操作 
 - **express** 通用快递查询客户端，支持 express100（快递100）和 expressBird（快递鸟）
 - **gstream** grpc 流式消息内容读写器，利用反射动态创建消息对象，流式读写消息内容
@@ -25,12 +26,12 @@ go 微服务常用公共包
 - **jwt** jwt token 生成和解析包，支持返回 `map[string]any` 类型的 payloads 或反序列化至指定 token 结构体
 - **limit** 基于 redis lua 脚本编写的时间段限流器和令牌桶限流器
 - **lock** 基于 etcd 实现的分布式锁
-- **notify** 通用通知服务包，包含短信、邮件验证码发送与短信、邮件验证码校验等功能，可以对发送间隔、验证间隔、一天内同一接收方、一天内同一 IP 和一天内总发送量进行限制与监控，支持 aliyun、submail 和 yunpian
+- **notify** 通用通知服务包，包含短信、邮件验证码发送与短信、邮件验证码校验等功能，可以对发送间隔、验证间隔、一天内同一接收方、一天内同一 ip 和一天内总发送量进行限制与监控，支持 aliyun、submail 和 yunpian
 - **oss** 通用对象存储服务客户端，支持 aliyun、huawei、tencent、minio、local 和 mock
 - **retry** 通用操作重试包，对操作进行失败重试，可以组合不同的策略
 - **shorturl** 基于 murmur3 hash 的短地址标识符生成包
 - **watcher** 基于 etcd 的键值更新观察器，当观察到键发生创建或更新事件时，会触发回调函数，并实现了 casbin 的 `persist.Watcher` 接口
-- **xdb** 通用数据库连接包，返回 `*gorm.DB` 对象，支持 MySQL、PostgreSQL、SQLite 和 SQLServer
+- **xdb** 通用数据库连接包，返回 `*gorm.DB` 对象，支持 mysql、postgres、sqlite 和 sqlserver
 - **xdb/xfield** gorm gen 字段拓展包，支持构建原始 sql 字段和原始 sql 条件
 - **xgrpc** grpc 相关操作库，包含 grpc error 判断和 grpc code 到 http code 的转换等
 - **xgrpc/xinterceptor** 通用 grpc 拦截器，包含功能禁用处理、jwt token 传递解析、请求响应日志打印和恐慌捕获恢复等

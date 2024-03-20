@@ -242,7 +242,7 @@ func isLoopback(f net.Flags) bool {
 }
 
 // CopyRequest 复制请求
-func CopyRequest(r *http.Request) (*http.Request, error) {
+func CopyRequest(r *http.Request, maxBodyLen ...int64) (*http.Request, error) {
 	clone := r.Clone(context.Background())
 	if r.Body == nil {
 		clone.Body = nil
@@ -257,7 +257,11 @@ func CopyRequest(r *http.Request) (*http.Request, error) {
 		clone.Body = body
 	} else {
 		var buf bytes.Buffer
-		if _, err := buf.ReadFrom(r.Body); err != nil {
+		var reader io.Reader = r.Body
+		if len(maxBodyLen) > 0 && maxBodyLen[0] > 0 {
+			reader = io.LimitReader(reader, maxBodyLen[0])
+		}
+		if _, err := buf.ReadFrom(reader); err != nil {
 			return nil, errors.WithMessage(err, "read from request body err")
 		}
 		if err := r.Body.Close(); err != nil {

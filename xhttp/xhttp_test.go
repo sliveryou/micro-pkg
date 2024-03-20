@@ -273,7 +273,7 @@ func TestErrorCtx2(t *testing.T) {
 
 func testHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	rc, err := CopyRequest(r)
+	rc, err := CopyRequest(r, 1<<10)
 	if err != nil {
 		ErrorCtx(ctx, w, err)
 		return
