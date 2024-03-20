@@ -1,21 +1,19 @@
 package jsonrpc
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"net/http"
 
 	"github.com/pkg/errors"
 
-	"github.com/sliveryou/micro-pkg/xhttp"
+	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
 
 // rpcClient 默认 JSON-RPC 客户端
 type rpcClient struct {
 	endpoint         string
-	httpClient       *http.Client
-	customHeaders    map[string]string
+	client           *xreq.Client
+	options          xreq.OptionCollection
 	defaultRequestID int
 }
 
@@ -74,25 +72,13 @@ func (c *rpcClient) CallBatchRaw(ctx context.Context, reqs RPCRequests) (RPCResp
 
 // NewHTTPRequest 新建 HTTP 请求体（req 可以为 *RPCRequest 或 []*RPCRequest）
 func (c *rpcClient) NewHTTPRequest(ctx context.Context, req any) (*http.Request, error) {
-	body, err := json.Marshal(req)
-	if err != nil {
-		return nil, errors.WithMessagef(err, "json marshal %v err", req)
-	}
-
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, c.endpoint, bytes.NewReader(body))
+	httpReq, err := xreq.NewPost(c.endpoint,
+		xreq.Context(ctx),
+		xreq.BodyJSON(req),
+		c.options,
+	)
 	if err != nil {
 		return nil, errors.WithMessage(err, "new http request err")
-	}
-
-	httpReq.Header.Set(xhttp.HeaderAccept, xhttp.MIMEApplicationJSON)
-	httpReq.Header.Set(xhttp.HeaderContentType, xhttp.MIMEApplicationJSON)
-
-	for k, v := range c.customHeaders {
-		if k == xhttp.HeaderHost && v != "" {
-			httpReq.Host = v
-		} else {
-			httpReq.Header.Set(k, v)
-		}
 	}
 
 	return httpReq, nil
@@ -100,50 +86,42 @@ func (c *rpcClient) NewHTTPRequest(ctx context.Context, req any) (*http.Request,
 
 // CallWithHTTPRequest 使用 http.Request 进行 JSON-RPC 调用
 func (c *rpcClient) CallWithHTTPRequest(httpReq *http.Request) (*http.Response, *RPCResponse, error) {
-	httpResp, err := c.httpClient.Do(httpReq)
+	resp, err := c.client.DoWithRequest(httpReq)
 	if err != nil {
 		return nil, nil, errors.WithMessagef(err, "call on %s err", httpReq.URL.String())
 	}
-	defer httpResp.Body.Close()
-
-	d := json.NewDecoder(httpResp.Body)
-	d.UseNumber()
 
 	var rpcResp *RPCResponse
-	if err := d.Decode(&rpcResp); err != nil {
-		return httpResp, nil, errors.WithMessagef(err, "call on %s status code: %d, decode body err",
-			httpReq.URL.String(), httpResp.StatusCode)
+	if err := resp.JSONUnmarshal(&rpcResp); err != nil {
+		return resp.RawResponse, nil, errors.WithMessagef(err, "call on %s status code: %d, decode body err",
+			httpReq.URL.String(), resp.StatusCode())
 	}
 	if rpcResp == nil {
-		return httpResp, nil, errors.WithMessagef(err, "call on %s status code: %d, rpc response missing err",
-			httpReq.URL.String(), httpResp.StatusCode)
+		return resp.RawResponse, nil, errors.WithMessagef(err, "call on %s status code: %d, rpc response missing err",
+			httpReq.URL.String(), resp.StatusCode())
 	}
 
-	return httpResp, rpcResp, nil
+	return resp.RawResponse, rpcResp, nil
 }
 
 // CallBatchWithHTTPRequest 使用 http.Request 进行 JSON-RPC 批量调用
 func (c *rpcClient) CallBatchWithHTTPRequest(httpReq *http.Request) (*http.Response, []*RPCResponse, error) {
-	httpResp, err := c.httpClient.Do(httpReq)
+	resp, err := c.client.DoWithRequest(httpReq)
 	if err != nil {
 		return nil, nil, errors.WithMessagef(err, "batch call on %s err", httpReq.URL.String())
 	}
-	defer httpResp.Body.Close()
-
-	d := json.NewDecoder(httpResp.Body)
-	d.UseNumber()
 
 	var rpcResponses RPCResponses
-	if err := d.Decode(&rpcResponses); err != nil {
-		return httpResp, nil, errors.WithMessagef(err, "batch call on %s status code: %d, decode body err",
-			httpReq.URL.String(), httpResp.StatusCode)
+	if err := resp.JSONUnmarshal(&rpcResponses); err != nil {
+		return resp.RawResponse, nil, errors.WithMessagef(err, "batch call on %s status code: %d, decode body err",
+			httpReq.URL.String(), resp.StatusCode())
 	}
 	if len(rpcResponses) == 0 {
-		return httpResp, nil, errors.WithMessagef(err, "batch call on %s status code: %d, rpc response missing err",
-			httpReq.URL.String(), httpResp.StatusCode)
+		return resp.RawResponse, nil, errors.WithMessagef(err, "batch call on %s status code: %d, rpc response missing err",
+			httpReq.URL.String(), resp.StatusCode())
 	}
 
-	return httpResp, rpcResponses, nil
+	return resp.RawResponse, rpcResponses, nil
 }
 
 // doCall 执行 JSON-RPC 调用

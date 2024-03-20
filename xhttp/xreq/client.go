@@ -34,30 +34,31 @@ type Config = xhttp.Config
 
 // Client HTTP 拓展客户端结构详情
 type Client struct {
-	OptionCollection
+	BeforeOptions OptionCollection
+	AfterOptions  OptionCollection
 	JSONUnmarshal Unmarshaler
 	XMLUnmarshal  Unmarshaler
 	httpClient    *http.Client
 }
 
 // NewClient 新建 HTTP 拓展客户端
-func NewClient(options ...Option) *Client {
-	return createClient(nil, options...)
+func NewClient(beforeOptions ...Option) *Client {
+	return createClient(nil, beforeOptions...)
 }
 
 // NewClientWithConfig 使用配置新建 HTTP 拓展客户端
-func NewClientWithConfig(config Config, options ...Option) *Client {
-	return createClient(NewHTTPClient(config), options...)
+func NewClientWithConfig(config Config, beforeOptions ...Option) *Client {
+	return createClient(NewHTTPClient(config), beforeOptions...)
 }
 
 // NewClientWithHTTPClient 使用 HTTP 客户端新建 HTTP 拓展客户端
-func NewClientWithHTTPClient(hc *http.Client, options ...Option) *Client {
-	return createClient(hc, options...)
+func NewClientWithHTTPClient(hc *http.Client, beforeOptions ...Option) *Client {
+	return createClient(hc, beforeOptions...)
 }
 
 // Do 发起 HTTP 请求
 func (c *Client) Do(method string, options ...Option) (*Response, error) {
-	request, err := New(method, "", c.With(options...)...)
+	request, err := New(method, "", c.concatOptions(options...)...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +82,7 @@ func (c *Client) Call(method string, result any, options ...Option) (*Response, 
 // DoWithRequest 使用 *http.Request 发起 HTTP 请求
 func (c *Client) DoWithRequest(request *http.Request, options ...Option) (*Response, error) {
 	var err error
-	request, err = c.With(options...).Apply(request)
+	request, err = Apply(request, c.concatOptions(options...)...)
 	if err != nil {
 		return nil, err
 	}
@@ -193,6 +194,13 @@ func (c *Client) SetTimeout(timeout time.Duration) *Client {
 	return c
 }
 
+// SetAfterOptions 设置后可选参数
+func (c *Client) SetAfterOptions(afterOptions ...Option) *Client {
+	c.AfterOptions = afterOptions
+
+	return c
+}
+
 // SetJSONUnmarshaler 设置 json 反序列化器
 func (c *Client) SetJSONUnmarshaler(unmarshaler Unmarshaler) *Client {
 	c.JSONUnmarshal = unmarshaler
@@ -205,6 +213,11 @@ func (c *Client) SetXMLUnmarshaler(unmarshaler Unmarshaler) *Client {
 	c.XMLUnmarshal = unmarshaler
 
 	return c
+}
+
+// concatOptions 连接可选参数
+func (c *Client) concatOptions(options ...Option) []Option {
+	return c.BeforeOptions.With(options...).With(c.AfterOptions...)
 }
 
 // roundTrip 请求响应往返
@@ -244,15 +257,15 @@ func (c *Client) roundTrip(request *http.Request) (*Response, error) {
 }
 
 // createClient 创建 HTTP 拓展客户端
-func createClient(hc *http.Client, options ...Option) *Client {
+func createClient(hc *http.Client, beforeOptions ...Option) *Client {
 	if hc == nil {
 		hc = NewHTTPClient()
 	}
 
 	return &Client{
-		OptionCollection: options,
-		JSONUnmarshal:    json.Unmarshal,
-		XMLUnmarshal:     xml.Unmarshal,
-		httpClient:       hc,
+		BeforeOptions: beforeOptions,
+		JSONUnmarshal: json.Unmarshal,
+		XMLUnmarshal:  xml.Unmarshal,
+		httpClient:    hc,
 	}
 }

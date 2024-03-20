@@ -24,7 +24,6 @@ func TestRPCOption(t *testing.T) {
 	dc, ok := c.(*rpcClient)
 	assert.True(t, ok)
 	assert.Equal(t, endpoint, dc.endpoint)
-	assert.Equal(t, hc, dc.httpClient)
-	assert.Equal(t, hds, dc.customHeaders)
+	assert.Equal(t, hc, dc.client.GetHTTPClient())
 	assert.Equal(t, 1, dc.defaultRequestID)
 }

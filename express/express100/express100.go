@@ -68,11 +68,12 @@ func (e *Express100) GetExpress(ctx context.Context, req *types.GetExpressReques
 	}
 
 	// 构建请求参数
-	param := make(map[string]string)
-	param["com"] = req.CoCode  // 查询的快递公司的编码（一律用小写字母，下载编码表格：https://api.kuaidi100.com/manager/openapi/download/kdbm.do）
-	param["num"] = req.ExpNo   // 查询的快递单号（单号的最小长度 6 个字符，最大长度 32 个字符）
-	param["phone"] = req.TelNo // 收、寄件人的电话号码（手机和固定电话均可，只能填写一个，顺丰速运、顺丰快运必填，其他快递公司选填）
-	param["order"] = orderDesc // 返回结果降序
+	param := map[string]string{
+		"com":   req.CoCode, // 查询的快递公司的编码（一律用小写字母，下载编码表格：https://api.kuaidi100.com/manager/openapi/download/kdbm.do）
+		"num":   req.ExpNo,  // 查询的快递单号（单号的最小长度 6 个字符，最大长度 32 个字符）
+		"phone": req.TelNo,  // 收、寄件人的电话号码（手机和固定电话均可，只能填写一个，顺丰速运、顺丰快运必填，其他快递公司选填）
+		"order": orderDesc,  // 返回结果降序
+	}
 	paramBytes, err := json.Marshal(param)
 	if err != nil {
 		return nil, errors.WithMessage(err, "json marshal param err")

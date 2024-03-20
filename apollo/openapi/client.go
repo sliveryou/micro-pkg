@@ -1,22 +1,20 @@
 package openapi
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	stderrors "errors"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 
 	"github.com/pkg/errors"
 
 	"github.com/sliveryou/micro-pkg/xhttp"
+	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
 
 const (
-	// ApplicationJSONCharsetUTF8  应用类型：json;charset=UTF-8
+	// ApplicationJSONCharsetUTF8  应用类型：application/json;charset=UTF-8
 	ApplicationJSONCharsetUTF8 = "application/json;charset=UTF-8"
 
 	// DefaultEnv 默认环境
@@ -75,7 +73,7 @@ type ClientOption func(c *client)
 // WithHTTPClient 使用配置的 HTTP 客户端
 func WithHTTPClient(hc *http.Client) ClientOption {
 	return func(c *client) {
-		c.httpClient = hc
+		c.client.SetHTTPClient(hc)
 	}
 }
 
@@ -95,12 +93,15 @@ func NewClient(config ClientConfig, opts ...ClientOption) (OpenAPI, error) {
 	config.PortalAddress = NormalizeURL(config.PortalAddress)
 	config.DefaultNamespace = NormalizeNamespace(config.DefaultNamespace)
 
-	c := &client{config: config}
+	c := &client{
+		config: config,
+		client: xreq.NewClient().SetAfterOptions(
+			xreq.Authorization(config.Token),
+			xreq.ContentType(ApplicationJSONCharsetUTF8),
+		),
+	}
 	for _, opt := range opts {
 		opt(c)
-	}
-	if c.httpClient == nil {
-		c.httpClient = xhttp.NewHTTPClient()
 	}
 
 	return c, nil
@@ -118,71 +119,30 @@ func MustNewClient(config ClientConfig, opts ...ClientOption) OpenAPI {
 
 // client 默认阿波罗配置中心开放平台客户端
 type client struct {
-	config     ClientConfig
-	httpClient *http.Client
-}
-
-// newRequest 新建请求体
-func (c *client) newRequest(ctx context.Context, method, url string, body io.Reader) (*http.Request, error) {
-	req, err := http.NewRequestWithContext(ctx, method, url, body)
-	if err != nil {
-		return nil, errors.WithMessagef(err, "new http request err, method: %s, url: %s", method, url)
-	}
-
-	// https://github.com/apolloconfig/apollo/blob/master/docs/zh/portal/apollo-open-api-platform.md#241-%E8%B0%83%E7%94%A8http-rest%E6%8E%A5%E5%8F%A3
-	req.Header.Set(xhttp.HeaderAuthorization, c.config.Token)
-	req.Header.Set(xhttp.HeaderContentType, ApplicationJSONCharsetUTF8)
-
-	return req, nil
+	config ClientConfig
+	client *xreq.Client
 }
 
 // do 执行请求
 func (c *client) do(ctx context.Context, method, url string, request, response any) error {
-	var (
-		err           error
-		reqBody       []byte
-		reqBodyReader io.Reader
-		req           *http.Request
-		respBody      []byte
-	)
-
+	options := []xreq.Option{xreq.Context(ctx), xreq.URL(url)}
 	if request != nil {
-		reqBody, err = json.Marshal(request)
-		if err != nil {
-			return errors.WithMessage(err, "json marshal request err")
-		}
-
-		reqBodyReader = bytes.NewReader(reqBody)
+		options = append(options, xreq.BodyJSON(request))
 	}
 
-	req, err = c.newRequest(ctx, method, url, reqBodyReader)
+	resp, err := c.client.Do(method, options...)
 	if err != nil {
-		return errors.WithMessage(err, "new request err")
+		return errors.WithMessage(err, "client do request err")
 	}
-
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return errors.WithMessage(err, "http client do err")
-	}
-	defer resp.Body.Close()
-
-	respBody, err = io.ReadAll(resp.Body)
-	if err != nil {
-		return errors.WithMessage(err, "read resp body err")
-	}
-
-	if resp.StatusCode == http.StatusOK {
+	if resp.StatusCode() == http.StatusOK {
 		if response != nil {
-			return errors.WithMessage(json.Unmarshal(respBody, response), "json unmarshal response err")
+			return errors.WithMessage(resp.JSONUnmarshal(response), "json unmarshal response err")
 		}
 
 		return nil
 	}
 
-	return errors.WithMessagef(
-		parseError(resp.StatusCode),
-		"resp body: %s", string(respBody),
-	)
+	return errors.WithMessagef(parseError(resp.StatusCode()), "resp body: %s", resp.String())
 }
 
 // GetEnvClusters 获取对应应用环境下的所有集群信息（appId 必填）

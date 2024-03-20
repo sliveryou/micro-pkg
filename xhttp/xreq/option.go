@@ -59,7 +59,7 @@ func (oc OptionCollection) Apply(request *http.Request) (*http.Request, error) {
 	return request, nil
 }
 
-// With 添加可选参数列表
+// With 添加可选参数列表并返回新的可选参数集合
 func (oc OptionCollection) With(withOptions ...Option) OptionCollection {
 	return copyAndAppend(oc, withOptions...)
 }
@@ -490,19 +490,20 @@ var _ io.ReadCloser = nopCloser{}
 
 type nopCloser struct {
 	io.Reader
+	size int64
 }
 
 // rc 与 io.NopCloser() 函数类似，实现该方法是为了能便于拿到底层的 io.Reader
 func rc(r io.Reader) nopCloser {
-	return nopCloser{r}
+	size, _ := xhttp.GetReaderLen(r)
+
+	return nopCloser{Reader: r, size: size}
 }
 
 func (nopCloser) Close() error { return nil }
 
 func (nc nopCloser) Size() int64 {
-	l, _ := xhttp.GetReaderLen(nc.Reader)
-
-	return l
+	return nc.size
 }
 
 func getOptionName(o Option) string {

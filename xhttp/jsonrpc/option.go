@@ -1,6 +1,11 @@
 package jsonrpc
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/sliveryou/micro-pkg/xhttp"
+	"github.com/sliveryou/micro-pkg/xhttp/xreq"
+)
 
 // RPCOption JSON-RPC 客户端可选配置
 type RPCOption func(server *rpcClient)
@@ -8,18 +13,23 @@ type RPCOption func(server *rpcClient)
 // WithHTTPClient 使用配置的 HTTP 客户端
 func WithHTTPClient(hc *http.Client) RPCOption {
 	return func(c *rpcClient) {
-		if hc != nil {
-			c.httpClient = hc
-		}
+		c.client.SetHTTPClient(hc)
 	}
 }
 
 // WithCustomHeaders 使用配置的 HTTP 请求头
 func WithCustomHeaders(hds map[string]string) RPCOption {
 	return func(c *rpcClient) {
-		c.customHeaders = make(map[string]string)
+		customHeaders := make(map[string]string)
 		for k, v := range hds {
-			c.customHeaders[k] = v
+			if k == xhttp.HeaderHost && v != "" {
+				c.options = append(c.options, xreq.Host(v))
+			} else {
+				customHeaders[k] = v
+			}
+		}
+		if len(customHeaders) > 0 {
+			c.options = append(c.options, xreq.HeaderMap(customHeaders))
 		}
 	}
 }

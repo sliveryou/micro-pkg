@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
@@ -182,8 +181,8 @@ func (f *Face) videoVerify(ctx context.Context, accessToken, videoBase64 string)
 	_, err := f.client.Call(http.MethodPost, &resp, xreq.Context(ctx),
 		xreq.URL(VideoVerifyURL),
 		xreq.Query("access_token", accessToken),
-		xreq.BodyForm(url.Values{
-			"video_base64": []string{videoBase64},
+		xreq.BodyFormMap(map[string]any{
+			"video_base64": videoBase64,
 		}),
 	)
 	if err != nil {

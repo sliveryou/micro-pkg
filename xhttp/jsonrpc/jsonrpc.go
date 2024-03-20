@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/sliveryou/micro-pkg/xhttp"
+	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
 
 const (
@@ -46,14 +47,13 @@ func NewRPCClient(endpoint string, opts ...RPCOption) RPCClient {
 		panic(errors.New("jsonrpc: empty endpoint is invalid"))
 	}
 
-	c := &rpcClient{endpoint: xhttp.WithHTTPScheme(endpoint)}
-
+	c := &rpcClient{
+		endpoint: xhttp.WithHTTPScheme(endpoint),
+		client:   xreq.NewClient().SetJSONUnmarshaler(unmarshal),
+		options:  xreq.OptionCollection{xreq.Accept(xhttp.MIMEApplicationJSON)},
+	}
 	for _, opt := range opts {
 		opt(c)
-	}
-
-	if c.httpClient == nil {
-		c.httpClient = xhttp.NewHTTPClient()
 	}
 
 	return c
