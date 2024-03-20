@@ -6,9 +6,9 @@ require (
 	dario.cat/mergo v1.0.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/alicebob/miniredis/v2 v2.32.1
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.695
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.696
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
-	github.com/casbin/casbin/v2 v2.84.1
+	github.com/casbin/casbin/v2 v2.85.0
 	github.com/glebarez/sqlite v1.11.0
 	github.com/go-stack/stack v1.8.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
@@ -35,11 +35,11 @@ require (
 	golang.org/x/crypto v0.21.0
 	google.golang.org/grpc v1.62.0
 	gopkg.in/yaml.v2 v2.4.0
-	gorm.io/driver/mysql v1.5.4
+	gorm.io/driver/mysql v1.5.5
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/driver/sqlserver v1.5.3
 	gorm.io/gen v0.3.25
-	gorm.io/gorm v1.25.7
+	gorm.io/gorm v1.25.8
 )
 
 require (
