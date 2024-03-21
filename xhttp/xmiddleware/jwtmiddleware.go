@@ -26,7 +26,7 @@ type JWTMiddleware struct {
 // 注意：token 必须为结构体或结构体指针，名称以 json tag 对应的名称与 payloads 进行映射
 func NewJWTMiddleware(j *jwt.JWT, token any, errTokenVerify error) (*JWTMiddleware, error) {
 	if j == nil || token == nil || errTokenVerify == nil {
-		return nil, errors.New("xhttp: illegal jwt middleware config")
+		return nil, errors.New("xmiddleware: illegal jwt middleware config")
 	}
 
 	var t reflect.Type

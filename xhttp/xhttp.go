@@ -3,6 +3,7 @@ package xhttp
 import (
 	"bytes"
 	"context"
+	stderrors "errors"
 	"io"
 	"mime/multipart"
 	"net"
@@ -263,6 +264,9 @@ func CopyRequest(r *http.Request, maxBodyLen ...int64) (*http.Request, error) {
 		}
 		if _, err := buf.ReadFrom(reader); err != nil {
 			return nil, errors.WithMessage(err, "read from request body err")
+		}
+		if lr, ok := reader.(*io.LimitedReader); ok && lr.N <= 0 {
+			return nil, stderrors.New("request body too large")
 		}
 		if err := r.Body.Close(); err != nil {
 			return nil, errors.WithMessage(err, "request body close err")

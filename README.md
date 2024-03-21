@@ -38,7 +38,7 @@ go 微服务常用公共包
 - **xhash** 通用 hash 校验和计算包，包含常用 hash 计算和基于 bcrypt hash 的密码生成与校验等
 - **xhttp** http 相关操作库，包含请求参数反序列化和响应参数序列化、http 客户端、http 通用写入器 和 ip 获取等
 - **xhttp/jsonrpc** 通用 json rpc 2.0 客户端，支持常规调用与批量调用
-- **xhttp/xmiddleware** 通用 http 中间件，包含跨域请求处理、功能禁用处理、jwt 认证处理、请求响应日志打印和恐慌捕获恢复等
+- **xhttp/xmiddleware** 通用 http 中间件，包含跨域请求处理、功能禁用处理、jwt 认证处理、签名校验、请求响应日志打印和恐慌捕获恢复等
 - **xhttp/xreq** 通用 http 请求拓展包，包含指定可选参数列表构建 http 请求、http 拓展客户端 和 http 拓展响应等
 - **xkv** 通用 redis 集群键值相关操作库
 - **xonce** 操作执行器，只执行一次成功操作，失败可以再次执行
@@ -56,4 +56,5 @@ go 微服务常用公共包
 - [短地址标识符生成](shorturl/README.md)
 - [gorm/gen 字段拓展包](xdb/xfield/README.md)
 - [枚举类型方法生成工具](docs/enumer.md)
+- [重放攻击](docs/replay-attacks.md)
 - [参考文献](docs/references.md)

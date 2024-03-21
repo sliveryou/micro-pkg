@@ -14,7 +14,7 @@ import (
 	"github.com/sliveryou/micro-pkg/xhttp"
 )
 
-func TestNewCORSMiddleware_Options(t *testing.T) {
+func TestCORSMiddleware_Handle_Options(t *testing.T) {
 	m := NewCORSMiddleware()
 
 	req := httptest.NewRequest(http.MethodOptions, "http://localhost", http.NoBody)
@@ -40,7 +40,7 @@ func TestNewCORSMiddleware_Options(t *testing.T) {
 	fmt.Println(string(dump))
 }
 
-func TestNewCORSMiddleware_Options_MethodNotAllowed(t *testing.T) {
+func TestCORSMiddleware_Handle_Options_MethodNotAllowed(t *testing.T) {
 	m := NewCORSMiddleware()
 
 	req := httptest.NewRequest(http.MethodOptions, "http://localhost", http.NoBody)
@@ -66,7 +66,7 @@ func TestNewCORSMiddleware_Options_MethodNotAllowed(t *testing.T) {
 	fmt.Println(string(dump))
 }
 
-func TestNewCORSMiddleware_Post(t *testing.T) {
+func TestCORSMiddleware_Handle_Post(t *testing.T) {
 	m := NewCORSMiddleware()
 
 	req := httptest.NewRequest(http.MethodPost, "http://localhost", strings.NewReader(`{"a":"a","b":1}`))
@@ -89,7 +89,7 @@ func TestNewCORSMiddleware_Post(t *testing.T) {
 	fmt.Println(string(dump))
 }
 
-func TestNewCORSMiddleware_Trace_Fail(t *testing.T) {
+func TestCORSMiddleware_Handle_Trace_Fail(t *testing.T) {
 	m := NewCORSMiddleware()
 
 	req := httptest.NewRequest(http.MethodTrace, "http://localhost", strings.NewReader(`{"a":"a","b":1}`))
@@ -112,7 +112,7 @@ func TestNewCORSMiddleware_Trace_Fail(t *testing.T) {
 	fmt.Println(string(dump))
 }
 
-func TestAllowAllCORSMiddleware_Trace_OK(t *testing.T) {
+func TestAllowAllCORSMiddleware_Handle_Trace_OK(t *testing.T) {
 	m := AllowAllCORSMiddleware()
 
 	req := httptest.NewRequest(http.MethodTrace, "http://localhost", strings.NewReader(`{"a":"a","b":1}`))
@@ -135,7 +135,7 @@ func TestAllowAllCORSMiddleware_Trace_OK(t *testing.T) {
 	fmt.Println(string(dump))
 }
 
-func TestUnsafeAllowAllCORSConfig_Options(t *testing.T) {
+func TestUnsafeAllowAllCORSMiddleware_Handle_Options(t *testing.T) {
 	m := UnsafeAllowAllCORSMiddleware()
 
 	req := httptest.NewRequest(http.MethodOptions, "http://localhost", http.NoBody)

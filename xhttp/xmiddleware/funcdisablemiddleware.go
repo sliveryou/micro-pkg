@@ -22,7 +22,7 @@ type FuncDisableMiddleware struct {
 // NewFuncDisableMiddleware 新建功能禁用处理中间件
 func NewFuncDisableMiddleware(fd *disabler.FuncDisabler, routePrefix string, errNotAllowed error) (*FuncDisableMiddleware, error) {
 	if fd == nil || errNotAllowed == nil {
-		return nil, errors.New("xhttp: illegal func disable middleware config")
+		return nil, errors.New("xmiddleware: illegal func disable middleware config")
 	}
 
 	return &FuncDisableMiddleware{

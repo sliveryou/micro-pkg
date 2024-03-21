@@ -22,7 +22,7 @@ func getJWTMiddleware() *JWTMiddleware {
 	return m
 }
 
-func TestNewJWTMiddleware_Success(t *testing.T) {
+func TestJWTMiddleware_Handle_Success(t *testing.T) {
 	m := getJWTMiddleware()
 	req := httptest.NewRequest(http.MethodGet, "http://localhost", http.NoBody)
 
@@ -52,7 +52,7 @@ func TestNewJWTMiddleware_Success(t *testing.T) {
 	assert.Equal(t, "{\"code\":0,\"msg\":\"ok\",\"data\":{\"user_id\":100000,\"user_name\":\"test_user\",\"role_ids\":[100000,100001,100002],\"group\":\"ADMIN\",\"is_admin\":true,\"score\":123.123}}", string(d))
 }
 
-func TestNewJWTMiddleware_Fail(t *testing.T) {
+func TestJWTMiddleware_Handle_Fail(t *testing.T) {
 	m := getJWTMiddleware()
 	req := httptest.NewRequest(http.MethodGet, "http://localhost", http.NoBody)
 	handler := m.Handle(func(w http.ResponseWriter, r *http.Request) {})

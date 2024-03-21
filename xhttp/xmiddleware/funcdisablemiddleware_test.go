@@ -27,7 +27,7 @@ func getFuncDisable() *FuncDisableMiddleware {
 	return m
 }
 
-func TestNewFuncDisable_Success(t *testing.T) {
+func TestFuncDisable_Handle_Success(t *testing.T) {
 	m := getFuncDisable()
 	req := httptest.NewRequest(http.MethodPost, "https://test.com/api/file", http.NoBody)
 	handler := m.Handle(func(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +44,7 @@ func TestNewFuncDisable_Success(t *testing.T) {
 	assert.Equal(t, "{\"code\":0,\"msg\":\"ok\"}", string(d))
 }
 
-func TestNewFuncDisable_Fail(t *testing.T) {
+func TestFuncDisable_Handle_Fail(t *testing.T) {
 	m := getFuncDisable()
 	req := httptest.NewRequest(http.MethodGet, "https://test.com/api/auth/1", http.NoBody)
 	handler := m.Handle(func(w http.ResponseWriter, r *http.Request) {})

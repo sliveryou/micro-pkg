@@ -166,7 +166,7 @@ func NewCORSMiddleware(config ...CORSConfig) *CORSMiddleware {
 			}
 		}
 		if !m.allowHeadersAll {
-			m.allowHeaders = convert(c.AllowHeaders, http.CanonicalHeaderKey)
+			m.allowHeaders = convertStrings(c.AllowHeaders, http.CanonicalHeaderKey)
 		}
 	}
 
@@ -180,7 +180,7 @@ func NewCORSMiddleware(config ...CORSConfig) *CORSMiddleware {
 			}
 		}
 		if !m.allowMethodsAll {
-			m.allowMethods = convert(c.AllowMethods, strings.ToUpper)
+			m.allowMethods = convertStrings(c.AllowMethods, strings.ToUpper)
 		}
 	}
 
@@ -206,7 +206,7 @@ func NewCORSMiddleware(config ...CORSConfig) *CORSMiddleware {
 	}
 
 	if len(c.ExposeHeaders) > 0 {
-		m.exposeHeaders = []string{strings.Join(convert(c.ExposeHeaders, http.CanonicalHeaderKey), sep)}
+		m.exposeHeaders = []string{strings.Join(convertStrings(c.ExposeHeaders, http.CanonicalHeaderKey), sep)}
 	}
 
 	if c.MaxAge > 0 {
@@ -441,7 +441,7 @@ func splitHeaderValues(values []string) []string {
 
 type converter func(string) string
 
-func convert(s []string, c converter) []string {
+func convertStrings(s []string, c converter) []string {
 	out := make([]string, 0, len(s))
 	for _, v := range s {
 		out = append(out, c(v))
