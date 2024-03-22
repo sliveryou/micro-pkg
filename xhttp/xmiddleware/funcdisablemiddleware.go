@@ -11,10 +11,10 @@ import (
 	"github.com/sliveryou/micro-pkg/xhttp"
 )
 
+// -------------------- FuncDisableMiddleware -------------------- //
+
 // ErrAPINotAllowed 暂不支持该 API 错误
 var ErrAPINotAllowed = bizerr.ErrAPINotAllowed
-
-// -------------------- FuncDisable -------------------- //
 
 // FuncDisableMiddleware 功能禁用处理中间件
 type FuncDisableMiddleware struct {

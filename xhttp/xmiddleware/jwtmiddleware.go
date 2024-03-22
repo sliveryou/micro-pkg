@@ -12,10 +12,10 @@ import (
 	"github.com/sliveryou/micro-pkg/xhttp"
 )
 
+// -------------------- JWTMiddleware -------------------- //
+
 // ErrInvalidToken Token 错误
 var ErrInvalidToken = bizerr.ErrInvalidToken
-
-// -------------------- JWTMiddleware -------------------- //
 
 // JWTMiddleware JWT 认证处理中间件
 type JWTMiddleware struct {
