@@ -95,7 +95,7 @@ func Parse(r *http.Request, v any) error {
 	}
 
 	if err := validator.Verify(v); err != nil {
-		return errcode.New(errcode.CodeInvalidParams, err.Error())
+		return errcode.NewInvalidParams(err.Error())
 	}
 
 	return nil
@@ -110,7 +110,7 @@ func ParseForm(r *http.Request, v any) error {
 	}
 
 	if err := validator.Verify(v); err != nil {
-		return errcode.New(errcode.CodeInvalidParams, err.Error())
+		return errcode.NewInvalidParams(err.Error())
 	}
 
 	return nil
@@ -125,7 +125,7 @@ func ParseJsonBody(r *http.Request, v any) error {
 	}
 
 	if err := validator.Verify(v); err != nil {
-		return errcode.New(errcode.CodeInvalidParams, err.Error())
+		return errcode.NewInvalidParams(err.Error())
 	}
 
 	return nil

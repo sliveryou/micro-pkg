@@ -12,6 +12,7 @@ import (
 	"github.com/sliveryou/go-tool/v2/validator"
 
 	"github.com/sliveryou/micro-pkg/errcode"
+	"github.com/sliveryou/micro-pkg/internal/bizerr"
 	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
 
@@ -90,7 +91,7 @@ func (c *CorpAccount) Authenticate(ctx context.Context, req *AuthenticateRequest
 
 	// 校验请求参数
 	if err := validator.Verify(req); err != nil {
-		return nil, errcode.New(errcode.CodeInvalidParams, err.Error())
+		return nil, errcode.NewInvalidParams(err.Error())
 	}
 
 	request, err := xreq.NewGet(URL, xreq.Context(ctx),
@@ -124,7 +125,7 @@ func (c *CorpAccount) Authenticate(ctx context.Context, req *AuthenticateRequest
 				Abstract:  resp.Abstract,
 			}, nil
 		} else if errMsg, ok := errMap[code]; ok {
-			return nil, errcode.NewCommon(errMsg)
+			return nil, errcode.New(bizerr.CodeCorpAccountAuth, errMsg)
 		}
 	}
 

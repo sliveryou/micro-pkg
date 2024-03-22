@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/sliveryou/micro-pkg/disabler"
-	"github.com/sliveryou/micro-pkg/errcode"
 	"github.com/sliveryou/micro-pkg/xhttp"
 )
 
@@ -22,8 +21,7 @@ func getFuncDisable() *FuncDisableMiddleware {
 			"/api/auth/{id}",
 		},
 	})
-	errNotAllowed := errcode.NewCommon("暂不支持该 API")
-	m := MustNewFuncDisableMiddleware(fd, "", errNotAllowed)
+	m := MustNewFuncDisableMiddleware(fd, "")
 	return m
 }
 
@@ -56,5 +54,5 @@ func TestFuncDisable_Handle_Fail(t *testing.T) {
 	defer result.Body.Close()
 	d, err := io.ReadAll(result.Body)
 	require.NoError(t, err)
-	assert.Equal(t, "{\"code\":97,\"msg\":\"暂不支持该 API\"}", string(d))
+	assert.Equal(t, "{\"code\":154,\"msg\":\"暂不支持该 API\"}", string(d))
 }

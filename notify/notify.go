@@ -208,14 +208,14 @@ func (n *Notify) handleSend(p *notifytypes.SendParams) error {
 		case notifytypes.Email:
 			ec, key, isExist := n.emailClients.Pick()
 			if !isExist {
-				return notifytypes.ErrEmailSupport
+				return notifytypes.ErrEmailUnsupported
 			}
 			return errors.Wrapf(ec.SendEmail(p.Receiver, p.TemplateID, p.Params...),
 				"send email by key: %s, params: %+v err", key, p)
 		default:
 			sc, key, isExist := n.smsClients.Pick()
 			if !isExist {
-				return notifytypes.ErrSmsSupport
+				return notifytypes.ErrSmsUnsupported
 			}
 			return errors.Wrapf(sc.SendSms(p.Receiver, p.TemplateID, p.Params...),
 				"send sms by key: %s, params: %+v err", key, p)
@@ -272,11 +272,11 @@ func (n *Notify) handleVerify(p *notifytypes.VerifyParams) error {
 	}
 
 	if cacheCode == "" {
-		return notifytypes.ErrCaptchaNotExist
+		return notifytypes.ErrCaptchaNotFound
 	}
 
 	if p.Code != cacheCode {
-		return notifytypes.ErrCaptchaVerify
+		return notifytypes.ErrInvalidCaptcha
 	}
 
 	if p.Clear {

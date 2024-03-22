@@ -13,6 +13,7 @@ import (
 
 	"github.com/sliveryou/micro-pkg/errcode"
 	"github.com/sliveryou/micro-pkg/express/types"
+	"github.com/sliveryou/micro-pkg/internal/bizerr"
 	"github.com/sliveryou/micro-pkg/xhash"
 	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
@@ -99,8 +100,8 @@ func (e *Express100) GetExpress(ctx context.Context, req *types.GetExpressReques
 
 	// 判断接口请求是否成功
 	if !resp.Result && resp.ReturnCode != "" && resp.Message != messageOK {
-		if returnCode := convert.ToInt(resp.ReturnCode); 200 <= returnCode && returnCode <= 500 {
-			return nil, errcode.NewCommon(resp.Message)
+		if returnCode := convert.ToInt(resp.ReturnCode); 200 < returnCode && returnCode < 501 {
+			return nil, errcode.New(bizerr.CodeGetExpressFailed, resp.Message)
 		}
 		return nil, errors.New(resp.Message)
 	}

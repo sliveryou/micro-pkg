@@ -10,7 +10,6 @@ import (
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 	"github.com/pkg/errors"
 
-	"github.com/sliveryou/micro-pkg/errcode"
 	notifytypes "github.com/sliveryou/micro-pkg/notify/types"
 )
 
@@ -23,9 +22,6 @@ const (
 	// defaultRegionID 默认地域ID
 	defaultRegionID = "cn-hangzhou"
 )
-
-// ErrEmailTmplNotExist 邮件模板不存在错误
-var ErrEmailTmplNotExist = errcode.NewCommon("邮件模板信息不存在")
 
 // App 应用相关配置
 type App struct {
@@ -110,7 +106,7 @@ func (a *Aliyun) Platform() string {
 // SendSms 发送短信
 func (a *Aliyun) SendSms(receiver, templateID string, params ...notifytypes.Param) error {
 	if a.smsClient == nil {
-		return notifytypes.ErrSmsSupport
+		return notifytypes.ErrSmsUnsupported
 	}
 
 	var templateParam string
@@ -147,12 +143,12 @@ func (a *Aliyun) SendSms(receiver, templateID string, params ...notifytypes.Para
 // SendEmail 发送邮件
 func (a *Aliyun) SendEmail(receiver, templateID string, params ...notifytypes.Param) error {
 	if a.emailClient == nil {
-		return notifytypes.ErrEmailSupport
+		return notifytypes.ErrEmailUnsupported
 	}
 
 	ee, ok := a.emailExtraMap[templateID]
 	if !ok {
-		return ErrEmailTmplNotExist
+		return notifytypes.ErrEmailTmplNotFound
 	}
 
 	textBody := ee.TextBody

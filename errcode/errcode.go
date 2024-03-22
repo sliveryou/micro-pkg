@@ -105,24 +105,21 @@ func (e *Err) GRPCStatus() *status.Status {
 
 // New 新建业务错误
 func New(code uint32, msg string, httpCode ...int) error {
-	hc := http.StatusOK
-	if len(httpCode) != 0 && httpCode[0] > 0 {
-		hc = httpCode[0]
-	}
-
-	return &Err{Code: code, HTTPCode: hc, Msg: msg}
+	return &Err{Code: code, HTTPCode: getHTTPCode(httpCode...), Msg: msg}
 }
 
 // NewCommon 新建通用业务错误
 //
 // 与 New 效果相同，只是 Code 硬性指定为 CodeCommon，主要适用于该业务错误不确定指定什么业务状态码的情况
 func NewCommon(msg string, httpCode ...int) error {
-	hc := http.StatusOK
-	if len(httpCode) != 0 && httpCode[0] > 0 {
-		hc = httpCode[0]
-	}
+	return &Err{Code: CodeCommon, HTTPCode: getHTTPCode(httpCode...), Msg: msg}
+}
 
-	return &Err{Code: CodeCommon, HTTPCode: hc, Msg: msg}
+// NewInvalidParams 新建请求参数错误
+//
+// 与 New 效果相同，只是 Code 硬性指定为 CodeInvalidParams，主要适用于该业务错误为请求参数错误的情况
+func NewInvalidParams(msg string, httpCode ...int) error {
+	return &Err{Code: CodeInvalidParams, HTTPCode: getHTTPCode(httpCode...), Msg: msg}
 }
 
 // FromMessage 解析业务消息对应的业务错误
@@ -193,4 +190,13 @@ func Is(err, target error) bool {
 	}
 
 	return false
+}
+
+func getHTTPCode(httpCode ...int) int {
+	hc := http.StatusOK
+	if len(httpCode) != 0 && httpCode[0] > 0 {
+		hc = httpCode[0]
+	}
+
+	return hc
 }

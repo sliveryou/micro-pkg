@@ -10,6 +10,7 @@ import (
 
 	"github.com/sliveryou/micro-pkg/appsign"
 	"github.com/sliveryou/micro-pkg/errcode"
+	"github.com/sliveryou/micro-pkg/internal/bizerr"
 	"github.com/sliveryou/micro-pkg/xhttp"
 	"github.com/sliveryou/micro-pkg/xkv"
 )
@@ -25,9 +26,9 @@ const (
 
 var (
 	// ErrSignExpired 签名已过期错误
-	ErrSignExpired = errcode.NewCommon("签名已过期")
+	ErrSignExpired = bizerr.ErrSignExpired
 	// ErrNonceExpired 随机数已过期错误
-	ErrNonceExpired = errcode.NewCommon("随机数已过期")
+	ErrNonceExpired = bizerr.ErrNonceExpired
 )
 
 // GetSecret 密钥查询函数
@@ -90,7 +91,7 @@ func (m *SignMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		// 校验签名
 		_, ok := appSign.CheckSign(secret)
 		if !ok {
-			xhttp.ErrorCtx(ctx, w, errcode.NewCommon(fmt.Sprintf(
+			xhttp.ErrorCtx(ctx, w, errcode.New(bizerr.CodeInvalidSign, fmt.Sprintf(
 				"签名错误，服务端计算的待签名字符串为 `%s`",
 				appSign.StringToSign)))
 			return

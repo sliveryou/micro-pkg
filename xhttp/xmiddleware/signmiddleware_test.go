@@ -117,13 +117,13 @@ func TestSignMiddleware_Handle_Fail2(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 	handler.ServeHTTP(resp, req)
-	assert.Equal(t, http.StatusOK, resp.Code)
+	assert.Equal(t, http.StatusUnauthorized, resp.Code)
 
 	result := resp.Result()
 	defer result.Body.Close()
 	d, err := io.ReadAll(result.Body)
 	require.NoError(t, err)
-	assert.Equal(t, `{"code":97,"msg":"签名已过期"}`, string(d))
+	assert.Equal(t, `{"code":151,"msg":"签名已过期"}`, string(d))
 }
 
 func TestSignMiddleware_Handle_Fail3(t *testing.T) {
@@ -157,13 +157,13 @@ func TestSignMiddleware_Handle_Fail3(t *testing.T) {
 
 	resp2 := httptest.NewRecorder()
 	handler.ServeHTTP(resp2, req2)
-	assert.Equal(t, http.StatusOK, resp2.Code)
+	assert.Equal(t, http.StatusUnauthorized, resp2.Code)
 
 	result2 := resp2.Result()
 	defer result2.Body.Close()
 	d2, err := io.ReadAll(result2.Body)
 	require.NoError(t, err)
-	assert.Equal(t, `{"code":97,"msg":"随机数已过期"}`, string(d2))
+	assert.Equal(t, `{"code":152,"msg":"随机数已过期"}`, string(d2))
 }
 
 func getRawURL() string {

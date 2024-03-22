@@ -10,15 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/sliveryou/micro-pkg/errcode"
 	"github.com/sliveryou/micro-pkg/jwt"
 	"github.com/sliveryou/micro-pkg/xhttp"
 )
 
 func getJWTMiddleware() *JWTMiddleware {
 	j := jwt.MustNewJWT(jwt.Config{Issuer: "test-issuer", SecretKey: "ABCDEFGH", Expiration: 72 * time.Hour})
-	errTokenVerify := errcode.New(401, "token校验失败", http.StatusUnauthorized)
-	m := MustNewJWTMiddleware(j, &userInfo{}, errTokenVerify)
+	m := MustNewJWTMiddleware(j, &userInfo{})
 	return m
 }
 
@@ -64,7 +62,7 @@ func TestJWTMiddleware_Handle_Fail(t *testing.T) {
 	defer result.Body.Close()
 	d, err := io.ReadAll(result.Body)
 	require.NoError(t, err)
-	assert.Equal(t, "{\"code\":401,\"msg\":\"token校验失败\"}", string(d))
+	assert.Equal(t, "{\"code\":153,\"msg\":\"Token 错误\"}", string(d))
 }
 
 func getToken() *userInfo {

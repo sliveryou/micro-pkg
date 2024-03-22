@@ -2,6 +2,7 @@
 
 > 以下资料均来自互联网
 
+- [API 设计指南](https://cloud.google.com/apis/design?hl=zh-cn)
 - [Protocol Buffers Language Guide (proto3)](https://developers.google.com/protocol-buffers/docs/proto3)
 - [RESTful Web API 设计](https://docs.microsoft.com/zh-cn/azure/architecture/best-practices/api-design)
 - [GRPC Health Checking Protocol](https://github.com/grpc/grpc/blob/master/doc/health-checking.md)

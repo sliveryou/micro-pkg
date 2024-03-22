@@ -7,32 +7,33 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/sliveryou/micro-pkg/disabler"
+	"github.com/sliveryou/micro-pkg/internal/bizerr"
 	"github.com/sliveryou/micro-pkg/xhttp"
 )
+
+// ErrAPINotAllowed 暂不支持该 API 错误
+var ErrAPINotAllowed = bizerr.ErrAPINotAllowed
 
 // -------------------- FuncDisable -------------------- //
 
 // FuncDisableMiddleware 功能禁用处理中间件
 type FuncDisableMiddleware struct {
-	fd            *disabler.FuncDisabler
-	routePrefix   string
-	errNotAllowed error
+	fd          *disabler.FuncDisabler
+	routePrefix string
 }
 
 // NewFuncDisableMiddleware 新建功能禁用处理中间件
-func NewFuncDisableMiddleware(fd *disabler.FuncDisabler, routePrefix string, errNotAllowed error) (*FuncDisableMiddleware, error) {
-	if fd == nil || errNotAllowed == nil {
+func NewFuncDisableMiddleware(fd *disabler.FuncDisabler, routePrefix string) (*FuncDisableMiddleware, error) {
+	if fd == nil {
 		return nil, errors.New("xmiddleware: illegal func disable middleware config")
 	}
 
-	return &FuncDisableMiddleware{
-		fd: fd, routePrefix: routePrefix, errNotAllowed: errNotAllowed,
-	}, nil
+	return &FuncDisableMiddleware{fd: fd, routePrefix: routePrefix}, nil
 }
 
 // MustNewFuncDisableMiddleware 新建功能禁用处理中间件
-func MustNewFuncDisableMiddleware(fd *disabler.FuncDisabler, routePrefix string, errNotAllowed error) *FuncDisableMiddleware {
-	m, err := NewFuncDisableMiddleware(fd, routePrefix, errNotAllowed)
+func MustNewFuncDisableMiddleware(fd *disabler.FuncDisabler, routePrefix string) *FuncDisableMiddleware {
+	m, err := NewFuncDisableMiddleware(fd, routePrefix)
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +52,7 @@ func (m *FuncDisableMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		api := strings.TrimPrefix(path, m.routePrefix)
 
 		if !m.fd.AllowAPI(method, api) {
-			xhttp.ErrorCtx(r.Context(), w, m.errNotAllowed)
+			xhttp.ErrorCtx(r.Context(), w, ErrAPINotAllowed)
 			return
 		}
 

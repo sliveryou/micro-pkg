@@ -11,6 +11,7 @@ import (
 	"github.com/sliveryou/go-tool/v2/validator"
 
 	"github.com/sliveryou/micro-pkg/errcode"
+	"github.com/sliveryou/micro-pkg/internal/bizerr"
 	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
 
@@ -84,7 +85,7 @@ func (b *BankCard4C) Authenticate(ctx context.Context, req *AuthenticateRequest)
 
 	// 校验请求参数
 	if err := validator.Verify(req); err != nil {
-		return nil, errcode.New(errcode.CodeInvalidParams, err.Error())
+		return nil, errcode.NewInvalidParams(err.Error())
 	}
 
 	request, err := xreq.NewGet(URL, xreq.Context(ctx),
@@ -115,9 +116,9 @@ func (b *BankCard4C) Authenticate(ctx context.Context, req *AuthenticateRequest)
 		if *resp.Data.Result == resultConsistent {
 			return &AuthenticateResponse{OrderNo: resp.Data.OrderNo}, nil
 		}
-		return nil, errcode.NewCommon(resp.Data.Desc)
+		return nil, errcode.New(bizerr.CodeBankCard4CAuth, resp.Data.Desc)
 	} else if resp.Code == codeParamErr {
-		return nil, errcode.NewCommon(resp.Msg)
+		return nil, errcode.New(bizerr.CodeBankCard4CAuth, resp.Msg)
 	}
 
 	// 获取错误消息

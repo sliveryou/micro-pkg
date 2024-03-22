@@ -84,7 +84,7 @@ func (s *Submail) Platform() string {
 // SendSms 发送短信
 func (s *Submail) SendSms(receiver, templateID string, params ...notifytypes.Param) error {
 	if s.smsClient == nil {
-		return notifytypes.ErrSmsSupport
+		return notifytypes.ErrSmsUnsupported
 	}
 
 	xsp := &sms.XSendParam{
@@ -99,7 +99,7 @@ func (s *Submail) SendSms(receiver, templateID string, params ...notifytypes.Par
 // SendEmail 发送邮件
 func (s *Submail) SendEmail(receiver, templateID string, params ...notifytypes.Param) error {
 	if s.emailClient == nil {
-		return notifytypes.ErrEmailSupport
+		return notifytypes.ErrEmailUnsupported
 	}
 
 	xsp := &mail.XSendParam{

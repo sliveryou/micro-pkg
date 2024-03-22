@@ -13,6 +13,7 @@ import (
 	"github.com/sliveryou/go-tool/v2/validator"
 
 	"github.com/sliveryou/micro-pkg/errcode"
+	"github.com/sliveryou/micro-pkg/internal/bizerr"
 	"github.com/sliveryou/micro-pkg/xhttp/xreq"
 )
 
@@ -41,10 +42,10 @@ var (
 	// PersonVerifyThreshold 与公民身份证小图相似度可能性阈值，超过即判断为同一人
 	PersonVerifyThreshold = 80.0
 
-	// ErrFaceVideoVerify 视频活体检测错误
-	ErrFaceVideoVerify = errcode.NewCommon("活体检测失败")
-	// ErrFacePersonVerify 人脸实名认证错误
-	ErrFacePersonVerify = errcode.NewCommon("人脸与公民身份证小图相似度匹配过低")
+	// ErrFaceVideoAuth 视频活体检测失败错误
+	ErrFaceVideoAuth = bizerr.ErrFaceVideoAuth
+	// ErrFacePersonAuth 人脸实名认证失败错误
+	ErrFacePersonAuth = bizerr.ErrFacePersonAuth
 )
 
 // Config 人脸识别认证相关配置
@@ -118,7 +119,7 @@ func (f *Face) Authenticate(ctx context.Context, req *AuthenticateRequest) (*Aut
 
 	// 校验请求参数
 	if err := validator.Verify(req); err != nil {
-		return nil, errcode.New(errcode.CodeInvalidParams, err.Error())
+		return nil, errcode.NewInvalidParams(err.Error())
 	}
 
 	// 获取鉴权认证 token
@@ -191,7 +192,7 @@ func (f *Face) videoVerify(ctx context.Context, accessToken, videoBase64 string)
 
 	if resp.ErrorCode != codeSuccess {
 		if errMsg, ok := errMap[resp.ErrorCode]; ok {
-			return "", errcode.NewCommon(errMsg)
+			return "", errcode.New(bizerr.CodeFaceVideoAuth, errMsg)
 		}
 		return "", errors.Errorf("%d: %s", resp.ErrorCode, resp.ErrorMsg)
 	}
@@ -212,7 +213,7 @@ func (f *Face) videoVerify(ctx context.Context, accessToken, videoBase64 string)
 	}
 
 	if validPic == "" {
-		return "", ErrFaceVideoVerify
+		return "", ErrFaceVideoAuth
 	}
 
 	return validPic, nil
@@ -237,13 +238,13 @@ func (f *Face) personVerify(ctx context.Context, accessToken, validPic, name, id
 
 	if resp.ErrorCode != codeSuccess {
 		if errMsg, ok := errMap[resp.ErrorCode]; ok {
-			return 0, errcode.NewCommon(errMsg)
+			return 0, errcode.New(bizerr.CodeFacePersonAuth, errMsg)
 		}
 		return 0, errors.Errorf("%d: %s", resp.ErrorCode, resp.ErrorMsg)
 	}
 
 	if resp.Result.Score < PersonVerifyThreshold {
-		return 0, ErrFacePersonVerify
+		return 0, ErrFacePersonAuth
 	}
 
 	return resp.LogID, nil
