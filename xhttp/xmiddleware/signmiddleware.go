@@ -15,9 +15,11 @@ import (
 	"github.com/sliveryou/micro-pkg/xkv"
 )
 
+// -------------------- SignMiddleware -------------------- //
+
 const (
 	// KeyPrefixSignNonce 签名随机数缓存 key 前缀
-	KeyPrefixSignNonce = "micro.pkg:xhttp.xmiddleware.sign:"
+	KeyPrefixSignNonce = "micro.pkg:xhttp.xmiddleware:sign:"
 
 	appErrTime     = 60  // 允许应用误差时间：60s
 	signEffTime    = 300 // 签名有效时间：300s
@@ -33,8 +35,6 @@ var (
 
 // GetSecret 密钥查询函数
 type GetSecret = func(ctx context.Context, appKey string) (appKeySecret string, err error)
-
-// -------------------- SignMiddleware -------------------- //
 
 // SignMiddleware 签名校验处理中间件
 type SignMiddleware struct {
