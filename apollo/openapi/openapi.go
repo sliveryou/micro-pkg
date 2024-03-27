@@ -174,7 +174,7 @@ type UpdateItemRequest struct {
 	Value                    string `json:"value"`                    // 配置的 value，长度不能超过 20000 个字符，非 properties 格式，value 为文件全部内容
 	Comment                  string `json:"comment"`                  // 配置的备注，长度不能超过 256 个字符（非必填）
 	DataChangeLastModifiedBy string `json:"dataChangeLastModifiedBy"` // item 的修改人，格式为域账号，也就是 sso 系统的 UserId
-	DataChangeCreatedBy      string `json:"dataChangeCreatedBy"`      // 当 createIfNotExists 为 true 时必选。item 的创建人，格式为域账号，也就是 sso 系统的 UserID
+	DataChangeCreatedBy      string `json:"dataChangeCreatedBy"`      // 当 createIfNotExists 为 true 时必选。item 的创建人，格式为域账号，也就是 sso 系统的 userID
 }
 
 // DeleteItemRequest 删除配置信息请求

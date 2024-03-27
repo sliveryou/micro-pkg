@@ -34,7 +34,7 @@ type OSS interface {
 	GetThumbnailSuffix(width, height int, size int64) string
 }
 
-// Config OSS 相关配置
+// Config OSS 配置
 type Config struct {
 	UseSSL          bool   `json:",optional"`                                         // 是否使用安全配置（用于 minio 和 local 云服务商模式）
 	UploadInternal  bool   `json:",optional"`                                         // 是否使用内网上传（用于 aliyun 云服务商模式）
@@ -64,7 +64,7 @@ func checkConfig(c Config) (err error) {
 	return
 }
 
-// NewOSS 新建 OSS 对象
+// NewOSS 新建 OSS 客户端
 func NewOSS(c Config) (OSS, error) {
 	if err := checkConfig(c); err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func NewOSS(c Config) (OSS, error) {
 	return &defaultOSS{c: c, client: client}, nil
 }
 
-// MustNewOSS 新建 OSS 对象
+// MustNewOSS 新建 OSS 客户端
 func MustNewOSS(c Config) OSS {
 	o, err := NewOSS(c)
 	if err != nil {
@@ -112,7 +112,7 @@ func MustNewOSS(c Config) OSS {
 	return o
 }
 
-// defaultOSS 默认 OSS 服务结构详情
+// defaultOSS 默认 OSS 客户端
 type defaultOSS struct {
 	c      Config
 	client OSS

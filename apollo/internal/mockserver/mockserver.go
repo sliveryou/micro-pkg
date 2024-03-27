@@ -14,7 +14,7 @@ type notification struct {
 }
 
 type result struct {
-	// AppID          string            `json:"appId"`
+	// appID          string            `json:"appId"`
 	// Cluster        string            `json:"cluster"`
 	NamespaceName  string            `json:"namespaceName"`
 	Configurations map[string]string `json:"configurations"`

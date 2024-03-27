@@ -10,6 +10,7 @@ import (
 	minio "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/pkg/errors"
+	"github.com/zeromicro/go-zero/core/threading"
 
 	"github.com/sliveryou/micro-pkg/xhttp"
 )
@@ -62,7 +63,7 @@ func WithNotSetACL(notSetACL ...bool) Option {
 	}
 }
 
-// MinIO 结构详情
+// MinIO 客户端
 type MinIO struct {
 	secure     bool
 	notSetACL  bool
@@ -71,7 +72,7 @@ type MinIO struct {
 	client     *minio.Client
 }
 
-// NewMinIO 创建一个 MinIO 对象
+// NewMinIO 新建一个 MinIO 客户端
 func NewMinIO(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...Option) (*MinIO, error) {
 	m := &MinIO{endpoint: endpoint, bucketName: bucketName}
 	for _, opt := range opts {
@@ -150,12 +151,12 @@ func (m *MinIO) PutObject(key string, reader io.Reader) (string, error) {
 // DeleteObjects 批量删除 MinIO 上的对象
 func (m *MinIO) DeleteObjects(keys ...string) error {
 	objectCh := make(chan minio.ObjectInfo)
-	go func() {
+	threading.GoSafe(func() {
 		defer close(objectCh)
 		for _, key := range keys {
 			objectCh <- minio.ObjectInfo{Key: key}
 		}
-	}()
+	})
 
 	var err error
 	for errCh := range m.client.RemoveObjects(context.Background(), m.bucketName, objectCh,

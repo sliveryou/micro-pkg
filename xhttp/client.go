@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// Config HTTP 客户端相关配置
+// Config HTTP 客户端配置
 type Config struct {
 	HTTPTimeout           time.Duration // HTTP 请求超时时间
 	DialTimeout           time.Duration // 拨号超时时间
@@ -18,7 +18,7 @@ type Config struct {
 	ExpectContinueTimeout time.Duration // 期望继续超时时间
 }
 
-// DefaultConfig 获取默认 HTTP 客户端相关配置
+// DefaultConfig 获取默认 HTTP 客户端配置
 func DefaultConfig() Config {
 	return Config{
 		HTTPTimeout:           20 * time.Second,

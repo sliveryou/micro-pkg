@@ -16,7 +16,7 @@ const (
 	DefaultKeyPrefix = "micro.pkg:captcha:answer:"
 )
 
-// Config 验证码相关配置
+// Config 验证码配置
 type Config struct {
 	KeyPrefix      string        `json:",optional"`    // 验证码答案缓存 key 前缀，为空则使用 DefaultKeyPrefix
 	ImageWidth     int           `json:",default=240"` // 验证码图片宽度
@@ -25,7 +25,7 @@ type Config struct {
 	CodeExpiration time.Duration `json:",default=5m"`  // 验证码编码过期时间
 }
 
-// Captcha 验证码校验器结构详情
+// Captcha 验证码校验器
 type Captcha struct {
 	c       Config
 	captcha *base64Captcha.Captcha

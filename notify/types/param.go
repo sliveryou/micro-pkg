@@ -18,7 +18,7 @@ const (
 	Email NotifyMethod = 1 // email
 )
 
-// SendParams 发送通知参数结构详情
+// SendParams 发送通知参数
 type SendParams struct {
 	CommonParams         // 通用通知参数
 	IsMock       bool    // 是否模拟发送
@@ -34,7 +34,7 @@ func (p *SendParams) IsValid() bool {
 	return p.CommonParams.IsValid()
 }
 
-// VerifyParams 校验通知参数结构详情
+// VerifyParams 校验通知参数
 type VerifyParams struct {
 	CommonParams        // 通用通知参数
 	Code         string // 验证码
@@ -50,7 +50,7 @@ func (p *VerifyParams) IsValid() bool {
 	return p.CommonParams.IsValid() && p.Code != ""
 }
 
-// CommonParams 通用通知参数结构详情
+// CommonParams 通用通知参数
 type CommonParams struct {
 	NotifyMethod NotifyMethod // 通知方式（可以为 Sms 或 Email）
 	IP           string       // IP 地址
@@ -81,7 +81,7 @@ func (p CommonParams) IsValid() bool {
 	return true
 }
 
-// CommonParam 通用参数结构详情
+// CommonParam 通用参数
 type CommonParam struct {
 	Key   string // 键
 	Value string // 值
@@ -97,7 +97,7 @@ func (p *CommonParam) GetValue() string {
 	return p.Value
 }
 
-// CodeParam 验证码参数结构详情
+// CodeParam 验证码参数
 type CodeParam struct {
 	Key        string        // 键
 	Value      string        // 值

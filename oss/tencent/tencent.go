@@ -33,7 +33,7 @@ func WithNotSetACL(notSetACL ...bool) Option {
 	}
 }
 
-// COS 腾讯云 COS 结构详情
+// COS 腾讯云 COS 客户端
 type COS struct {
 	notSetACL bool
 	ak        string
@@ -41,7 +41,7 @@ type COS struct {
 	client    *cos.Client
 }
 
-// NewCOS 创建一个腾讯云 COS 对象
+// NewCOS 创建一个腾讯云 COS 客户端
 func NewCOS(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...Option) (*COS, error) {
 	u, err := url.Parse(fmt.Sprintf("https://%s.cos.%s.myqcloud.com", bucketName, endpoint))
 	if err != nil {

@@ -14,7 +14,7 @@ import (
 	"github.com/sliveryou/micro-pkg/xhttp"
 )
 
-// Response HTTP 拓展响应结构详情
+// Response HTTP 拓展响应
 type Response struct {
 	RawResponse *http.Response
 	body        []byte

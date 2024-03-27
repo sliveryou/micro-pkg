@@ -30,14 +30,14 @@ func WithSecure(secure ...bool) Option {
 	}
 }
 
-// LSS 本地 LSS 结构详情
+// LSS 本地 LSS 客户端
 type LSS struct {
 	secure     bool   // 是否使用安全配置
 	endpoint   string // 端节点
 	bucketName string // 存储桶名称
 }
 
-// NewLSS 创建一个本地 LSS 对象
+// NewLSS 创建一个本地 LSS 客户端
 func NewLSS(endpoint, bucketName string, opts ...Option) (*LSS, error) {
 	if bucketName == "" {
 		return nil, errors.New("local: illegal lss config")

@@ -12,7 +12,7 @@ import (
 
 var _ health.Checker = (*Checker)(nil)
 
-// Checker 数据库检查器结构详情
+// Checker 数据库检查器
 type Checker struct {
 	t  xdb.Type
 	db *gorm.DB

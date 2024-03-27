@@ -15,7 +15,7 @@ const (
 	DefaultCluster = "default"
 )
 
-// Config 阿波罗配置中心客户端相关配置
+// Config 阿波罗配置中心客户端配置
 type Config struct {
 	IsMock             bool     `json:",optional"`        // 是否模拟
 	AppID              string   `json:",optional"`        // 应用ID
@@ -29,7 +29,7 @@ type Config struct {
 
 // Apollo 阿波罗配置中心客户端
 type Apollo struct {
-	c             Config // 相关配置
+	c             Config // 配置
 	agollo.Client        // 客户端
 }
 

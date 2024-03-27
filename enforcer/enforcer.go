@@ -34,7 +34,7 @@ m = g(r.sub, p.sub) && keyMatch3(r.obj, p.obj) && (r.act == p.act || p.act == "*
 `
 )
 
-// Config 决策规则执行器相关配置
+// Config 决策规则执行器配置
 type Config struct {
 	ModelText     string        `json:",optional"`      // casbin 模型文本，为空则使用 DefaultModelText
 	RetryDuration time.Duration `json:",default=500ms"` // 加载决策规则重试间隔
@@ -47,7 +47,7 @@ type Enforcer struct {
 	c           Config
 	a           persist.Adapter
 	w           persist.Watcher
-	loadRunning int32
+	loadRunning atomic.Int32
 }
 
 // NewEnforcer 新建决策规则执行器
@@ -59,7 +59,7 @@ func NewEnforcer(c Config, a persist.Adapter, w persist.Watcher) (*Enforcer, err
 		return nil, errors.WithMessage(err, "enforcer: fill default config err")
 	}
 
-	e := &Enforcer{c: c, a: a, w: w, loadRunning: 0}
+	e := &Enforcer{c: c, a: a, w: w}
 	if err := e.init(); err != nil {
 		return nil, errors.WithMessage(err, "enforcer: init enforcer err")
 	}
@@ -112,10 +112,9 @@ func (e *Enforcer) Update() {
 
 // Reload 重新加载决策规则
 func (e *Enforcer) Reload(retryDuration time.Duration, retryMaxTimes int) {
-	if atomic.LoadInt32(&e.loadRunning) != 0 {
+	if !e.loadRunning.CompareAndSwap(0, 1) {
 		return
 	}
-	atomic.StoreInt32(&e.loadRunning, int32(1))
 
 	var err error
 	ticker := time.NewTicker(retryDuration)
@@ -123,7 +122,7 @@ func (e *Enforcer) Reload(retryDuration time.Duration, retryMaxTimes int) {
 	threading.GoSafe(func() {
 		defer func() {
 			ticker.Stop()
-			atomic.StoreInt32(&e.loadRunning, int32(0))
+			e.loadRunning.Store(0)
 			if err != nil {
 				logx.Errorf("enforcer: reload polocy err: %v", err)
 			}

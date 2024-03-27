@@ -7,10 +7,10 @@ const (
 	CloudMock = "mock"
 )
 
-// MSS 模拟 MSS 结构详情
+// MSS 模拟 MSS 客户端
 type MSS struct{}
 
-// NewMSS 创建一个模拟 MSS 对象
+// NewMSS 创建一个模拟 MSS 客户端
 func NewMSS() *MSS {
 	return &MSS{}
 }

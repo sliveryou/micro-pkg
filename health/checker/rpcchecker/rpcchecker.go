@@ -17,7 +17,7 @@ const healthHeader = "health"
 
 var _ health.Checker = (*Checker)(nil)
 
-// Checker 服务检查器结构详情
+// Checker 服务检查器
 type Checker struct {
 	hc grpc_health_v1.HealthClient
 }

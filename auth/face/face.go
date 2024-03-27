@@ -48,14 +48,14 @@ var (
 	ErrFacePersonAuth = bizerr.ErrFacePersonAuth
 )
 
-// Config 人脸识别认证相关配置
+// Config 人脸识别认证配置
 type Config struct {
 	IsMock    bool   `json:",optional"` // 是否模拟通过
 	APIKey    string `json:",optional"` // 接口Key
 	SecretKey string `json:",optional"` // 接口密钥
 }
 
-// Face 人脸识别认证器结构详情
+// Face 人脸识别认证器
 type Face struct {
 	c      Config
 	client *xreq.Client

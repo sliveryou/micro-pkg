@@ -8,7 +8,7 @@ import (
 	"github.com/sliveryou/micro-pkg/xkv"
 )
 
-// Store 验证码存储器结构详情
+// Store 验证码存储器
 type Store struct {
 	kvStore    *xkv.Store // 键值存取器
 	keyPrefix  string     // 存储验证码的 key 前缀

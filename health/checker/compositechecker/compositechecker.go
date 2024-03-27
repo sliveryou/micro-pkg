@@ -4,6 +4,8 @@ import (
 	"context"
 	"sync"
 
+	"github.com/zeromicro/go-zero/core/threading"
+
 	"github.com/sliveryou/micro-pkg/health"
 )
 
@@ -72,10 +74,10 @@ func (c *Checker) Check(ctx context.Context) health.Health {
 	for _, item := range c.checkers {
 		wg.Add(1)
 		item := item
-		go func() {
+		threading.GoSafe(func() {
 			ch <- state{h: item.checker.Check(ctx), name: item.name}
 			wg.Done()
-		}()
+		})
 	}
 	wg.Wait()
 	close(ch)

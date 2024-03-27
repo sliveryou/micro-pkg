@@ -53,7 +53,7 @@ type EmailClientPicker interface {
 // Params 参数列表
 type Params []Param
 
-// ToMap 将参数列表转换成map
+// ToMap 将参数列表转换成 map
 func (ps Params) ToMap() map[string]string {
 	m := make(map[string]string)
 

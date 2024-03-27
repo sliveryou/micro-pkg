@@ -35,10 +35,10 @@
 调用方调用通知服务准备发送短信时，通知服务随机从阿里云和赛邮云短信发送客户端选取一个进行发送，  
 当阿里云短信发送客户端出错次数较多时，可将其暂时屏蔽，只调用赛邮云客户端，保证短信发送功能的正常运行。
 
-相关配置：
+配置：
 
 ```go
-// Config 通知服务相关配置
+// Config 通知服务配置
 type Config struct {
 	Provider      string // 提供方
 	SendPeriod    int    `json:",default=60"`    // 发送时间段（与发送配额搭配，如发送时间段为 60，发送配额为 1，表示 60s 内对同一接收方只允许发送 1 次）
@@ -98,9 +98,9 @@ type EmailClientPicker interface {
 	Remove(keys ...string)
 }
 
-// Notify 通知服务结构详情
+// Notify 通知服务
 type Notify struct {
-	c            Config                        // 相关配置
+	c            Config                        // 配置
 	smsClients   notifytypes.SmsClientPicker   // 短信客户端选取器
 	emailClients notifytypes.EmailClientPicker // 邮件客户端选取器
 	kvStore      *xkv.Store                    // 键值存取器

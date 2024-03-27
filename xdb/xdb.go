@@ -18,7 +18,7 @@ import (
 	"github.com/sliveryou/go-tool/v2/timex"
 )
 
-// Config 数据库相关配置
+// Config 数据库配置
 type Config struct {
 	Type            Type          `json:",default=mysql,options=[mysql,postgres,sqlite,sqlserver]"` // 数据库类型（枚举 mysql、postgres、sqlite 和 sqlserver）
 	Host            string        `json:",optional"`                                                // 地址
@@ -99,7 +99,7 @@ func MustNewDBMock(c Config) (*gorm.DB, sqlmock.Sqlmock) {
 	return db, sqlMock
 }
 
-// GetGORMConfig 获取 GORM 相关配置
+// GetGORMConfig 获取 GORM 配置
 func (c Config) GetGORMConfig() *gorm.Config {
 	gc := &gorm.Config{
 		PrepareStmt:     true, // 缓存预编译语句
@@ -115,7 +115,7 @@ func (c Config) GetGORMConfig() *gorm.Config {
 	return gc
 }
 
-// GetMySQLConfig 获取 GORM MySQL 相关配置
+// GetMySQLConfig 获取 GORM MySQL 配置
 func (c Config) GetMySQLConfig(needDatabase ...bool) mysql.Config {
 	// https://github.com/go-gorm/mysql
 	// https://github.com/go-sql-driver/mysql#dsn-data-source-name
@@ -136,7 +136,7 @@ func (c Config) GetMySQLConfig(needDatabase ...bool) mysql.Config {
 	}
 }
 
-// GetPostgreSQLConfig 获取 GORM PostgreSQL 相关配置
+// GetPostgreSQLConfig 获取 GORM PostgreSQL 配置
 func (c Config) GetPostgreSQLConfig(needDatabase ...bool) postgres.Config {
 	// https://github.com/go-gorm/postgres
 	// https://github.com/jackc/pgx
@@ -172,7 +172,7 @@ func (c Config) GetSQLiteDSN() string {
 	return dsn
 }
 
-// GetSQLServerConfig 获取 GORM SQLServer 相关配置
+// GetSQLServerConfig 获取 GORM SQLServer 配置
 func (c Config) GetSQLServerConfig(needDatabase ...bool) sqlserver.Config {
 	// https://github.com/go-gorm/sqlserver
 	// https://github.com/microsoft/go-mssqldb

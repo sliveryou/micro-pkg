@@ -16,24 +16,24 @@ const (
 	PlatformYunPian = "yunpian"
 )
 
-// App 应用相关配置
+// App 应用配置
 type App struct {
 	APIKey string // 接口Key
 }
 
-// Config 云片通知服务相关配置
+// Config 云片通知服务配置
 type Config struct {
-	Sms App // 短信应用相关配置
+	Sms App // 短信应用配置
 }
 
-// YunPian 云片知服务结构详情
+// YunPian 云片通知服务
 type YunPian struct {
-	c          Config                  // 相关配置
+	c          Config                  // 配置
 	baseClient *notifytypes.BaseClient // 基础客户端
 	smsClient  sdk.YunpianClient       // 短信客户端
 }
 
-// NewYunPian 新建云片通知服务对象
+// NewYunPian 新建云片通知服务
 func NewYunPian(c Config, opts ...notifytypes.Option) (*YunPian, error) {
 	if c.Sms.APIKey == "" {
 		return nil, errors.New("yunpian: illegal yunpian sms config")
@@ -48,7 +48,7 @@ func NewYunPian(c Config, opts ...notifytypes.Option) (*YunPian, error) {
 	}, nil
 }
 
-// MustNewYunPian 新建云片通知服务对象
+// MustNewYunPian 新建云片通知服务
 func MustNewYunPian(c Config, opts ...notifytypes.Option) *YunPian {
 	a, err := NewYunPian(c, opts...)
 	if err != nil {

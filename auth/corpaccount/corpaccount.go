@@ -31,14 +31,14 @@ const (
 // MockTransAmt 模拟打款金额，单位（分）
 var MockTransAmt = 5
 
-// Config 企业银行卡账户认证相关配置
+// Config 企业银行卡账户认证配置
 type Config struct {
 	IsMock       bool   `json:",optional"` // 是否模拟通过
 	AppKey       string `json:",optional"` // 应用Key
 	AppKeySecret string `json:",optional"` // 应用密钥
 }
 
-// CorpAccount 企业银行卡账户认证器结构详情
+// CorpAccount 企业银行卡账户认证器
 type CorpAccount struct {
 	c      Config
 	client *xreq.Client

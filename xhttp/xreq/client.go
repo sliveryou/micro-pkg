@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	// DefaultConfig 获取默认 HTTP 客户端相关配置
+	// DefaultConfig 获取默认 HTTP 客户端配置
 	DefaultConfig = xhttp.DefaultConfig
 	// NewHTTPClient 新建 HTTP 客户端（不传递配置时，将使用默认配置 DefaultConfig）
 	NewHTTPClient = xhttp.NewHTTPClient
@@ -29,10 +29,10 @@ var (
 	DefaultClient = NewClient()
 )
 
-// Config HTTP 客户端相关配置
+// Config HTTP 客户端配置
 type Config = xhttp.Config
 
-// Client HTTP 拓展客户端结构详情
+// Client HTTP 拓展客户端
 type Client struct {
 	BeforeOptions OptionCollection
 	AfterOptions  OptionCollection

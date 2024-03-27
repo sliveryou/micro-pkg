@@ -100,7 +100,7 @@ func WithKeyPrefix(keyPrefix string) Option {
 	}
 }
 
-// PeriodLimit 时间段限流器结构详情
+// PeriodLimit 时间段限流器
 type PeriodLimit struct {
 	option option
 	store  *xkv.Store

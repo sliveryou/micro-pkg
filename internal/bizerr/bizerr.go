@@ -95,7 +95,7 @@ var (
 	ErrCaptchaNotFound = errcode.New(140, "验证码不存在或已过期")
 )
 
-// xhttp/xmiddleware、xgrpc/xinterceptor 包预定义错误
+// xhttp/xmiddleware 和 xgrpc/xinterceptor 包预定义错误
 
 // CodeInvalidSign 签名错误业务状态码
 const CodeInvalidSign = 150

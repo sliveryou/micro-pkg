@@ -20,7 +20,7 @@ end
 return current;`
 )
 
-// Store 键值存取器结构详情
+// Store 键值存取器
 type Store struct {
 	c kv.KvConf
 	kv.Store

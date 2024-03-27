@@ -35,14 +35,14 @@ const (
 	comSFKY = "shunfengkuaiyun"
 )
 
-// Express100 快递100客户端结构详情
+// Express100 快递100客户端
 type Express100 struct {
 	appID     string // 应用ID（为快递100中分配的 CustomerID）
 	secretKey string // 应用密钥
 	client    *xreq.Client
 }
 
-// NewExpress100 新建快递100客户端对象
+// NewExpress100 新建快递100客户端
 func NewExpress100(appID, secretKey string) (*Express100, error) {
 	if appID == "" || secretKey == "" {
 		return nil, errors.New("express100: illegal express100 config")

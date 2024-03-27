@@ -15,7 +15,7 @@ import (
 
 var _ health.Checker = (*Checker)(nil)
 
-// Checker 键值集群检查器结构详情
+// Checker 键值集群检查器
 type Checker struct {
 	nodes []*redis.Redis
 }

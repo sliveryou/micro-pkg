@@ -18,7 +18,7 @@ type Express interface {
 	GetExpress(ctx context.Context, req *types.GetExpressRequest) (*types.GetExpressResponse, error)
 }
 
-// Config 快递查询客户端相关配置
+// Config 快递查询客户端配置
 type Config struct {
 	Cloud       string `json:",options=[express100,expressBird]"` // 云服务商（当前支持 express100 和 expressBird）
 	AppID       string // 应用ID
@@ -26,7 +26,7 @@ type Config struct {
 	RequestType string `json:",optional"` // 请求指令类型（expressBird 云服务商专用，枚举 1002、8001 和 8002）
 }
 
-// NewExpress 新建快递查询客户端对象
+// NewExpress 新建快递查询客户端
 func NewExpress(c Config) (Express, error) {
 	var client Express
 	var err error
@@ -46,7 +46,7 @@ func NewExpress(c Config) (Express, error) {
 	return &defaultExpress{c: c, client: client}, nil
 }
 
-// MustNewExpress 新建快递查询客户端对象
+// MustNewExpress 新建快递查询客户端
 func MustNewExpress(c Config) Express {
 	e, err := NewExpress(c)
 	if err != nil {
@@ -56,7 +56,7 @@ func MustNewExpress(c Config) Express {
 	return e
 }
 
-// defaultExpress 默认快递查询客户端结构详情
+// defaultExpress 默认快递查询客户端
 type defaultExpress struct {
 	c      Config
 	client Express

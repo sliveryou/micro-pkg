@@ -40,7 +40,7 @@ var requestTypes = []string{
 	"", requestType1002, requestType8001, requestType8002,
 }
 
-// ExpressBird 快递鸟客户端结构详情
+// ExpressBird 快递鸟客户端
 type ExpressBird struct {
 	appID       string // 应用ID（为快递鸟中分配的 EBusinessID）
 	secretKey   string // 应用密钥
@@ -48,7 +48,7 @@ type ExpressBird struct {
 	client      *xreq.Client
 }
 
-// NewExpressBird 新建快递鸟客户端对象
+// NewExpressBird 新建快递鸟客户端
 func NewExpressBird(appID, secretKey, requestType string) (*ExpressBird, error) {
 	if appID == "" || secretKey == "" || !sliceg.Contain(requestTypes, requestType) {
 		return nil, errors.New("expressbird: illegal expressbird config")

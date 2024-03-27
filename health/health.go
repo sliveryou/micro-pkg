@@ -21,7 +21,7 @@ const (
 	Unknown Status = 3 // UNKNOWN
 )
 
-// Health 健康状态结构详情
+// Health 健康状态
 type Health struct {
 	status Status
 	info   map[string]any

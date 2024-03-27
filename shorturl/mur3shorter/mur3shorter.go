@@ -15,7 +15,7 @@ const (
 	DefaultAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 )
 
-// Shorter 基于 murmur3 的短地址映射器结构详情
+// Shorter murmur3 短地址映射器
 type Shorter struct {
 	Length   int    // 生成短地址标识长度
 	Alphabet []byte // 对应进制数字符表

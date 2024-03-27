@@ -41,19 +41,19 @@ var (
 	errNoTokenInCtx    = stderrors.New("no token present in context")
 )
 
-// Config JWT 相关配置
+// Config JWT 配置
 type Config struct {
 	Issuer     string        // 签发者
 	SecretKey  string        // 密钥
 	Expiration time.Duration `json:",default=72h"` // 过期时间
 }
 
-// JWT 结构详情
+// JWT 对象
 type JWT struct {
 	c Config
 }
 
-// NewJWT 新建 JWT
+// NewJWT 新建 JWT 对象
 func NewJWT(c Config) (*JWT, error) {
 	if c.Issuer == "" || c.SecretKey == "" || c.Expiration < 0 {
 		return nil, errors.New("jwt: illegal jwt config")
@@ -65,7 +65,7 @@ func NewJWT(c Config) (*JWT, error) {
 	return &JWT{c: c}, nil
 }
 
-// MustNewJWT 新建 JWT
+// MustNewJWT 新建 JWT 对象
 func MustNewJWT(c Config) *JWT {
 	j, err := NewJWT(c)
 	if err != nil {

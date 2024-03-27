@@ -23,7 +23,7 @@ m = keyMatch3(r.obj, p.obj) && (r.act == p.act || p.act == "*")
 `
 )
 
-// Config 功能禁用器相关配置
+// Config 功能禁用器配置
 type Config struct {
 	DisabledAPIs []string `json:",optional"` // API 禁用列表
 	DisabledRPCs []string `json:",optional"` // RPC 禁用列表

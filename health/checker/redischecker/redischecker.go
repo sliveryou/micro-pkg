@@ -11,7 +11,7 @@ import (
 
 var _ health.Checker = (*Checker)(nil)
 
-// Checker redis 检查器结构详情
+// Checker redis 检查器
 type Checker struct {
 	rds *redis.Redis
 }

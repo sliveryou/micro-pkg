@@ -21,28 +21,28 @@ var signTypes = []string{
 	"", smclient.SignTypeNormal, smclient.SignTypeSha1, smclient.SignTypeMd5,
 }
 
-// App 应用相关配置
+// App 应用配置
 type App struct {
 	AppID    string // 应用ID
 	AppKey   string // 应用Key
 	SignType string `json:",default=sha1,options=[normal,sha1,md5]"` // 签名类型（枚举 normal、sha1 和 md5）
 }
 
-// Config 赛邮云通知服务相关配置
+// Config 赛邮云通知服务配置
 type Config struct {
-	Sms   *App // 短信应用相关配置
-	Email *App // 邮件应用相关配置
+	Sms   *App // 短信应用配置
+	Email *App // 邮件应用配置
 }
 
-// Submail 赛邮云通知服务结构详情
+// Submail 赛邮云通知服务
 type Submail struct {
-	c           Config                  // 相关配置
+	c           Config                  // 配置
 	baseClient  *notifytypes.BaseClient // 基础客户端
 	smsClient   *sms.Client             // 短信客户端
 	emailClient *mail.Client            // 邮件客户端
 }
 
-// NewSubmail 新建赛邮云通知服务对象
+// NewSubmail 新建赛邮云通知服务
 func NewSubmail(c Config, opts ...notifytypes.Option) (*Submail, error) {
 	if err := c.check(); err != nil {
 		return nil, errors.WithMessage(err, "submail: check config err")
@@ -66,7 +66,7 @@ func NewSubmail(c Config, opts ...notifytypes.Option) (*Submail, error) {
 	return s, nil
 }
 
-// MustNewSubmail 新建赛邮云通知服务对象
+// MustNewSubmail 新建赛邮云通知服务
 func MustNewSubmail(c Config, opts ...notifytypes.Option) *Submail {
 	s, err := NewSubmail(c, opts...)
 	if err != nil {
@@ -112,7 +112,7 @@ func (s *Submail) SendEmail(receiver, templateID string, params ...notifytypes.P
 	return errors.WithMessage(s.emailClient.XSend(xsp), "email client xsend err")
 }
 
-// isValid 判断应用相关配置是否合法
+// isValid 判断应用配置是否合法
 func (a *App) isValid() bool {
 	if a != nil {
 		if a.AppID == "" || a.AppKey == "" || !sliceg.Contain(signTypes, a.SignType) {

@@ -29,7 +29,7 @@ func WithNotSetACL(notSetACL ...bool) Option {
 	}
 }
 
-// OBS 华为云 OBS 结构详情
+// OBS 华为云 OBS 客户端
 type OBS struct {
 	notSetACL  bool
 	endpoint   string
@@ -37,7 +37,7 @@ type OBS struct {
 	client     *obs.ObsClient
 }
 
-// NewOBS 创建一个华为云 OBS 对象
+// NewOBS 创建一个华为云 OBS 客户端
 func NewOBS(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...Option) (*OBS, error) {
 	client, err := obs.New(accessKeyID, accessKeySecret, endpoint)
 	if err != nil {

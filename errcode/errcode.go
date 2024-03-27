@@ -65,7 +65,7 @@ var (
 	descRegex = regexp.MustCompile(`code: (\d+), msg: (.+), http code: (\d+)`)
 )
 
-// Err 业务错误结构详情
+// Err 业务错误
 type Err struct {
 	Code     uint32
 	HTTPCode int

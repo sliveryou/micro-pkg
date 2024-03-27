@@ -13,7 +13,7 @@ import (
 	"github.com/sliveryou/go-tool/v2/sliceg"
 )
 
-// AppSign 应用签名结构详情
+// AppSign 应用签名
 //
 // 签名规则参考：阿里云使用摘要签名认证方式调用 API
 // https://help.aliyun.com/zh/api-gateway/user-guide/use-digest-authentication-to-call-an-api

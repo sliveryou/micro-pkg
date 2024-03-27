@@ -10,7 +10,7 @@ type Shorter interface {
 	Mapping(longURL string) (shortURL string)
 }
 
-// Config 短地址相关配置
+// Config 短地址配置
 type Config struct {
 	Length   int64  // 生成短地址标识长度，不建议超过 12
 	Alphabet string `json:",optional"` // 对应进制数字符表，为空则使用默认，不为空长度须为 62

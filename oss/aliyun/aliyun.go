@@ -37,7 +37,7 @@ func WithNotSetACL(notSetACL ...bool) Option {
 	}
 }
 
-// OSS 阿里云 OSS 结构详情
+// OSS 阿里云 OSS 客户端
 type OSS struct {
 	client           *oss.Client
 	bucket           *oss.Bucket
@@ -46,7 +46,7 @@ type OSS struct {
 	externalEndpoint string
 }
 
-// NewOSS 创建一个阿里云 OSS 对象
+// NewOSS 创建一个阿里云 OSS 客户端
 func NewOSS(endpoint, accessKeyID, accessKeySecret, bucketName string, opts ...Option) (*OSS, error) {
 	client, err := oss.New(endpoint, accessKeyID, accessKeySecret)
 	if err != nil {

@@ -18,7 +18,7 @@ import (
 // MockCode 模拟验证码
 var MockCode = "123456"
 
-// Config 通知服务相关配置
+// Config 通知服务配置
 type Config struct {
 	Provider      string // 提供方
 	SendPeriod    int    `json:",default=60"`    // 发送时间段（与发送配额搭配，如发送时间段为 60，发送配额为 1，表示 60s 内对同一接收方只允许发送 1 次）
@@ -30,16 +30,16 @@ type Config struct {
 	ProviderQuota int    `json:",default=10000"` // 一天内该提供方配额
 }
 
-// Notify 通知服务结构详情
+// Notify 通知服务
 type Notify struct {
-	c            Config                        // 相关配置
+	c            Config                        // 配置
 	smsClients   notifytypes.SmsClientPicker   // 短信客户端选取器
 	emailClients notifytypes.EmailClientPicker // 邮件客户端选取器
 	kvStore      *xkv.Store                    // 键值存取器
 	periodLimit  *limit.PeriodLimit            // 通知限流器
 }
 
-// NewNotify 新建通知服务对象
+// NewNotify 新建通知服务
 func NewNotify(c Config, smsClients notifytypes.SmsClientPicker, emailClients notifytypes.EmailClientPicker, kvStore *xkv.Store) (*Notify, error) {
 	if smsClients == nil || emailClients == nil || kvStore == nil || c.Provider == "" {
 		return nil, errors.New("notify: illegal notify config")
@@ -64,7 +64,7 @@ func NewNotify(c Config, smsClients notifytypes.SmsClientPicker, emailClients no
 	}, nil
 }
 
-// MustNewNotify 新建通知服务对象
+// MustNewNotify 新建通知服务
 func MustNewNotify(c Config, smsClients notifytypes.SmsClientPicker, emailClients notifytypes.EmailClientPicker, kvStore *xkv.Store) *Notify {
 	n, err := NewNotify(c, smsClients, emailClients, kvStore)
 	if err != nil {

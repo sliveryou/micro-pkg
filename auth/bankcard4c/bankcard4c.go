@@ -27,14 +27,14 @@ const (
 	MsgFailure = "认证失败，请稍后再试"
 )
 
-// Config 银行卡四要素认证相关配置
+// Config 银行卡四要素认证配置
 type Config struct {
 	IsMock       bool   `json:",optional"` // 是否模拟通过
 	AppKey       string `json:",optional"` // 应用Key
 	AppKeySecret string `json:",optional"` // 应用密钥
 }
 
-// BankCard4C 银行卡四要素认证器结构详情
+// BankCard4C 银行卡四要素认证器
 type BankCard4C struct {
 	c      Config
 	client *xreq.Client

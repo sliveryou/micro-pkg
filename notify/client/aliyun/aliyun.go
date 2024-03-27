@@ -23,7 +23,7 @@ const (
 	defaultRegionID = "cn-hangzhou"
 )
 
-// App 应用相关配置
+// App 应用配置
 type App struct {
 	RegionID        string `json:",default=cn-hangzhou"` // 地域ID
 	AccessKeyID     string // 访问鉴权ID
@@ -32,22 +32,22 @@ type App struct {
 	AccountName     string `json:",optional"` // 发信地址（邮件应用使用）
 }
 
-// Config 阿里云通知服务相关配置
+// Config 阿里云通知服务配置
 type Config struct {
-	Sms   *App // 短信应用相关配置
-	Email *App // 邮件应用相关配置
+	Sms   *App // 短信应用配置
+	Email *App // 邮件应用配置
 }
 
-// Aliyun 阿里云通知服务结构详情
+// Aliyun 阿里云通知服务
 type Aliyun struct {
-	c             Config                  // 相关配置
+	c             Config                  // 配置
 	baseClient    *notifytypes.BaseClient // 基础客户端
 	smsClient     *dysmsapi.Client        // 短信客户端
 	emailClient   *sdk.Client             // 邮件客户端
 	emailExtraMap map[string]EmailExtra   // 邮件额外信息映射
 }
 
-// NewAliyun 新建阿里云通知服务对象
+// NewAliyun 新建阿里云通知服务
 func NewAliyun(c Config, opts ...notifytypes.Option) (*Aliyun, error) {
 	if err := c.check(); err != nil {
 		return nil, errors.WithMessage(err, "aliyun: check config err")
@@ -88,7 +88,7 @@ func NewAliyun(c Config, opts ...notifytypes.Option) (*Aliyun, error) {
 	return a, nil
 }
 
-// MustNewAliyun 新建阿里云通知服务对象
+// MustNewAliyun 新建阿里云通知服务
 func MustNewAliyun(c Config, opts ...notifytypes.Option) *Aliyun {
 	a, err := NewAliyun(c, opts...)
 	if err != nil {
@@ -196,7 +196,7 @@ func (a *Aliyun) LoadEmailExtraMap(eem map[string]EmailExtra) {
 	}
 }
 
-// isValid 判断应用相关配置是否合法
+// isValid 判断应用配置是否合法
 func (a *App) isValid(isEmailApp ...bool) bool {
 	if a != nil {
 		if a.AccessKeyID == "" || a.AccessKeySecret == "" || a.SignName == "" {

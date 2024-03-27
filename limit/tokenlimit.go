@@ -80,7 +80,7 @@ func WithKey(key string) TokenOption {
 	}
 }
 
-// TokenLimit 令牌桶限流器结构详情
+// TokenLimit 令牌桶限流器
 type TokenLimit struct {
 	option tokenOption
 	store  *xkv.Store
