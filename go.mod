@@ -30,7 +30,7 @@ require (
 	github.com/xuri/excelize/v2 v2.8.1
 	github.com/yunpian/yunpian-go-sdk v2.0.0+incompatible
 	github.com/zeromicro/go-zero v1.6.3
-	go.etcd.io/etcd/api/v3 v3.5.12
+	go.etcd.io/etcd/api/v3 v3.5.13
 	go.etcd.io/etcd/client/v3 v3.5.12
 	go.opentelemetry.io/otel/trace v1.19.0
 	golang.org/x/crypto v0.21.0
@@ -73,7 +73,7 @@ require (
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/mock v1.6.0 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
