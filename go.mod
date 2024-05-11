@@ -6,15 +6,15 @@ require (
 	dario.cat/mergo v1.0.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/alicebob/miniredis/v2 v2.32.1
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.712
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.734
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
-	github.com/casbin/casbin/v2 v2.87.1
+	github.com/casbin/casbin/v2 v2.89.0
 	github.com/glebarez/sqlite v1.11.0
 	github.com/go-stack/stack v1.8.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/gorilla/websocket v1.5.1
 	github.com/h2non/filetype v1.1.3
-	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.23.12+incompatible
+	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.24.3+incompatible
 	github.com/minio/minio-go/v7 v7.0.67
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/mojocn/base64Captcha v1.3.6
@@ -33,14 +33,14 @@ require (
 	go.etcd.io/etcd/api/v3 v3.5.13
 	go.etcd.io/etcd/client/v3 v3.5.13
 	go.opentelemetry.io/otel/trace v1.19.0
-	golang.org/x/crypto v0.22.0
+	golang.org/x/crypto v0.23.0
 	google.golang.org/grpc v1.63.0
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/mysql v1.5.6
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/driver/sqlserver v1.5.3
 	gorm.io/gen v0.3.26
-	gorm.io/gorm v1.25.9
+	gorm.io/gorm v1.25.10
 )
 
 require (
@@ -142,9 +142,9 @@ require (
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/oauth2 v0.17.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
-	golang.org/x/sys v0.19.0 // indirect
-	golang.org/x/term v0.19.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/term v0.20.0 // indirect
+	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.17.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
