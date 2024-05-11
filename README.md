@@ -11,8 +11,6 @@ go 微服务常用公共包
 
 ## 简介
 
-接口暂不稳定，待稳定版本发布。
-
 - **apollo** 阿波罗配置中心 go 客户端
 - **appsign** 服务端应用签名校验包，签名规则参考：[使用摘要签名认证方式调用 api](https://help.aliyun.com/zh/api-gateway/user-guide/use-digest-authentication-to-call-an-api)，客户端签名 go sdk：[aliyun-api-gateway-sign](https://github.com/sliveryou/aliyun-api-gateway-sign)
 - **auth** 身份认证包，包含阿里云银行卡四要素认证、阿里云企业银行卡账户认证和百度云人脸识别认证
