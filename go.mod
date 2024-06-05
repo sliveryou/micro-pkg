@@ -26,7 +26,7 @@ require (
 	github.com/sliveryou/submail-go-sdk v1.0.5
 	github.com/spaolacci/murmur3 v1.1.0
 	github.com/stretchr/testify v1.9.0
-	github.com/tencentyun/cos-go-sdk-v5 v0.7.47
+	github.com/tencentyun/cos-go-sdk-v5 v0.7.49
 	github.com/xuri/excelize/v2 v2.8.1
 	github.com/yunpian/yunpian-go-sdk v2.0.0+incompatible
 	github.com/zeromicro/go-zero v1.6.5
