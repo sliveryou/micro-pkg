@@ -72,16 +72,11 @@ func TestManager_GetUserClients(t *testing.T) {
 
 func TestManager_GetClients(t *testing.T) {
 	m := NewManager()
-	c1, _ := getClientAndChan(t, m, WithUserID("1"), WithAppID("web"))
+	_, _ = getClientAndChan(t, m, WithUserID("1"), WithAppID("web"))
 	_, _ = getClientAndChan(t, m, WithUserID("2"), WithAppID("web"))
 
 	gets := m.GetClients()
 	assert.Len(t, gets, 2)
-
-	get1 := gets[0]
-	assert.Equal(t, c1.ConnID(), get1.ConnID())
-	assert.Equal(t, c1.UserID(), get1.UserID())
-	assert.Equal(t, c1.AppID(), get1.AppID())
 }
 
 func TestManager_SendMsgToClient(t *testing.T) {

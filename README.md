@@ -28,8 +28,10 @@ go 微服务常用公共包
 - **lock** 基于 etcd 实现的分布式锁
 - **notify** 通用通知服务包，包含短信、邮件验证码发送与短信、邮件验证码校验等功能，可以对发送间隔、验证间隔、一天内同一接收方、一天内同一 ip 和一天内总发送量进行限制与监控，支持 aliyun、submail 和 yunpian
 - **oss** 通用对象存储服务客户端，支持 aliyun、huawei、tencent、minio、local 和 mock
+- **promcollector** 通用 prometheus 指标收集器，包含 cpu、disk、diskio、mem 和 net 等指标的收集器
 - **retry** 通用操作重试包，对操作进行失败重试，可以组合不同的策略
 - **shorturl** 基于 murmur3 hash 的短地址标识符生成包
+- **sysctl** 通用系统控制包，包含系统信息如：主机信息、cpu 信息、内存信息、网络信息和硬盘信息等的获取和 linux 文件排它锁的实现
 - **watcher** 基于 etcd 的键值更新观察器，当观察到键发生创建或更新事件时，会触发回调函数，并实现了 casbin 的 `persist.Watcher` 接口
 - **xdb** 通用数据库连接包，返回 `*gorm.DB` 对象，支持 mysql、postgres、sqlite 和 sqlserver
 - **xdb/xfield** gorm gen 字段拓展包，支持构建原始 sql 字段和原始 sql 条件
@@ -57,5 +59,6 @@ go 微服务常用公共包
 - [短地址标识符生成](shorturl/README.md)
 - [gorm/gen 字段拓展包](xdb/xfield/README.md)
 - [枚举类型方法生成工具](docs/enumer.md)
+- [常用监控指标](docs/metric.md)
 - [重放攻击](docs/replay-attacks.md)
 - [参考文献](docs/references.md)
