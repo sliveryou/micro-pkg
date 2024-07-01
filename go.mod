@@ -21,7 +21,7 @@ require (
 	github.com/mojocn/base64Captcha v1.3.6
 	github.com/philchia/agollo/v4 v4.1.5
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.18.0
+	github.com/prometheus/client_golang v1.19.1
 	github.com/redis/go-redis/v9 v9.5.3
 	github.com/shirou/gopsutil/v4 v4.24.5
 	github.com/sliveryou/aliyun-api-gateway-sign v1.0.5
@@ -100,7 +100,6 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
 	github.com/microsoft/go-mssqldb v1.6.0 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
@@ -115,7 +114,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
-	github.com/prometheus/common v0.45.0 // indirect
+	github.com/prometheus/common v0.48.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
