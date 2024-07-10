@@ -2,6 +2,7 @@ package minio
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
 	"io"
 	"strings"
@@ -162,7 +163,7 @@ func (m *MinIO) DeleteObjects(keys ...string) error {
 	for errCh := range m.client.RemoveObjects(context.Background(), m.bucketName, objectCh,
 		minio.RemoveObjectsOptions{}) {
 		if errCh.Err != nil {
-			err = errors.WithMessagef(err, "remove object: %s err", errCh.ObjectName)
+			err = stderrors.Join(err, errors.WithMessagef(errCh.Err, "remove object: %s err", errCh.ObjectName))
 		}
 	}
 
