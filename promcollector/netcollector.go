@@ -25,8 +25,8 @@ type NetCollector struct {
 	DropIn      *prometheus.Desc
 	DropOut     *prometheus.Desc
 
-	reportErrors    bool
 	checkInterfaces bool
+	BaseCollector
 }
 
 // NewNetCollector 新建网络指标收集器
@@ -36,13 +36,11 @@ func NewNetCollector(opts ...NetCollectorOpts) *NetCollector {
 		opt = opts[0]
 	}
 
-	ns := ""
-	if opt.Namespace != "" {
-		ns = opt.Namespace + "_"
-	}
+	bc := BaseCollector{reportErrors: opt.ReportErrors}
+	ns := bc.getNamespace(opt.Namespace)
 
 	return &NetCollector{
-		reportErrors:    opt.ReportErrors,
+		BaseCollector:   bc,
 		checkInterfaces: opt.CheckInterfaces,
 		BytesSent: prometheus.NewDesc(
 			ns+"net_bytes_sent", "Number of bytes sent by the network interface.",
@@ -87,7 +85,7 @@ func (c *NetCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *NetCollector) Collect(ch chan<- prometheus.Metric) {
 	interfaces, err := stdnet.Interfaces()
 	if err != nil {
-		c.reportError(ch, nil, err)
+		c.reportError(ch, err)
 		return
 	}
 
@@ -98,7 +96,7 @@ func (c *NetCollector) Collect(ch chan<- prometheus.Metric) {
 
 	counts, err := net.IOCounters(true)
 	if err != nil {
-		c.reportError(ch, nil, err)
+		c.reportError(ch, err)
 		return
 	}
 
@@ -127,14 +125,4 @@ func (c *NetCollector) Collect(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(c.DropIn, prometheus.GaugeValue, float64(count.Dropin), labels...)
 		ch <- prometheus.MustNewConstMetric(c.DropOut, prometheus.GaugeValue, float64(count.Dropout), labels...)
 	}
-}
-
-func (c *NetCollector) reportError(ch chan<- prometheus.Metric, desc *prometheus.Desc, err error) {
-	if !c.reportErrors {
-		return
-	}
-	if desc == nil {
-		desc = prometheus.NewInvalidDesc(err)
-	}
-	ch <- prometheus.NewInvalidMetric(desc, err)
 }

@@ -24,7 +24,7 @@ type DiskCollector struct {
 	InodesUsed        *prometheus.Desc
 	InodesUsedPercent *prometheus.Desc
 
-	reportErrors bool
+	BaseCollector
 }
 
 // NewDiskCollector 新建硬盘指标收集器
@@ -34,13 +34,11 @@ func NewDiskCollector(opts ...DiskCollectorOpts) *DiskCollector {
 		opt = opts[0]
 	}
 
-	ns := ""
-	if opt.Namespace != "" {
-		ns = opt.Namespace + "_"
-	}
+	bc := BaseCollector{reportErrors: opt.ReportErrors}
+	ns := bc.getNamespace(opt.Namespace)
 
 	return &DiskCollector{
-		reportErrors: opt.ReportErrors,
+		BaseCollector: bc,
 		TotalBytes: prometheus.NewDesc(
 			ns+"disk_total_bytes", "Total number of bytes of space on the disk.",
 			[]string{"path", "device", "fstype"}, nil),
@@ -84,7 +82,7 @@ func (c *DiskCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *DiskCollector) Collect(ch chan<- prometheus.Metric) {
 	parts, err := disk.Partitions(true)
 	if err != nil {
-		c.reportError(ch, nil, err)
+		c.reportError(ch, err)
 		return
 	}
 
@@ -113,14 +111,4 @@ func (c *DiskCollector) Collect(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(c.InodesUsed, prometheus.GaugeValue, float64(du.InodesUsed), labels...)
 		ch <- prometheus.MustNewConstMetric(c.InodesUsedPercent, prometheus.GaugeValue, du.InodesUsedPercent, labels...)
 	}
-}
-
-func (c *DiskCollector) reportError(ch chan<- prometheus.Metric, desc *prometheus.Desc, err error) {
-	if !c.reportErrors {
-		return
-	}
-	if desc == nil {
-		desc = prometheus.NewInvalidDesc(err)
-	}
-	ch <- prometheus.NewInvalidMetric(desc, err)
 }

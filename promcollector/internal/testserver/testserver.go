@@ -27,5 +27,6 @@ func main() {
 	http.Handle("/metrics", promhttp.HandlerFor(registry, promhttp.HandlerOpts{
 		Registry: registry,
 	}))
+	log.Print("metrics api => http://localhost:8080/metrics")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

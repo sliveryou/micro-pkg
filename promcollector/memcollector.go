@@ -24,7 +24,7 @@ type MemCollector struct {
 	FreeBytes        *prometheus.Desc
 	InactiveBytes    *prometheus.Desc
 
-	reportErrors bool
+	BaseCollector
 }
 
 // NewMemCollector 新建内存指标收集器
@@ -34,13 +34,11 @@ func NewMemCollector(opts ...MemCollectorOpts) *MemCollector {
 		opt = opts[0]
 	}
 
-	ns := ""
-	if opt.Namespace != "" {
-		ns = opt.Namespace + "_"
-	}
+	bc := BaseCollector{reportErrors: opt.ReportErrors}
+	ns := bc.getNamespace(opt.Namespace)
 
 	return &MemCollector{
-		reportErrors: opt.ReportErrors,
+		BaseCollector: bc,
 		TotalBytes: prometheus.NewDesc(
 			ns+"mem_total_bytes", "Total number of bytes of memory.",
 			nil, nil),
@@ -92,7 +90,7 @@ func (c *MemCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *MemCollector) Collect(ch chan<- prometheus.Metric) {
 	metric, err := c.Metric()
 	if err != nil {
-		c.reportError(ch, nil, err)
+		c.reportError(ch, err)
 		return
 	}
 
@@ -127,14 +125,4 @@ func (c *MemCollector) Metric() (map[string]float64, error) {
 		"free_bytes":        float64(vm.Free),
 		"inactive_bytes":    float64(vm.Inactive),
 	}, nil
-}
-
-func (c *MemCollector) reportError(ch chan<- prometheus.Metric, desc *prometheus.Desc, err error) {
-	if !c.reportErrors {
-		return
-	}
-	if desc == nil {
-		desc = prometheus.NewInvalidDesc(err)
-	}
-	ch <- prometheus.NewInvalidMetric(desc, err)
 }

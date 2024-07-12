@@ -28,9 +28,9 @@ type CPUCollector struct {
 	UsageGuest     *prometheus.Desc
 	UsageGuestNice *prometheus.Desc
 
-	mu           sync.RWMutex
-	reportErrors bool
-	lastCts      *cpu.TimesStat
+	mu      sync.RWMutex
+	lastCts *cpu.TimesStat
+	BaseCollector
 }
 
 // NewCPUCollector 新建 cpu 指标收集器
@@ -40,13 +40,11 @@ func NewCPUCollector(opts ...CPUCollectorOpts) *CPUCollector {
 		opt = opts[0]
 	}
 
-	ns := ""
-	if opt.Namespace != "" {
-		ns = opt.Namespace + "_"
-	}
+	bc := BaseCollector{reportErrors: opt.ReportErrors}
+	ns := bc.getNamespace(opt.Namespace)
 
 	return &CPUCollector{
-		reportErrors: opt.ReportErrors,
+		BaseCollector: bc,
 		UsageActive: prometheus.NewDesc(
 			ns+"cpu_usage_active", "Percentage of time that the CPU is active in any capacity.",
 			[]string{"cpu"}, nil),
@@ -102,7 +100,7 @@ func (c *CPUCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *CPUCollector) Collect(ch chan<- prometheus.Metric) {
 	metric, err := c.Metric()
 	if err != nil {
-		c.reportError(ch, nil, err)
+		c.reportError(ch, err)
 		return
 	}
 
@@ -164,16 +162,6 @@ func (c *CPUCollector) Metric() (map[string]float64, error) {
 		"usage_guest":      100 * (cts.Guest - lastCts.Guest) / totalDelta,
 		"usage_guest_nice": 100 * (cts.GuestNice - lastCts.GuestNice) / totalDelta,
 	}, nil
-}
-
-func (c *CPUCollector) reportError(ch chan<- prometheus.Metric, desc *prometheus.Desc, err error) {
-	if !c.reportErrors {
-		return
-	}
-	if desc == nil {
-		desc = prometheus.NewInvalidDesc(err)
-	}
-	ch <- prometheus.NewInvalidMetric(desc, err)
 }
 
 func totalTime(t *cpu.TimesStat) float64 {

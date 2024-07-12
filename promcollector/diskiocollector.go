@@ -22,7 +22,7 @@ type DiskIOCollector struct {
 	IoTime         *prometheus.Desc
 	IopsInProgress *prometheus.Desc
 
-	reportErrors bool
+	BaseCollector
 }
 
 // NewDiskIOCollector 新建硬盘指标收集器
@@ -32,13 +32,11 @@ func NewDiskIOCollector(opts ...DiskIOCollectorOpts) *DiskIOCollector {
 		opt = opts[0]
 	}
 
-	ns := ""
-	if opt.Namespace != "" {
-		ns = opt.Namespace + "_"
-	}
+	bc := BaseCollector{reportErrors: opt.ReportErrors}
+	ns := bc.getNamespace(opt.Namespace)
 
 	return &DiskIOCollector{
-		reportErrors: opt.ReportErrors,
+		BaseCollector: bc,
 		Reads: prometheus.NewDesc(
 			ns+"diskio_reads", "Number of device read operations.",
 			[]string{"name"}, nil),
@@ -82,7 +80,7 @@ func (c *DiskIOCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *DiskIOCollector) Collect(ch chan<- prometheus.Metric) {
 	counts, err := disk.IOCounters()
 	if err != nil {
-		c.reportError(ch, nil, err)
+		c.reportError(ch, err)
 		return
 	}
 
@@ -104,14 +102,4 @@ func (c *DiskIOCollector) Collect(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(c.IoTime, prometheus.GaugeValue, float64(dio.IoTime), labels...)
 		ch <- prometheus.MustNewConstMetric(c.IopsInProgress, prometheus.GaugeValue, float64(dio.IopsInProgress), labels...)
 	}
-}
-
-func (c *DiskIOCollector) reportError(ch chan<- prometheus.Metric, desc *prometheus.Desc, err error) {
-	if !c.reportErrors {
-		return
-	}
-	if desc == nil {
-		desc = prometheus.NewInvalidDesc(err)
-	}
-	ch <- prometheus.NewInvalidMetric(desc, err)
 }
