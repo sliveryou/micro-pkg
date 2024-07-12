@@ -14,6 +14,8 @@ import (
 	"github.com/shirou/gopsutil/v4/load"
 	"github.com/shirou/gopsutil/v4/mem"
 	"github.com/shirou/gopsutil/v4/net"
+	"github.com/zeromicro/go-zero/core/errorx"
+	"github.com/zeromicro/go-zero/core/threading"
 )
 
 // Params 参数信息
@@ -38,38 +40,58 @@ func GetSystem(params ...Params) (*System, error) {
 		p = params[0]
 	}
 
-	h, err := GetHost()
-	if err != nil {
-		return nil, errors.WithMessage(err, "get host err")
+	var (
+		s  System
+		be errorx.BatchError
+		rg = threading.NewRoutineGroup()
+	)
+	rg.RunSafe(func() {
+		h, err := GetHost()
+		if err != nil {
+			be.Add(errors.WithMessage(err, "get host err"))
+			return
+		}
+		s.Host = *h
+	})
+	rg.RunSafe(func() {
+		c, err := GetCPU()
+		if err != nil {
+			be.Add(errors.WithMessage(err, "get cpu err"))
+			return
+		}
+		s.CPU = *c
+	})
+	rg.RunSafe(func() {
+		m, err := GetMemory()
+		if err != nil {
+			be.Add(errors.WithMessage(err, "get memory err"))
+			return
+		}
+		s.Memory = *m
+	})
+	rg.RunSafe(func() {
+		n, err := GetNetwork(p.IP)
+		if err != nil {
+			be.Add(errors.WithMessage(err, "get network err"))
+			return
+		}
+		s.Network = *n
+	})
+	rg.RunSafe(func() {
+		d, err := GetDisk(p.Path)
+		if err != nil {
+			be.Add(errors.WithMessage(err, "get disk err"))
+			return
+		}
+		s.Disk = *d
+	})
+	rg.Wait()
+
+	if be.NotNil() {
+		return nil, be.Err()
 	}
 
-	c, err := GetCPU()
-	if err != nil {
-		return nil, errors.WithMessage(err, "get cpu err")
-	}
-
-	m, err := GetMemory()
-	if err != nil {
-		return nil, errors.WithMessage(err, "get memory err")
-	}
-
-	n, err := GetNetwork(p.IP)
-	if err != nil {
-		return nil, errors.WithMessage(err, "get network err")
-	}
-
-	d, err := GetDisk(p.Path)
-	if err != nil {
-		return nil, errors.WithMessage(err, "get disk err")
-	}
-
-	return &System{
-		Host:    *h,
-		CPU:     *c,
-		Memory:  *m,
-		Network: *n,
-		Disk:    *d,
-	}, nil
+	return &s, nil
 }
 
 // Host 主机信息
